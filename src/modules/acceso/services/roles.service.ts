@@ -8,6 +8,7 @@ interface RolApiResponse {
   nivelAcceso?: number
   activo?: boolean
   fechaCreacion?: string
+  permisos?: any[]
 }
 
 const mapRol = (rol: RolApiResponse): Role => ({
@@ -16,7 +17,15 @@ const mapRol = (rol: RolApiResponse): Role => ({
   description: rol.descripcion || '',
   accessLevel: rol.nivelAcceso,
   isActive: rol.activo ?? true,
-  permissions: [],
+  permissions: rol.permisos ? rol.permisos.map((p: any) => ({
+    id: String(p.idPermiso),
+    name: p.nombre,
+    description: p.descripcion || '',
+    module: p.modulo,
+    action: p.accion,
+    isActive: p.activo ?? true,
+    createdAt: p.fechaCreacion,
+  })) : [],
   createdAt: rol.fechaCreacion,
 })
 
