@@ -38,10 +38,53 @@ export class HttpClient {
       return config
     })
 
-    // Response interceptor for error handling
+    // Response interceptor: automatic token refresh on 401
     this.axiosInstance.interceptors.response.use(
       (response) => response,
-      (error: AxiosError<{ message: string | string[] }>) => {
+      async (error: AxiosError<{ message: string | string [] }>) => {
+        const originalRequest = error.config as typeof error.config & { _retry?: boolean }
+
+        // If 401 and haven't retried yet: attempt token refresh
+        if (error.response?.status === 401 && !originalRequest?._retry) {
+          // If the request was to the login or register endpoint, do not attempt to refresh or redirect
+          if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/register')) {
+            const apiError = this.handleError(error)
+            return Promise.reject(apiError)
+          }
+
+          originalRequest._retry = true
+
+          const refreshToken = localStorage.getItem('gaira_refresh_token')
+          if (refreshToken) {
+            try {
+              const refreshResponse = await axios.post<{ accessToken: string; refreshToken: string }>(
+                `${this.axiosInstance.defaults.baseURL}/auth/refresh`,
+                { refreshToken },
+                { withCredentials: true }
+              )
+
+              const { accessToken, refreshToken: newRefreshToken } = refreshResponse.data
+              localStorage.setItem('gaira_access_token', accessToken)
+              localStorage.setItem('gaira_refresh_token', newRefreshToken)
+
+              // Retry original request with the new token
+              if (originalRequest?.headers) {
+                originalRequest.headers.Authorization = `Bearer ${accessToken}`
+              }
+              return this.axiosInstance(originalRequest!)
+            } catch {
+              // Refresh failed: clear tokens and redirect to login
+              localStorage.removeItem('gaira_access_token')
+              localStorage.removeItem('gaira_refresh_token')
+              window.location.href = '/login'
+            }
+          } else {
+            // No refresh token: redirect to login
+            localStorage.removeItem('gaira_access_token')
+            window.location.href = '/login'
+          }
+        }
+
         const apiError = this.handleError(error)
         return Promise.reject(apiError)
       }
