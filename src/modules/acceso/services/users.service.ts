@@ -10,8 +10,12 @@ interface UsuarioApiResponse {
   sexo?: 'M' | 'F' | 'O'
   correo?: string
   direccion?: string
+  username?: string
+  estadoAcceso?: string
+  intentosFallidos?: number
   fechaRegistro?: string
   activo?: boolean
+  roles?: any[]
 }
 
 const mapUsuario = (usuario: UsuarioApiResponse): User => {
@@ -24,11 +28,22 @@ const mapUsuario = (usuario: UsuarioApiResponse): User => {
     lastName,
     name: `${firstName} ${lastName}`.trim(),
     email: usuario.correo || '',
+    username: usuario.username,
     phone: usuario.telefono,
     gender: usuario.sexo,
     address: usuario.direccion,
     isActive: usuario.activo ?? true,
-    roles: [],
+    estadoAcceso: usuario.estadoAcceso,
+    intentosFallidos: usuario.intentosFallidos,
+    roles: usuario.roles ? usuario.roles.map((r: any) => ({
+      id: String(r.idRol),
+      name: r.nombre,
+      description: r.descripcion || '',
+      accessLevel: r.nivelAcceso,
+      isActive: r.activo ?? true,
+      permissions: [],
+      createdAt: r.fechaCreacion,
+    })) : [],
     createdAt: usuario.fechaRegistro,
   }
 }
