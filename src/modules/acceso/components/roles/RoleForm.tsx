@@ -17,6 +17,7 @@ interface FormData {
   descripcion: string
   nivelAcceso: number
   activo: boolean
+  permisos: string[]
 }
 
 export function RoleForm({ role, permissions, onSubmit, onCancel, isLoading }: RoleFormProps) {
@@ -32,16 +33,21 @@ export function RoleForm({ role, permissions, onSubmit, onCancel, isLoading }: R
       descripcion: role.description || '',
       nivelAcceso: role.accessLevel || 1,
       activo: role.isActive,
+      permisos: role.permissions?.map(p => p.id) || [],
     } : {
       nombre: '',
       descripcion: '',
       nivelAcceso: 1,
       activo: true,
+      permisos: [],
     },
   })
 
   const onFormSubmit = async (data: FormData) => {
-    await onSubmit(data)
+    await onSubmit({
+      ...data,
+      permisos: data.permisos?.map(Number) || []
+    })
   }
 
   // Agrupar permisos por módulo
@@ -114,7 +120,7 @@ export function RoleForm({ role, permissions, onSubmit, onCancel, isLoading }: R
           Permisos
         </label>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Vista de permisos disponibles. La asignación se gestiona desde endpoints específicos de roles.
+          Selecciona los permisos que se asignarán a este rol.
         </p>
 
         <div className="grid max-h-80 grid-cols-1 gap-4 overflow-y-auto rounded-xl border border-slate-200 p-3 dark:border-slate-700 sm:grid-cols-2">
@@ -125,14 +131,22 @@ export function RoleForm({ role, permissions, onSubmit, onCancel, isLoading }: R
               </h4>
               <div className="flex flex-col gap-2">
                 {perms.map((permission) => (
-                  <div key={permission.id} className="rounded-lg px-2 py-2 text-sm text-slate-800 dark:text-slate-100">
-                    <span className="capitalize">{permission.action}</span>
-                    {permission.description && (
-                      <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
-                        {permission.description}
-                      </span>
-                    )}
-                  </div>
+                  <label key={permission.id} className="flex cursor-pointer items-start gap-2 rounded-lg px-2 py-2 hover:bg-slate-200/50 dark:hover:bg-slate-700/50">
+                    <input
+                      type="checkbox"
+                      value={permission.id}
+                      {...register('permisos')}
+                      className="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium capitalize text-slate-800 dark:text-slate-100">{permission.action}</span>
+                      {permission.description && (
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          {permission.description}
+                        </span>
+                      )}
+                    </div>
+                  </label>
                 ))}
               </div>
             </div>
