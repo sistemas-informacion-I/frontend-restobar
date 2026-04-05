@@ -13,8 +13,12 @@ interface AuthApiResponse {
     sexo?: 'M' | 'F' | 'O'
     correo?: string
     direccion?: string
+    username?: string
+    estadoAcceso?: string
+    intentosFallidos?: number
     fechaRegistro?: string
     activo?: boolean
+    roles?: any[]
   }
   username?: string
   authorities?: string[]
@@ -25,6 +29,7 @@ interface MeApiResponse {
   username: string
   email?: string
   authorities?: string[]
+  roles?: any[]
 }
 
 const ACCESS_TOKEN_KEY = 'gaira_access_token'
@@ -75,12 +80,20 @@ const mapAuthUser = (response: AuthApiResponse): User => {
     lastName,
     name: `${firstName} ${lastName}`.trim(),
     email: apiUser.correo || response.username || '',
-    username: response.username,
+    username: apiUser.username || response.username,
     phone: apiUser.telefono,
     gender: apiUser.sexo,
     address: apiUser.direccion,
     isActive: apiUser.activo ?? true,
-    roles: [],
+    estadoAcceso: apiUser.estadoAcceso,
+    intentosFallidos: apiUser.intentosFallidos,
+    roles: apiUser.roles ? apiUser.roles.map((r: any) => ({
+      id: String(r.idRol),
+      name: r.nombre,
+      description: r.descripcion || '',
+      isActive: r.activo ?? true,
+      permissions: [],
+    })) : [],
     permissions,
     authorities,
     createdAt: apiUser.fechaRegistro,
@@ -128,8 +141,9 @@ class AuthService {
   }
 
   async getProfile(): Promise<User> {
-    const response = await httpClient.get<MeApiResponse>('/auth/me')
-    const permissions = mapAuthoritiesToPermissions(response.authorities || [])
+    const response = await httpClient.get<any>('/auth/me')
+    const authorities = response.authorities || []
+    const permissions = mapAuthoritiesToPermissions(authorities)
     return {
       id: String(response.idUsuario),
       firstName: response.username,
@@ -138,9 +152,15 @@ class AuthService {
       email: response.email || response.username,
       username: response.username,
       isActive: true,
-      roles: [],
+      roles: response.roles ? response.roles.map((r: any) => ({
+        id: String(r.idRol),
+        name: r.nombre,
+        description: r.descripcion || '',
+        isActive: r.activo ?? true,
+        permissions: [],
+      })) : [],
       permissions,
-      authorities: response.authorities || [],
+      authorities,
     }
   }
 
