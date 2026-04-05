@@ -58,6 +58,31 @@ export function UserView({ user }: UserViewProps) {
 
         <div className="flex items-start gap-4 rounded-xl bg-slate-100 p-3 dark:bg-slate-800/70">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+            <UserIcon size={18} />
+          </div>
+          <div className="flex min-w-0 flex-col gap-1">
+            <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Username / ID</span>
+            <span className="break-all text-sm text-slate-900 dark:text-slate-100">
+              {user.username || 'N/A'} <span className="text-slate-400">(ID: {user.id})</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-4 rounded-xl bg-slate-100 p-3 dark:bg-slate-800/70">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+            <Shield size={18} />
+          </div>
+          <div className="flex min-w-0 flex-col gap-1">
+            <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Estado de Acceso</span>
+            <span className="break-all text-sm text-slate-900 dark:text-slate-100">
+              {user.estadoAcceso || 'HABILITADO'} 
+              <span className="ml-2 text-slate-500 text-xs">(Intentos fallidos: {user.intentosFallidos ?? 0})</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-4 rounded-xl bg-slate-100 p-3 dark:bg-slate-800/70">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
             <Shield size={18} />
           </div>
           <div className="flex min-w-0 flex-col gap-1">
@@ -90,16 +115,6 @@ export function UserView({ user }: UserViewProps) {
           <div className="flex min-w-0 flex-col gap-1">
             <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Fecha de creación</span>
             <span className="break-all text-sm text-slate-900 dark:text-slate-100">{formatDate(user.createdAt)}</span>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-4 rounded-xl bg-slate-100 p-3 dark:bg-slate-800/70">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-            <UserIcon size={18} />
-          </div>
-          <div className="flex min-w-0 flex-col gap-1">
-            <span className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">ID de usuario</span>
-            <span className="break-all text-sm text-slate-900 dark:text-slate-100">{user.id}</span>
           </div>
         </div>
       </div>
