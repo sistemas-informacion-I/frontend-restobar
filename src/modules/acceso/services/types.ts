@@ -30,6 +30,8 @@ export interface User {
   gender?: 'M' | 'F' | 'O'
   address?: string
   isActive: boolean
+  estadoAcceso?: string
+  intentosFallidos?: number
   roles: Role[]
   permissions?: Permission[]
   authorities?: string[]
@@ -63,7 +65,10 @@ export interface CreateUserData {
   sexo?: 'M' | 'F' | 'O'
   correo?: string
   direccion?: string
+  username?: string
+  password?: string
   activo?: boolean
+  roles?: number[]
 }
 
 export interface UpdateUserData {
@@ -75,6 +80,8 @@ export interface UpdateUserData {
   correo?: string
   direccion?: string
   activo?: boolean
+  estadoAcceso?: string
+  roles?: number[]
 }
 
 export interface CreateRoleData {
@@ -82,6 +89,7 @@ export interface CreateRoleData {
   descripcion?: string
   nivelAcceso?: number
   activo?: boolean
+  permisos?: number[]
 }
 
 export interface UpdateRoleData {
@@ -89,6 +97,7 @@ export interface UpdateRoleData {
   descripcion?: string
   nivelAcceso?: number
   activo?: boolean
+  permisos?: number[]
 }
 
 export interface AuthResponse {
