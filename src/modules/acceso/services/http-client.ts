@@ -8,8 +8,9 @@ export interface HttpClientConfig {
 export interface ApiError {
   status: number
   message: string
-  code: 'UNAUTHORIZED' | 'FORBIDDEN' | 'VALIDATION_ERROR' | 'SERVER_ERROR' | 'NETWORK_ERROR'
+  code: 'UNAUTHORIZED' | 'FORBIDDEN' | 'VALIDATION_ERROR' | 'SERVER_ERROR' | 'NETWORK_ERROR' | 'ACCOUNT_LOCKED'
   details?: string[]
+  metadata?: Record<string, any>
 }
 
 export class HttpClient {
@@ -103,13 +104,21 @@ export class HttpClient {
     const { status, data } = error.response
     let message = 'Ha ocurrido un error inesperado.'
     let details: string[] | undefined
+    let metadata: Record<string, any> | undefined
 
-    if (data?.message) {
-      if (Array.isArray(data.message)) {
-        details = data.message
-        message = data.message[0]
-      } else {
-        message = data.message
+    if (data) {
+      // Extraer metadatos si vienen en la respuesta (Spring ApiErrorResponse)
+      if ((data as any).metadata) {
+        metadata = (data as any).metadata
+      }
+
+      if ((data as any).message) {
+        if (Array.isArray((data as any).message)) {
+          details = (data as any).message
+          message = (data as any).message[0]
+        } else {
+          message = (data as any).message
+        }
       }
     }
 
@@ -119,40 +128,54 @@ export class HttpClient {
           status,
           message,
           code: 'UNAUTHORIZED',
-          details
+          details,
+          metadata
         }
       case 403:
         return {
           status,
           message: 'No tienes permisos para realizar esta acción.',
-          code: 'FORBIDDEN'
+          code: 'FORBIDDEN',
+          metadata
+        }
+      case 423:
+        return {
+          status,
+          message: message || 'Tu cuenta ha sido bloqueada temporalmente.',
+          code: 'ACCOUNT_LOCKED',
+          details,
+          metadata
         }
       case 422:
         return {
           status,
           message,
           code: 'VALIDATION_ERROR',
-          details
+          details,
+          metadata
         }
       case 400:
         return {
           status,
           message,
           code: 'VALIDATION_ERROR',
-          details
+          details,
+          metadata
         }
       case 500:
         return {
           status,
           message: 'Error interno del servidor. Intenta de nuevo más tarde.',
-          code: 'SERVER_ERROR'
+          code: 'SERVER_ERROR',
+          metadata
         }
       default:
         return {
           status,
           message,
           code: 'SERVER_ERROR',
-          details
+          details,
+          metadata
         }
     }
   }
