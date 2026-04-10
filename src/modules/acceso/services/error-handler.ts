@@ -24,6 +24,14 @@ export class ErrorHandler {
       return 'Correo o contraseña incorrectos. Verifica tus datos e intenta de nuevo.'
     }
 
+    if (lower.includes('bloqueada') || lower.includes('locked')) {
+      return 'Tu cuenta está temporalmente bloqueada.'
+    }
+
+    if (lower.includes('suspendida') || lower.includes('suspended')) {
+      return 'Tu cuenta ha sido suspendida. Contacta con soporte.'
+    }
+
     if (lower.includes('incorrect password') || lower.includes('contraseña incorrecta')) {
       return 'La contraseña es incorrecta. Intenta nuevamente.'
     }
@@ -111,6 +119,14 @@ export class ErrorHandler {
         )
       }
 
+      if (apiError.code === 'ACCOUNT_LOCKED') {
+        const normalized = this.normalizeMessage(apiError.message || '')
+        return this.withContext(
+          normalized || 'Demasiados intentos fallidos. Por favor, intenta de nuevo en unos minutos.',
+          context
+        )
+      }
+
       if (apiError.code === 'FORBIDDEN') {
         return this.withContext('No tienes permisos para realizar esta acción.', context)
       }
@@ -156,5 +172,22 @@ export class ErrorHandler {
       return (error as ApiError).code === 'VALIDATION_ERROR'
     }
     return false
+  }
+
+  static isLockoutError(error: unknown): boolean {
+    if (error && typeof error === 'object' && 'code' in error) {
+      return (error as ApiError).code === 'ACCOUNT_LOCKED'
+    }
+    return false
+  }
+
+  static getLockoutUntil(error: unknown): Date | null {
+    if (this.isLockoutError(error)) {
+      const apiError = error as ApiError
+      if (apiError.metadata?.lockedUntil) {
+        return new Date(apiError.metadata.lockedUntil)
+      }
+    }
+    return null
   }
 }
