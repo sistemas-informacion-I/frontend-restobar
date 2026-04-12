@@ -9,6 +9,7 @@ export { authService } from './auth.service'
 export { usersService } from './users.service'
 export { rolesService } from './roles.service'
 export { permissionsService } from './permissions.service'
+export { auditoriaService } from './auditoria.service'
 
 // Error handling
 export { ErrorHandler } from './error-handler'

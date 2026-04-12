@@ -7,6 +7,7 @@ import RegisterPage from './modules/acceso/pages/RegisterPage'
 import DashboardPage from './modules/acceso/pages/DashboardPage'
 import UsersPage from './modules/acceso/pages/UsersPage'
 import RolesPage from './modules/acceso/pages/RolesPage'
+import AuditoriaPage from './modules/acceso/pages/AuditoriaPage'
 
 function App() {
   return (
@@ -37,6 +38,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <RolesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/auditoria"
+              element={
+                <ProtectedRoute>
+                  <AuditoriaPage />
                 </ProtectedRoute>
               }
             />

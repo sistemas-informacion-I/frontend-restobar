@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { LogOut, Users, Shield, LayoutDashboard, Sparkles, Menu, X, Sun, Moon } from 'lucide-react'
+import { LogOut, Users, Shield, LayoutDashboard, Sparkles, Menu, X, Sun, Moon, Activity } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '../ui/Button'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
@@ -31,6 +31,7 @@ export function Layout({ children }: LayoutProps) {
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, show: true },
     { path: '/users', label: 'Usuarios', icon: Users, show: canRead('users') },
     { path: '/roles', label: 'Roles', icon: Shield, show: canRead('roles') },
+    { path: '/auditoria', label: 'Auditoría', icon: Activity, show: canRead('audit') },
   ]
 
   return (
