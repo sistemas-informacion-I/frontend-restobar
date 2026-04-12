@@ -10,6 +10,11 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    host: '0.0.0.0', // Escuchar en todas las interfaces (necesario en Docker)
+    hmr: {
+      host: 'localhost',
+      port: 5173,
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',

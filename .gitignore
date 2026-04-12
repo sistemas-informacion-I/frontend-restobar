@@ -68,3 +68,7 @@ Thumbs.db
 
 # Misc
 .sentryclirc
+
+### Docker ###
+.dockerignore
+Dockerfile.*
