@@ -14,7 +14,7 @@ interface UseCountdownReturn {
  */
 export function useCountdown(): UseCountdownReturn {
   const [seconds, setSeconds] = useState<number | null>(null)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const stop = useCallback(() => {
     if (timerRef.current) {
