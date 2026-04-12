@@ -1,0 +1,27 @@
+# Frontend Dockerfile para producción (Vite build + Nginx)
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+ARG VITE_API_URL=http://localhost:3000
+ENV VITE_API_URL=$VITE_API_URL
+
+RUN npm run build
+
+FROM nginx:alpine
+
+ENV PORT=80
+
+RUN mkdir -p /etc/nginx/templates
+RUN echo 'server { listen ${PORT}; server_name _; root /usr/share/nginx/html; error_page 404 =200 /index.html; location / { try_files $uri $uri/ /index.html; } }' > /etc/nginx/templates/default.conf.template
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["sh", "-c", "envsubst '${PORT}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
