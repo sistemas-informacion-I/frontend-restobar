@@ -119,6 +119,7 @@ export function UsersTable({
                         </Button>
                       )}
 
+
                       {canDeleteUsers && user.id !== currentUserId && (
                         <Button
                           variant="ghost"

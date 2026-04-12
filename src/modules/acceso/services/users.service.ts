@@ -72,6 +72,21 @@ class UsersService {
   async delete(id: string): Promise<void> {
     await httpClient.delete(`/api/usuarios/${id}`)
   }
+
+  async bloquear(id: string): Promise<User> {
+    const response = await httpClient.put<UsuarioApiResponse>(`/api/usuarios/${id}/bloquear`, {})
+    return mapUsuario(response)
+  }
+
+  async desbloquear(id: string): Promise<User> {
+    const response = await httpClient.put<UsuarioApiResponse>(`/api/usuarios/${id}/desbloquear`, {})
+    return mapUsuario(response)
+  }
+
+  async suspender(id: string): Promise<User> {
+    const response = await httpClient.put<UsuarioApiResponse>(`/api/usuarios/${id}/suspender`, {})
+    return mapUsuario(response)
+  }
 }
 
 // Export singleton instance

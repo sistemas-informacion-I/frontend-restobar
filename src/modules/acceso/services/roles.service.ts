@@ -53,6 +53,14 @@ class RolesService {
   async delete(id: string): Promise<void> {
     await httpClient.delete(`/api/roles/${id}`)
   }
+
+  async assignPermission(id: string, data: { idPermiso: number }): Promise<void> {
+    await httpClient.post(`/api/roles/${id}/permisos`, data)
+  }
+
+  async assignRoleToUser(idUsuario: string, data: { idRol: number }): Promise<void> {
+    await httpClient.post(`/api/roles/usuarios/${idUsuario}/asignar-entidad`, data)
+  }
 }
 
 // Export singleton instance
