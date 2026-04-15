@@ -1,5 +1,5 @@
 import { httpClient } from './http-client'
-import { User, CreateUserData, UpdateUserData } from './types'
+import { User, CreateUserData, UpdateUserData } from '../models'
 
 interface UsuarioApiResponse {
   idUsuario: number

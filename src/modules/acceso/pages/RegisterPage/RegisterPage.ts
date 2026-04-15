@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { authService, getErrorMessage, RegisterData } from '../../services/api'
+import { authService, getErrorMessage } from '../../services/api'
+import type { RegisterData } from '../../models'
 import { RegisterPageView } from './RegisterPage.view'
 
 interface RegisterFormData extends RegisterData {

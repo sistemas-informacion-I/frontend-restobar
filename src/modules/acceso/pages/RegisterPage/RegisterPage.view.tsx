@@ -6,9 +6,9 @@ import {
   AuthFooterNote, 
   AuthFormCard, 
   AuthPageShell, 
-  AuthStatusCard, 
-  PasswordRules 
-} from '../../components/auth'
+  AuthStatusCard 
+} from '../LoginPage/components'
+import { PasswordRules } from './components'
 
 interface RegisterPageViewProps {
   register: any
@@ -112,6 +112,24 @@ export function RegisterPageView({
                 required: 'Ingresa tu apellido',
               })}
             />
+
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 px-1">Sexo</label>
+              <select
+                {...register('sexo', { required: 'Selecciona tu sexo' })}
+                className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500 shadow-sm"
+              >
+                <option value="" disabled className="bg-white dark:bg-wine-950 font-medium">Seleccionar sexo...</option>
+                <option value="M" className="bg-white dark:bg-wine-950">Masculino</option>
+                <option value="F" className="bg-white dark:bg-wine-950">Femenino</option>
+                <option value="O" className="bg-white dark:bg-wine-950">Otro</option>
+              </select>
+              {errors.sexo && (
+                <span className="px-1 text-[10px] font-bold text-rose-500 animate-in fade-in slide-in-from-top-1">
+                  {errors.sexo.message}
+                </span>
+              )}
+            </div>
 
             <Input
               label="Correo"

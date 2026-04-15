@@ -1,7 +1,7 @@
 import { User, Lock, LogIn, Timer } from 'lucide-react'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
-import { AuthBrandHeader, AuthFooterNote, AuthFormCard, AuthPageShell } from '../../components/auth'
+import { AuthBrandHeader, AuthFooterNote, AuthFormCard, AuthPageShell } from './components'
 
 interface LoginPageViewProps {
   register: any

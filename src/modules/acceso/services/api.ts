@@ -2,7 +2,7 @@
 // This file provides backward compatibility and a single import point
 
 // Types
-export * from './types'
+export * from '../models'
 
 // Services
 export { authService } from './auth.service'

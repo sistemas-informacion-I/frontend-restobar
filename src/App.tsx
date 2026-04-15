@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './modules/acceso/context/AuthContext'
 import { QueryProvider, ThemeProvider } from './core/providers'
-import { ProtectedRoute } from './modules/acceso/components/ProtectedRoute'
+import { ProtectedRoute } from './modules/acceso/components/common'
 import LoginPage from './modules/acceso/pages/LoginPage'
 import RegisterPage from './modules/acceso/pages/RegisterPage'
 import DashboardPage from './modules/acceso/pages/DashboardPage'
@@ -9,12 +9,22 @@ import UsersPage from './modules/acceso/pages/UsersPage'
 import RolesPage from './modules/acceso/pages/RolesPage'
 import AuditoriaPage from './modules/acceso/pages/AuditoriaPage'
 
+import { SWRConfig } from 'swr'
+import { httpClient } from './modules/acceso/services/http-client'
+
 function App() {
   return (
-    <QueryProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <Routes>
+    <SWRConfig 
+      value={{ 
+        fetcher: (url: string) => httpClient.get(url),
+        revalidateOnFocus: false,
+        shouldRetryOnError: false
+      }}
+    >
+      <QueryProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route
@@ -51,10 +61,11 @@ function App() {
             />
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryProvider>
+            </Routes>
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryProvider>
+    </SWRConfig>
   )
 }
 

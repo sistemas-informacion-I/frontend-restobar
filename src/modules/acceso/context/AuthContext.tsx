@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
-import { User, authService, LoginData, ErrorHandler } from '../services/api'
+import { User, authService, LoginData, ErrorHandler, Permission } from '../services/api'
+import { Role } from '../models'
 
 interface AuthContextType {
   user: User | null
@@ -68,12 +69,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true
     }
 
-    if (user.permissions?.some((permission) => permission.name === permissionName)) {
+    if (user.permissions?.some((permission: Permission) => permission.name === permissionName)) {
       return true
     }
 
-    return user.roles?.some(role => 
-      role.permissions?.some((p) => p.name === permissionName)
+    return user.roles?.some((role: Role) => 
+      role.permissions?.some((p: Permission) => p.name === permissionName)
     ) || false
   }, [user])
 

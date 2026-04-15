@@ -1,5 +1,5 @@
 import { Layout } from '@/shared/components/layout/Layout'
-import { DashboardWelcome, PermissionsCard, QuickLinksCard, UserProfileCard } from '../../components/dashboard'
+import { DashboardWelcome, PermissionsCard, QuickLinksCard, UserProfileCard } from './components'
 
 interface DashboardPageViewProps {
   user: any

@@ -1,16 +1,37 @@
-import { useState, useEffect, useCallback } from 'react'
-import { rolesService, permissionsService, Role, Permission, CreateRoleData, UpdateRoleData, getErrorMessage } from '../../services/api'
+import { useState } from 'react'
+import { Role, CreateRoleData, UpdateRoleData } from '../../models'
+import { useRoles } from '../../hooks/useRoles'
+import { usePermissions } from '../../hooks/usePermissions'
+import { getErrorMessage } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
 import { RolesPageView } from './RolesPage.view'
 
 export function RolesPage() {
   const { canCreate, canRead, canUpdate, canDelete } = useAuth()
-  const [roles, setRoles] = useState<Role[]>([])
-  const [permissions, setPermissions] = useState<Permission[]>([])
-  const [loading, setLoading] = useState(true)
+  const { 
+    roles, 
+    isLoading: rolesLoading, 
+    isSubmitting, 
+    createRole, 
+    updateRole, 
+    deleteRole,
+    loadError: rolesError 
+  } = useRoles()
+  
+  const { 
+    permissions, 
+    isLoading: permissionsLoading,
+    loadError: permissionsError
+  } = usePermissions()
+
   const [search, setSearch] = useState('')
   const [feedbackMessage, setFeedbackMessage] = useState('')
   const [feedbackType, setFeedbackType] = useState<'error' | 'success' | ''>('')
+
+  const clearFeedback = () => {
+    setFeedbackMessage('')
+    setFeedbackType('')
+  }
   
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -18,29 +39,9 @@ export function RolesPage() {
   const [showViewModal, setShowViewModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      const [rolesData, permissionsData] = await Promise.all([
-        rolesService.getAll(),
-        permissionsService.getAll(),
-      ])
-      setRoles(rolesData)
-      setPermissions(permissionsData)
-    } catch (error) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'cargar roles y permisos'))
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
+  const isLoading = rolesLoading || permissionsLoading
+  const loadError = rolesError || permissionsError
 
   const filteredRoles = roles.filter((role) =>
     role.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -50,67 +51,67 @@ export function RolesPage() {
   // Handlers
   const handleCreate = async (data: CreateRoleData | UpdateRoleData) => {
     try {
-      setIsSubmitting(true)
-      await rolesService.create(data as CreateRoleData)
+      await createRole(data as CreateRoleData)
       setFeedbackType('success')
       setFeedbackMessage('Rol creado exitosamente')
       setShowCreateModal(false)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'crear el rol'))
-    } finally {
-      setIsSubmitting(false)
     }
+  }
+
+  const handleCloseModals = () => {
+    setShowCreateModal(false)
+    setShowEditModal(false)
+    setShowViewModal(false)
+    setShowDeleteModal(false)
+    setSelectedRole(null)
+    clearFeedback()
   }
 
   const handleUpdate = async (data: CreateRoleData | UpdateRoleData) => {
     if (!selectedRole) return
     try {
-      setIsSubmitting(true)
-      await rolesService.update(selectedRole.id, data as UpdateRoleData)
+      await updateRole({ id: selectedRole.id, data: data as UpdateRoleData })
       setFeedbackType('success')
       setFeedbackMessage('Rol actualizado exitosamente')
       setShowEditModal(false)
       setSelectedRole(null)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'actualizar el rol'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   const handleDelete = async () => {
     if (!selectedRole) return
     try {
-      setIsSubmitting(true)
-      await rolesService.delete(selectedRole.id)
+      await deleteRole(selectedRole.id)
       setFeedbackType('success')
       setFeedbackMessage('Rol eliminado exitosamente')
       setShowDeleteModal(false)
       setSelectedRole(null)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'eliminar el rol'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   const openView = (role: Role) => {
+    clearFeedback()
     setSelectedRole(role)
     setShowViewModal(true)
   }
 
   const openEdit = (role: Role) => {
+    clearFeedback()
     setSelectedRole(role)
     setShowEditModal(true)
   }
 
   const openDelete = (role: Role) => {
+    clearFeedback()
     setSelectedRole(role)
     setShowDeleteModal(true)
   }
@@ -126,19 +127,34 @@ export function RolesPage() {
     canCreateRoles,
     canUpdateRoles,
     canDeleteRoles,
-    loading,
+    loading: isLoading,
     search,
     setSearch,
-    feedbackMessage,
-    feedbackType,
+    feedbackMessage: feedbackMessage || (loadError ? getErrorMessage(loadError) : ''),
+    feedbackType: feedbackType || (loadError ? 'error' : ''),
     showCreateModal,
-    setShowCreateModal,
+    setShowCreateModal: (val: boolean) => {
+      if (!val) handleCloseModals()
+      else {
+        clearFeedback()
+        setShowCreateModal(true)
+      }
+    },
     showEditModal,
-    setShowEditModal,
+    setShowEditModal: (val: boolean) => {
+      if (!val) handleCloseModals()
+      else setShowEditModal(true)
+    },
     showViewModal,
-    setShowViewModal,
+    setShowViewModal: (val: boolean) => {
+      if (!val) handleCloseModals()
+      else setShowViewModal(true)
+    },
     showDeleteModal,
-    setShowDeleteModal,
+    setShowDeleteModal: (val: boolean) => {
+      if (!val) handleCloseModals()
+      else setShowDeleteModal(true)
+    },
     selectedRole,
     setSelectedRole,
     isSubmitting,
@@ -152,3 +168,4 @@ export function RolesPage() {
     openDelete
   })
 }
+

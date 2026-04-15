@@ -1,7 +1,7 @@
 import { Layout } from '@/shared/components/layout'
 import { Button } from '@/shared/components/ui/Button'
 import { Modal } from '@/shared/components/ui/Modal'
-import { UserForm, UserView, UsersTable, UsersToolbar } from '../../components/users'
+import { UserForm, UserView, UsersTable, UsersToolbar } from './components'
 
 interface UsersPageViewProps {
   canCreate: (p: string) => boolean
@@ -59,7 +59,7 @@ export function UsersPageView({
   return (
     <Layout>
       <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-        {feedbackMessage && (
+        {feedbackMessage && !showCreateModal && !showEditModal && !showDeleteModal && (
           <div className={`mb-6 rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg ${feedbackType === 'error'
             ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900/30 dark:bg-rose-900/20 dark:text-rose-400 shadow-rose-900/5'
             : 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-400 shadow-emerald-900/5'
@@ -103,6 +103,14 @@ export function UsersPageView({
         >
           <Modal.Header>Crear Usuario</Modal.Header>
           <Modal.Body>
+            {feedbackMessage && feedbackType === 'error' && (
+              <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50/50 p-3 text-[10px] font-black uppercase tracking-widest text-rose-600 dark:border-rose-900/30 dark:bg-rose-900/10 dark:text-rose-400">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  {feedbackMessage}
+                </div>
+              </div>
+            )}
             <UserForm
               onSubmit={handleCreate}
               onCancel={closeModals}
@@ -119,6 +127,14 @@ export function UsersPageView({
         >
           <Modal.Header>Editar Usuario</Modal.Header>
           <Modal.Body>
+            {feedbackMessage && feedbackType === 'error' && (
+              <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50/50 p-3 text-[10px] font-black uppercase tracking-widest text-rose-600 dark:border-rose-900/30 dark:bg-rose-900/10 dark:text-rose-400">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  {feedbackMessage}
+                </div>
+              </div>
+            )}
             {selectedUser && (
               <UserForm
                 user={selectedUser}
@@ -150,6 +166,14 @@ export function UsersPageView({
         >
           <Modal.Header>Eliminar Usuario</Modal.Header>
           <Modal.Body>
+            {feedbackMessage && feedbackType === 'error' && (
+              <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50/50 p-3 text-[10px] font-black uppercase tracking-widest text-rose-600 dark:border-rose-900/30 dark:bg-rose-900/10 dark:text-rose-400">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  {feedbackMessage}
+                </div>
+              </div>
+            )}
             <div className="text-center">
               <p>¿Estás seguro de que deseas eliminar a <strong>{selectedUser?.name}</strong>?</p>
               <p className="mt-2 text-sm text-rose-500">Esta acción no se puede deshacer.</p>

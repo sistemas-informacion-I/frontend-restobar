@@ -1,5 +1,5 @@
 import { httpClient } from './http-client'
-import { Permission } from './types'
+import { Permission } from '../models'
 
 interface PermisoApiResponse {
   idPermiso: number

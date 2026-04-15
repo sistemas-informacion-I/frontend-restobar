@@ -1,5 +1,5 @@
 import { httpClient } from './http-client'
-import { Role, CreateRoleData, UpdateRoleData } from './types'
+import { Role, CreateRoleData, UpdateRoleData } from '../models'
 
 interface RolApiResponse {
   idRol: number

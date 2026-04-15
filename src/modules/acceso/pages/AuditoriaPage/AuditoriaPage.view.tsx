@@ -1,5 +1,5 @@
-import { Layout } from '@/shared/components/layout'
-import { AuditoriaTable, AuditoriaToolbar, AuditoriaDetail } from '../../components/auditoria'
+import { Layout } from '@/shared/components/layout/Layout'
+import { AuditoriaTable, AuditoriaToolbar, AuditoriaDetail } from './components'
 
 interface AuditoriaPageViewProps {
   canRead: (p: string) => boolean

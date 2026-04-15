@@ -1,5 +1,5 @@
 import { httpClient } from './http-client'
-import { AuditLog, AuditPage, AuditFilters } from './types'
+import { AuditLog, AuditPage, AuditFilters } from '../models'
 
 class AuditoriaService {
   async getAll(filters: AuditFilters): Promise<AuditPage> {

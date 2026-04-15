@@ -2,7 +2,7 @@ import { Trash2, Shield, AlertCircle } from 'lucide-react'
 import { Layout } from '@/shared/components/layout/Layout'
 import { Modal } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
-import { RoleForm, RoleView, RolesTable, RolesToolbar } from '../../components/roles'
+import { RoleForm, RoleView, RolesTable, RolesToolbar } from './components'
 
 interface RolesPageViewProps {
   canViewRoles: boolean
@@ -82,7 +82,7 @@ export function RolesPageView({
   return (
     <Layout>
       <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-        {feedbackMessage && (
+        {feedbackMessage && !showCreateModal && !showEditModal && !showDeleteModal && (
           <div className={`mb-6 rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg ${feedbackType === 'error'
             ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900/30 dark:bg-rose-900/20 dark:text-rose-400 shadow-rose-900/5'
             : 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-400 shadow-emerald-900/5'
@@ -139,6 +139,14 @@ export function RolesPageView({
         >
           <Modal.Header>Crear Nuevo Rol</Modal.Header>
           <Modal.Body>
+            {feedbackMessage && feedbackType === 'error' && (
+              <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50/50 p-3 text-[10px] font-black uppercase tracking-widest text-rose-600 dark:border-rose-900/30 dark:bg-rose-900/10 dark:text-rose-400">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  {feedbackMessage}
+                </div>
+              </div>
+            )}
             <RoleForm
               permissions={permissions}
               onSubmit={handleCreate}
@@ -159,6 +167,14 @@ export function RolesPageView({
         >
           <Modal.Header>Editar Rol</Modal.Header>
           <Modal.Body>
+            {feedbackMessage && feedbackType === 'error' && (
+              <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50/50 p-3 text-[10px] font-black uppercase tracking-widest text-rose-600 dark:border-rose-900/30 dark:bg-rose-900/10 dark:text-rose-400">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  {feedbackMessage}
+                </div>
+              </div>
+            )}
             {selectedRole && (
               <RoleForm
                 role={selectedRole}

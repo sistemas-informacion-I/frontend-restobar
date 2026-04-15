@@ -1,5 +1,5 @@
 import { httpClient } from './http-client'
-import { LoginData, RegisterData, AuthResponse, User, Permission } from './types'
+import { LoginData, RegisterData, AuthResponse, User, Permission } from '../models'
 
 interface AuthApiResponse {
   accessToken: string
@@ -118,7 +118,8 @@ class AuthService {
   async login(data: LoginData): Promise<User> {
     const response = await httpClient.post<AuthApiResponse>('/auth/login', data)
     this.persistTokens(response.accessToken, response.refreshToken)
-    return mapAuthUser(response)
+    // Fetch full profile to ensure consistent state and permissions
+    return this.getProfile()
   }
 
   async register(data: RegisterData): Promise<AuthResponse> {
