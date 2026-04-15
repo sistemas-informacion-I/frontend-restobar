@@ -1,3 +1,3 @@
-export { AuditoriaTable } from './AuditoriaTable'
-export { AuditoriaToolbar } from './AuditoriaToolbar'
-export { AuditoriaDetail } from './AuditoriaDetail'
+export * from './AuditoriaDetail'
+export * from './AuditoriaTable'
+export * from './AuditoriaToolbar'

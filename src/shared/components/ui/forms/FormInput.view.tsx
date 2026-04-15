@@ -1,0 +1,19 @@
+import { Ref } from 'react'
+
+interface FormInputViewProps {
+  disabled: boolean
+  className: string
+  ref: Ref<HTMLInputElement>
+  [key: string]: any
+}
+
+export const FormInputView = ({ disabled, className, ref, ...props }: FormInputViewProps) => (
+  <input
+    ref={ref}
+    disabled={disabled}
+    className={`px-4 py-2 border-2 rounded-md mt-2 block w-full bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-yellow-500 focus:ring-yellow-500 transition ${
+      disabled ? 'opacity-75 cursor-not-allowed' : ''
+    } ${className}`}
+    {...props}
+  />
+)

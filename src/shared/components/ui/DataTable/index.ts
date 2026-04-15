@@ -1,4 +1,4 @@
-export { DataTable } from './DataTable'
-export { TableCell } from './TableCell'
-export { TableRow } from './TableRow'
-export { TableActionCell } from './TableActionCell'
+export * from './DataTable'
+export * from './TableActionCell'
+export * from './TableCell'
+export * from './TableRow'

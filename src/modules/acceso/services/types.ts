@@ -120,7 +120,7 @@ export interface MessageResponse {
 }
 
 export interface AuditLog {
-  id: number
+  idLog: number
   tabla: string
   operacion: string
   idRegistro?: string
