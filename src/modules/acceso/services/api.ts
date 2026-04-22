@@ -7,6 +7,7 @@ export * from './types'
 // Services
 export { authService } from './auth.service'
 export { usersService } from './users.service'
+export { empleadosService } from './empleados.service'
 export { rolesService } from './roles.service'
 export { permissionsService } from './permissions.service'
 export { auditoriaService } from './auditoria.service'

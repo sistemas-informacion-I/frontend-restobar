@@ -142,25 +142,45 @@ class AuthService {
 
   async getProfile(): Promise<User> {
     const response = await httpClient.get<any>('/auth/me')
+    const usuario = response.usuario
     const authorities = response.authorities || []
     const permissions = mapAuthoritiesToPermissions(authorities)
+
+    const firstName = usuario.nombre || usuario.username || ''
+    const lastName = usuario.apellido || ''
+
     return {
-      id: String(response.idUsuario),
-      firstName: response.username,
-      lastName: '',
-      name: response.username,
-      email: response.email || response.username,
-      username: response.username,
-      isActive: true,
-      roles: response.roles ? response.roles.map((r: any) => ({
+      id: String(usuario.idUsuario),
+      ci: usuario.ci,
+      firstName,
+      lastName,
+      name: `${firstName} ${lastName}`.trim(),
+      email: usuario.correo || usuario.username || '',
+      username: usuario.username,
+      phone: usuario.telefono,
+      gender: usuario.sexo,
+      address: usuario.direccion,
+      isActive: usuario.activo ?? true,
+      estadoAcceso: usuario.estadoAcceso,
+      intentosFallidos: usuario.intentosFallidos,
+      roles: usuario.roles ? usuario.roles.map((r: any) => ({
         id: String(r.idRol),
         name: r.nombre,
         description: r.descripcion || '',
+        accessLevel: r.nivelAcceso,
         isActive: r.activo ?? true,
-        permissions: [],
+        permissions: r.permisos ? r.permisos.map((p: any) => ({
+          id: String(p.idPermiso),
+          name: p.nombre,
+          description: p.descripcion || '',
+          module: p.modulo,
+          action: p.accion,
+          isActive: p.activo ?? true,
+        })) : [],
       })) : [],
       permissions,
       authorities,
+      createdAt: usuario.fechaRegistro,
     }
   }
 
@@ -175,6 +195,68 @@ class AuthService {
     this.persistTokens(response.accessToken, response.refreshToken)
     return mapAuthUser(response)
   }
+
+  async updateProfile(data: UpdateProfileData): Promise<User> {
+    const response = await httpClient.put<any>('/auth/profile', data)
+    const usuario = response.usuario
+    const authorities = response.authorities || []
+    const permissions = mapAuthoritiesToPermissions(authorities)
+
+    const firstName = usuario.nombre || usuario.username || ''
+    const lastName = usuario.apellido || ''
+
+    return {
+      id: String(usuario.idUsuario),
+      ci: usuario.ci,
+      firstName,
+      lastName,
+      name: `${firstName} ${lastName}`.trim(),
+      email: usuario.correo || usuario.username || '',
+      username: usuario.username,
+      phone: usuario.telefono,
+      gender: usuario.sexo,
+      address: usuario.direccion,
+      isActive: usuario.activo ?? true,
+      estadoAcceso: usuario.estadoAcceso,
+      intentosFallidos: usuario.intentosFallidos,
+      roles: usuario.roles ? usuario.roles.map((r: any) => ({
+        id: String(r.idRol),
+        name: r.nombre,
+        description: r.descripcion || '',
+        accessLevel: r.nivelAcceso,
+        isActive: r.activo ?? true,
+        permissions: r.permisos ? r.permisos.map((p: any) => ({
+          id: String(p.idPermiso),
+          name: p.nombre,
+          description: p.descripcion || '',
+          module: p.modulo,
+          action: p.accion,
+          isActive: p.activo ?? true,
+        })) : [],
+      })) : [],
+      permissions,
+      authorities,
+      createdAt: usuario.fechaRegistro,
+    }
+  }
+
+  async changePassword(data: ChangePasswordData): Promise<void> {
+    await httpClient.post('/auth/change-password', data)
+  }
+}
+
+// Types for profile update
+export interface UpdateProfileData {
+  nombre?: string
+  apellido?: string
+  telefono?: string
+  correo?: string
+  direccion?: string
+}
+
+export interface ChangePasswordData {
+  currentPassword: string
+  newPassword: string
 }
 
 // Export singleton instance

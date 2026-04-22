@@ -6,8 +6,10 @@ import LoginPage from './modules/acceso/pages/LoginPage'
 import RegisterPage from './modules/acceso/pages/RegisterPage'
 import DashboardPage from './modules/acceso/pages/DashboardPage'
 import UsersPage from './modules/acceso/pages/UsersPage'
+import EmpleadosPage from './modules/acceso/pages/EmpleadosPage'
 import RolesPage from './modules/acceso/pages/RolesPage'
 import AuditoriaPage from './modules/acceso/pages/AuditoriaPage'
+import ProfilePage from './modules/acceso/pages/ProfilePage'
 
 function App() {
   return (
@@ -34,6 +36,14 @@ function App() {
               }
             />
             <Route
+              path="/empleados"
+              element={
+                <ProtectedRoute>
+                  <EmpleadosPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/roles"
               element={
                 <ProtectedRoute>
@@ -46,6 +56,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AuditoriaPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/perfil"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
                 </ProtectedRoute>
               }
             />

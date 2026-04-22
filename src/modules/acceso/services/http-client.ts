@@ -112,9 +112,18 @@ export class HttpClient {
         metadata = (data as any).metadata
       }
 
+      // Extraer errores de validación de GlobalExceptionHandler
+      if ((data as any).errors) {
+        if (Array.isArray((data as any).errors)) {
+          details = (data as any).errors
+        } else if (typeof (data as any).errors === 'string') {
+          details = [(data as any).errors]
+        }
+      }
+
       if ((data as any).message) {
         if (Array.isArray((data as any).message)) {
-          details = (data as any).message
+          if (!details) details = (data as any).message
           message = (data as any).message[0]
         } else {
           message = (data as any).message

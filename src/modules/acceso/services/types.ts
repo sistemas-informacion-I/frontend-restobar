@@ -151,3 +151,63 @@ export interface AuditFilters {
   page: number
   size: number
 }
+
+// Empleado Interfaces
+export interface Empleado {
+  id: string
+  ci: string
+  firstName: string
+  lastName: string
+  name: string
+  username?: string
+  email: string
+  phone?: string
+  gender?: 'M' | 'F' | 'O'
+  address?: string
+  codigoEmpleado?: string
+  salary?: number
+  turno?: 'AM' | 'PM'
+  hireDate?: string
+  endDate?: string
+  isActive: boolean
+  estadoAcceso?: string
+  usuario?: any
+}
+
+export interface CreateEmpleadoData {
+  ci: string
+  nombre: string
+  apellido: string
+  username?: string
+  password?: string
+  telefono?: string
+  sexo?: 'M' | 'F' | 'O'
+  correo?: string
+  direccion?: string
+  codigoEmpleado?: string
+  salario: number
+  turno?: 'AM' | 'PM'
+  fechaContratacion?: string
+  fechaFinalizacion?: string
+  activo?: boolean
+  roles?: number[]
+}
+
+export interface UpdateEmpleadoData {
+  ci?: string
+  nombre?: string
+  apellido?: string
+  username?: string
+  password?: string
+  telefono?: string
+  sexo?: 'M' | 'F' | 'O'
+  correo?: string
+  direccion?: string
+  codigoEmpleado?: string
+  salario?: number
+  turno?: 'AM' | 'PM'
+  fechaContratacion?: string
+  fechaFinalizacion?: string
+  activo?: boolean
+  roles?: number[]
+}
