@@ -19,7 +19,7 @@ RUN npm run build
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Default port for Railway (can be overridden)
+# Default port for Railway (provided by platform at runtime)
 ENV PORT=8080
 
 # Configure Nginx via the new template
@@ -29,6 +29,7 @@ COPY nginx.conf /etc/nginx/templates/default.conf.template
 # Copy built assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# The port is handled by nginx.conf listening on ${PORT}
 EXPOSE ${PORT}
 
 CMD ["nginx", "-g", "daemon off;"]
