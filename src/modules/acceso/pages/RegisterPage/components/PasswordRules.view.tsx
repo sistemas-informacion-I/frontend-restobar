@@ -24,7 +24,23 @@ export function PasswordRulesView({ rules }: PasswordRulesViewProps) {
           }`}
         >
           <div className={`h-1.5 w-1.5 rounded-full ${rules.hasNumber ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`} />
-          Incluir al menos un número
+          Al menos un número
+        </li>
+        <li
+          className={`flex items-center gap-2 text-xs font-bold transition-colors ${
+            rules.hasUpper ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-600'
+          }`}
+        >
+          <div className={`h-1.5 w-1.5 rounded-full ${rules.hasUpper ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`} />
+          Al menos una mayúscula
+        </li>
+        <li
+          className={`flex items-center gap-2 text-xs font-bold transition-colors ${
+            rules.hasLower ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-600'
+          }`}
+        >
+          <div className={`h-1.5 w-1.5 rounded-full ${rules.hasLower ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`} />
+          Al menos una minúscula
         </li>
       </ul>
     </div>

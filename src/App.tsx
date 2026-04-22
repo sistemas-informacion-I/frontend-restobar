@@ -8,6 +8,7 @@ import DashboardPage from './modules/acceso/pages/DashboardPage'
 import UsersPage from './modules/acceso/pages/UsersPage'
 import RolesPage from './modules/acceso/pages/RolesPage'
 import AuditoriaPage from './modules/acceso/pages/AuditoriaPage'
+import PerfilPersonalPage from './modules/acceso/pages/PerfilPersonalPage'
 
 import { SWRConfig } from 'swr'
 import { httpClient } from './modules/acceso/services/http-client'
@@ -56,6 +57,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AuditoriaPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/perfil"
+              element={
+                <ProtectedRoute>
+                  <PerfilPersonalPage />
                 </ProtectedRoute>
               }
             />

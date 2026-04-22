@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Users, Shield, LayoutDashboard, Activity } from 'lucide-react'
+import { Users, Shield, LayoutDashboard, Activity, User } from 'lucide-react'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { useAppStore } from '@/core/store/appStore'
 import { LayoutView } from './Layout.view'
@@ -27,6 +27,7 @@ export function Layout({ children }: LayoutProps) {
 
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, show: true },
+    { path: '/perfil', label: 'Mi Perfil', icon: User, show: true },
     { path: '/users', label: 'Usuarios', icon: Users, show: canRead('users') },
     { path: '/roles', label: 'Roles', icon: Shield, show: canRead('roles') },
     { path: '/auditoria', label: 'Auditoría', icon: Activity, show: canRead('audit') },

@@ -7,7 +7,9 @@ export interface PasswordRulesProps {
 export function PasswordRules({ password = '' }: PasswordRulesProps) {
   const rules = {
     minLength: password.length >= 8,
-    hasNumber: /\d/.test(password)
+    hasNumber: /\d/.test(password),
+    hasUpper: /[A-Z]/.test(password),
+    hasLower: /[a-z]/.test(password),
   }
   
   return PasswordRulesView({ rules })
