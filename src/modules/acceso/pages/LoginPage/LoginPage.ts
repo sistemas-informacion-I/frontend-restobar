@@ -12,6 +12,9 @@ export function LoginPage() {
   const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [viewMode, setViewMode] = useState<'login' | 'recovery'>('login')
+  const [isCodeSent, setIsCodeSent] = useState(false)
   
   const { 
     formattedTime, 
@@ -23,6 +26,8 @@ export function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
+    getValues,
     formState: { errors },
     reset,
   } = useForm<LoginData>({
@@ -61,6 +66,62 @@ export function LoginPage() {
     }
   }
 
+  // Recovery Handlers
+  const onSendCode = async () => {
+    const email = (getValues() as any).recoveryEmail
+    if (!email) {
+      setErrorMessage('Ingresa un correo para enviar el código.')
+      return
+    }
+
+    setIsLoading(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+    try {
+      // Import dynamic or use authService directly (it's in context/services)
+      const { authService } = await import('../../services/auth.service')
+      await authService.sendResetCode(email)
+      setIsCodeSent(true)
+      setSuccessMessage('El código de verificación ha sido enviado a tu correo.')
+    } catch (error) {
+      setErrorMessage(ErrorHandler.handle(error, 'enviar el código de recuperación'))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const onVerifyCode = async () => {
+    const email = (getValues() as any).recoveryEmail
+    const code = (getValues() as any).recoveryCode
+
+    if (!email || !code) {
+      setErrorMessage('Ingresa el correo y el código de verificación.')
+      return
+    }
+
+    setIsLoading(true)
+    setErrorMessage('')
+    try {
+      const { authService } = await import('../../services/auth.service')
+      await authService.verifyResetCode(email, code)
+      setSuccessMessage('Contraseña restablecida. Revisa tu correo con tu nueva contraseña.')
+      setIsCodeSent(false)
+      setValue('recoveryCode' as any, '')
+    } catch (error) {
+      setErrorMessage(ErrorHandler.handle(error, 'verificar el código'))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const onGoBack = () => {
+    setViewMode('login')
+    setErrorMessage('')
+    setSuccessMessage('')
+    setIsCodeSent(false)
+    reset()
+  }
+
   return LoginPageView({
     register,
     handleSubmit,
@@ -68,7 +129,14 @@ export function LoginPage() {
     onSubmit,
     isLoading,
     errorMessage,
+    successMessage,
     isLocked,
-    formattedTime
+    formattedTime,
+    viewMode,
+    setViewMode,
+    isCodeSent,
+    onSendCode,
+    onVerifyCode,
+    onGoBack
   })
 }

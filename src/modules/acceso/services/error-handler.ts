@@ -12,6 +12,13 @@ export class ErrorHandler {
   private static normalizeMessage(message: string): string {
     const lower = message.toLowerCase()
 
+    if (
+      (lower.includes('correo') || lower.includes('email')) &&
+      (lower.includes('no registrado') || lower.includes('no existe') || lower.includes('not registered') || lower.includes('not found'))
+    ) {
+      return 'No encontramos una cuenta con ese correo.'
+    }
+
     if (lower.includes('email') && (lower.includes('exist') || lower.includes('already'))) {
       return 'Este correo ya está registrado. Usa otro correo o inicia sesión.'
     }

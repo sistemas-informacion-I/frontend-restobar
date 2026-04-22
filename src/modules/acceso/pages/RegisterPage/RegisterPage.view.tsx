@@ -174,8 +174,8 @@ export function RegisterPageView({
                   message: 'La contraseña no puede exceder 128 caracteres',
                 },
                 pattern: {
-                  value: /^(?=.*\d).*$/,
-                  message: 'La contraseña debe incluir al menos un número',
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+                  message: 'La contraseña debe incluir mayúsculas, minúsculas y números',
                 },
               })}
             />

@@ -116,14 +116,14 @@ class AuthService {
   }
 
   async login(data: LoginData): Promise<User> {
-    const response = await httpClient.post<AuthApiResponse>('/auth/login', data)
+    const response = await httpClient.post<AuthApiResponse>('/login', data)
     this.persistTokens(response.accessToken, response.refreshToken)
     // Fetch full profile to ensure consistent state and permissions
     return this.getProfile()
   }
 
   async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await httpClient.post<AuthApiResponse>('/auth/register', data)
+    const response = await httpClient.post<AuthApiResponse>('/register', data)
     this.persistTokens(response.accessToken, response.refreshToken)
     return {
       accessToken: response.accessToken,
@@ -136,13 +136,13 @@ class AuthService {
   async logout(): Promise<void> {
     const refreshToken = this.getRefreshToken()
     if (refreshToken) {
-      await httpClient.post('/auth/logout', { refreshToken })
+      await httpClient.post('/login/logout', { refreshToken })
     }
     this.clearTokens()
   }
 
   async getProfile(): Promise<User> {
-    const response = await httpClient.get<any>('/auth/me')
+    const response = await httpClient.get<any>('/login/me')
     const authorities = response.authorities || []
     const permissions = mapAuthoritiesToPermissions(authorities)
     return {
@@ -166,15 +166,23 @@ class AuthService {
   }
 
   async getPermissions(): Promise<Permission[]> {
-    const me = await httpClient.get<MeApiResponse>('/auth/me')
+    const me = await httpClient.get<MeApiResponse>('/login/me')
     return mapAuthoritiesToPermissions(me.authorities || [])
   }
 
   async refreshToken(): Promise<User> {
     const refreshToken = this.getRefreshToken()
-    const response = await httpClient.post<AuthApiResponse>('/auth/refresh', { refreshToken })
+    const response = await httpClient.post<AuthApiResponse>('/login/refresh', { refreshToken })
     this.persistTokens(response.accessToken, response.refreshToken)
     return mapAuthUser(response)
+  }
+
+  async sendResetCode(correo: string): Promise<void> {
+    await httpClient.post('/login/forgot/send-code', { correo })
+  }
+
+  async verifyResetCode(correo: string, codigo: string): Promise<void> {
+    await httpClient.post('/login/forgot/verify', { correo, codigo })
   }
 }
 

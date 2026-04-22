@@ -47,8 +47,16 @@ export class HttpClient {
 
         // If 401 and haven't retried yet: attempt token refresh
         if (error.response?.status === 401 && !originalRequest?._retry) {
-          // If the request was to the login or register endpoint, do not attempt to refresh or redirect
-          if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/register')) {
+          const requestUrl = originalRequest?.url || ''
+          const isAuthEntryEndpoint =
+            requestUrl === '/login' ||
+            requestUrl.endsWith('/login') ||
+            requestUrl === '/register' ||
+            requestUrl.endsWith('/register') ||
+            requestUrl.includes('/login/forgot/')
+
+          // For auth entry and recovery failures, return API error without refresh/redirect.
+          if (isAuthEntryEndpoint) {
             const apiError = this.handleError(error)
             return Promise.reject(apiError)
           }
