@@ -8,6 +8,9 @@ import DashboardPage from './modules/acceso/pages/DashboardPage'
 import UsersPage from './modules/acceso/pages/UsersPage'
 import RolesPage from './modules/acceso/pages/RolesPage'
 import AuditoriaPage from './modules/acceso/pages/AuditoriaPage'
+import SucursalesPage from './modules/operaciones/pages/SucursalesPage'
+import SectoresPage from './modules/operaciones/pages/SectoresPage'
+import MesasPage from './modules/operaciones/pages/MesasPage'
 
 function App() {
   return (
@@ -49,6 +52,31 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/sucursales"
+              element={
+                <ProtectedRoute>
+                  <SucursalesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sectores"
+              element={
+                <ProtectedRoute>
+                  <SectoresPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mesas"
+              element={
+                <ProtectedRoute>
+                  <MesasPage />
+                </ProtectedRoute>
+              }
+            />
+            
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
