@@ -12,6 +12,9 @@ import PerfilPersonalPage from './modules/acceso/pages/PerfilPersonalPage'
 
 import { SWRConfig } from 'swr'
 import { httpClient } from './modules/acceso/services/http-client'
+import SucursalesPage from './modules/operaciones/pages/SucursalesPage'
+import SectoresPage from './modules/operaciones/pages/SectoresPage'
+import MesasPage from './modules/operaciones/pages/MesasPage'
 
 function App() {
   return (
@@ -68,6 +71,31 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/sucursales"
+              element={
+                <ProtectedRoute>
+                  <SucursalesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sectores"
+              element={
+                <ProtectedRoute>
+                  <SectoresPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mesas"
+              element={
+                <ProtectedRoute>
+                  <MesasPage />
+                </ProtectedRoute>
+              }
+            />
+            
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
