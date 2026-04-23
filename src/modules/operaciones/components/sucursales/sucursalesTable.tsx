@@ -1,5 +1,5 @@
 import { Edit2, Eye, Store, Trash2, Grid3X3 } from 'lucide-react'
-import { Button, TableCell, TableRow } from '@/shared/components/ui'
+import { Button } from '@/shared/components/ui/Button'
 
 interface Sucursal {
   idSucursal: number
@@ -12,7 +12,6 @@ interface Sucursal {
   activo: boolean
 }
 
-// es una mascara de lo que quiero añadir en la tabla 
 interface SucursalesTableProps {
   sucursales: Sucursal[]
   canUpdateSucursales: boolean
@@ -33,104 +32,120 @@ export function SucursalesTable({
   onAddSector,
 }: SucursalesTableProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+    <div className="glass-card rounded-[2.5rem] shadow-2xl shadow-wine-900/5 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="overflow-x-auto">
         <table className="min-w-[800px] w-full border-collapse">
           <thead>
-            <TableRow header>
-              <TableCell header>Nombre</TableCell>
-              <TableCell header>Dirección</TableCell>
-              <TableCell header>Ciudad</TableCell>
-              <TableCell header>Teléfono</TableCell>
-              <TableCell header>Estado</TableCell>
-              <TableCell header>Acciones</TableCell>
-            </TableRow>
+            <tr className="border-b border-wine-100/50 bg-wine-50/30 dark:border-wine-900/20 dark:bg-wine-950/20">
+              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Sucursal</th>
+              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Dirección</th>
+              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Contacto</th>
+              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Estado</th>
+              <th className="px-6 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Acciones</th>
+            </tr>
           </thead>
-          <tbody>
-            {sucursales.map((sucursal) => (
-              <TableRow key={sucursal.idSucursal}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300">
-                      <Store size={16} />
+          <tbody className="divide-y divide-wine-50 dark:divide-wine-950/30">
+            {sucursales.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-16 text-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <Store size={40} className="text-wine-100 dark:text-wine-900/30" />
+                    <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">No se encontraron sucursales</span>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              sucursales.map((sucursal) => (
+                <tr key={sucursal.idSucursal} className="transition-all duration-300 hover:bg-wine-50/30 dark:hover:bg-wine-900/10 group">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-wine-600 to-wine-950 text-white shadow-lg shadow-wine-900/20 group-hover:scale-105 transition-transform">
+                        <Store size={20} />
+                      </div>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-slate-900 dark:text-white tracking-tight leading-none">{sucursal.nombre}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-wine-600 dark:text-wine-400">ID: {sucursal.idSucursal}</span>
+                      </div>
                     </div>
-                    <span className="font-medium text-slate-900 dark:text-slate-100">{sucursal.nombre}</span>
-                  </div>
-                </TableCell>
+                  </td>
 
-                <TableCell className="text-slate-600 dark:text-slate-300">
-                  {sucursal.direccion || 'Sin dirección'}
-                </TableCell>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col gap-0.5 max-w-[250px]">
+                      <span className="text-sm font-bold text-slate-600 dark:text-slate-300 truncate tracking-tight">{sucursal.direccion || 'Sin dirección'}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">{sucursal.ciudad || 'Ciudad no especificada'}</span>
+                    </div>
+                  </td>
 
-                <TableCell className="text-slate-600 dark:text-slate-300">
-                  {sucursal.ciudad || '-'}
-                </TableCell>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-bold text-slate-600 dark:text-slate-300 tracking-tight">{sucursal.telefono || 'Sin teléfono'}</span>
+                      <span className="text-[10px] font-bold lowercase tracking-widest text-slate-400 dark:text-slate-500">{sucursal.correo || 'sin@correo.com'}</span>
+                    </div>
+                  </td>
 
-                <TableCell className="text-slate-600 dark:text-slate-300">
-                  {sucursal.telefono || '-'}
-                </TableCell>
-
-                <TableCell>
-                  {sucursal.activo ? (
-                    <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
-                      Activo
-                    </span>
-                  ) : (
-                    <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
-                      Inactivo
-                    </span>
-                  )}
-                </TableCell>
-
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="!h-8 !w-8 !min-h-8 !rounded-md !px-0 border border-emerald-300 !text-emerald-600 hover:!border-emerald-500 hover:!bg-emerald-50 hover:!text-emerald-700 dark:border-emerald-600/50 dark:!text-emerald-400 dark:hover:!border-emerald-500 dark:hover:!bg-emerald-500/10 dark:hover:!text-emerald-300"
-                      title="Añadir Sector"
-                      onClick={() => onAddSector(sucursal)}
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[9px] font-black uppercase tracking-tighter shadow-sm ${
+                        sucursal.activo
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                          : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                      }`}
                     >
-                      <Grid3X3 size={16} />
-                    </Button>
+                      <div className={`h-1.5 w-1.5 rounded-full ${sucursal.activo ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                      {sucursal.activo ? 'Activa' : 'Inactiva'}
+                    </span>
+                  </td>
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="!h-8 !w-8 !min-h-8 !rounded-md !px-0 border border-slate-300 !text-slate-500 hover:!border-indigo-400 hover:!bg-indigo-50 hover:!text-indigo-600 dark:border-slate-600 dark:!text-slate-400 dark:hover:!border-indigo-500/50 dark:hover:!bg-indigo-500/10 dark:hover:!text-indigo-300"
-                      title="Ver"
-                      onClick={() => onView(sucursal)}
-                    >
-                      <Eye size={16} />
-                    </Button>
-
-                    {canUpdateSucursales && (
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="!h-8 !w-8 !min-h-8 !rounded-md !px-0 border border-slate-300 !text-slate-500 hover:!border-indigo-400 hover:!bg-indigo-50 hover:!text-indigo-600 dark:border-slate-600 dark:!text-slate-400 dark:hover:!border-indigo-500/50 dark:hover:!bg-indigo-500/10 dark:hover:!text-indigo-300"
-                        title="Editar"
-                        onClick={() => onEdit(sucursal)}
+                        className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-emerald-50 dark:hover:!bg-emerald-900/20 hover:!text-emerald-600 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-900/30 transition-all"
+                        onClick={() => onAddSector(sucursal)}
+                        title="Añadir Sector"
                       >
-                        <Edit2 size={16} />
+                        <Grid3X3 size={16} />
                       </Button>
-                    )}
 
-                    {canDeleteSucursales && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="!h-8 !w-8 !min-h-8 !rounded-md !px-0 border border-slate-300 !text-slate-500 hover:!border-rose-400 hover:!bg-rose-50 hover:!text-rose-600 dark:border-slate-600 dark:!text-slate-400 dark:hover:!border-rose-500/50 dark:hover:!bg-rose-500/10 dark:hover:!text-rose-300"
-                        title="Eliminar"
-                        onClick={() => onDelete(sucursal)}
+                        className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 border border-transparent hover:border-wine-100 dark:hover:border-wine-900/20 transition-all"
+                        onClick={() => onView(sucursal)}
+                        title="Ver detalles"
                       >
-                        <Trash2 size={16} />
+                        <Eye size={16} />
                       </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+
+                      {canUpdateSucursales && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 border border-transparent hover:border-wine-100 dark:hover:border-wine-900/20 transition-all"
+                          onClick={() => onEdit(sucursal)}
+                          title="Editar"
+                        >
+                          <Edit2 size={16} />
+                        </Button>
+                      )}
+
+                      {canDeleteSucursales && (
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className="!rounded-xl shadow-lg shadow-rose-900/10"
+                          onClick={() => onDelete(sucursal)}
+                          title="Eliminar"
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

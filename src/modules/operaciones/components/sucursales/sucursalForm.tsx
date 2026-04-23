@@ -1,10 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
-import { Store } from 'lucide-react'
+import { Store, MapPin, Phone, Mail, Globe, Activity } from 'lucide-react'
 
-
-// mejorar
 interface Sucursal {
   idSucursal?: number
   nombre: string
@@ -18,7 +16,7 @@ interface Sucursal {
   estadoOperativo?: string
   activo?: boolean
 }
-//para crear
+
 interface CreateSucursalData {
   nombre: string
   direccion: string
@@ -28,7 +26,7 @@ interface CreateSucursalData {
   departamento?: string
   estadoOperativo?: string
 }
-//para actualizar
+
 interface UpdateSucursalData {
   nombre?: string
   direccion?: string
@@ -88,77 +86,98 @@ export function SucursalForm({ sucursal, onSubmit, onCancel, isLoading }: Sucurs
   }
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col gap-5">
-      <Input
-        label="Nombre"
-        type="text"
-        placeholder="Nombre de la sucursal"
-        icon={<Store size={18} />}
-        error={errors.nombre?.message}
-        {...register('nombre', {
-          required: 'Ingresa el nombre de la sucursal',
-          minLength: { value: 2, message: 'El nombre debe tener al menos 2 caracteres' },
-        })}
-      />
+    <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <Input
+            label="Nombre de la Sucursal"
+            type="text"
+            placeholder="Ej: La Gaira Central"
+            icon={<Store size={18} />}
+            error={errors.nombre?.message as string}
+            {...register('nombre', {
+              required: 'El nombre es obligatorio',
+              minLength: { value: 3, message: 'Mínimo 3 caracteres' },
+            })}
+          />
+        </div>
 
-      <Input
-        label="Dirección"
-        type="text"
-        placeholder="Dirección de la sucursal"
-        error={errors.direccion?.message}
-        {...register('direccion', {
-          required: 'Ingresa la dirección',
-        })}
-      />
+        <div className="md:col-span-2">
+          <Input
+            label="Dirección Física"
+            type="text"
+            placeholder="Av. Las Américas #123..."
+            icon={<MapPin size={18} />}
+            error={errors.direccion?.message as string}
+            {...register('direccion', {
+              required: 'La dirección es obligatoria',
+            })}
+          />
+        </div>
 
-      <Input
-        label="Teléfono"
-        type="text"
-        placeholder="Teléfono de contacto"
-        error={errors.telefono?.message}
-        {...register('telefono')}
-      />
+        <Input
+          label="Teléfono"
+          type="text"
+          placeholder="+591 ..."
+          icon={<Phone size={18} />}
+          error={errors.telefono?.message as string}
+          {...register('telefono')}
+        />
 
-      <Input
-        label="Correo"
-        type="email"
-        placeholder="correo@sucursal.com"
-        error={errors.correo?.message}
-        {...register('correo', {
-          pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo inválido' }
-        })}
-      />
+        <Input
+          label="Correo Electrónico"
+          type="email"
+          placeholder="sucursal@restobar.com"
+          icon={<Mail size={18} />}
+          error={errors.correo?.message as string}
+          {...register('correo', {
+            pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo inválido' }
+          })}
+        />
 
-      <Input
-        label="Ciudad"
-        type="text"
-        placeholder="Ciudad"
-        error={errors.ciudad?.message}
-        {...register('ciudad')}
-      />
+        <Input
+          label="Ciudad"
+          type="text"
+          placeholder="Ej: Santa Cruz"
+          icon={<Globe size={18} />}
+          error={errors.ciudad?.message as string}
+          {...register('ciudad')}
+        />
 
-      <Input
-        label="Departamento"
-        type="text"
-        placeholder="Departamento"
-        error={errors.departamento?.message}
-        {...register('departamento')}
-      />
+        <Input
+          label="Departamento"
+          type="text"
+          placeholder="Ej: Santa Cruz"
+          icon={<Globe size={18} />}
+          error={errors.departamento?.message as string}
+          {...register('departamento')}
+        />
 
-      <Input
-        label="Estado Operativo"
-        type="text"
-        placeholder="Ej: Abierta, Cerrada, Mantenimiento"
-        error={errors.estadoOperativo?.message}
-        {...register('estadoOperativo')}
-      />
+        <Input
+          label="Estado Operativo"
+          type="text"
+          placeholder="Ej: Abierta, Cerrada, Mantenimiento"
+          icon={<Activity size={18} />}
+          error={errors.estadoOperativo?.message as string}
+          {...register('estadoOperativo')}
+        />
+      </div>
 
-      <div className="mt-2 flex flex-col-reverse justify-end gap-2 border-t border-slate-200 pt-4 dark:border-slate-700 sm:flex-row sm:gap-3">
-        <Button type="button" variant="secondary" onClick={onCancel}>
+      <div className="mt-4 flex flex-col-reverse justify-end gap-3 border-t border-wine-100/30 pt-6 dark:border-wine-900/10 sm:flex-row">
+        <Button 
+          type="button" 
+          variant="ghost" 
+          onClick={onCancel}
+          className="bg-wine-50/50 dark:bg-wine-950/30"
+        >
           Cancelar
         </Button>
-        <Button type="submit" isLoading={isLoading}>
-          {isEdit ? 'Guardar Cambios' : 'Crear Sucursal'}
+        <Button 
+          type="submit" 
+          isLoading={isLoading}
+          className="shadow-lg shadow-wine-900/20 min-w-[180px]"
+        >
+          {isEdit ? 'Guardar Cambios' : 'Registrar Sucursal'}
         </Button>
       </div>
     </form>

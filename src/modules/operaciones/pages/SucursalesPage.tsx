@@ -169,11 +169,15 @@ export default function SucursalesPage() {
     <Layout>
       <div className="animate-in fade-in slide-in-from-bottom-1">
         {feedbackMessage && (
-          <div className={`mb-4 rounded-xl border px-4 py-3 text-sm ${feedbackType === 'error'
-            ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/40 dark:bg-rose-500/10 dark:text-rose-300'
-            : 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-300'
-            }`}>
-            {feedbackMessage}
+          <div className={`mb-6 rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg animate-in fade-in slide-in-from-top-2 duration-500 ${
+            feedbackType === 'error'
+              ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900/30 dark:bg-rose-900/20 dark:text-rose-400 shadow-rose-900/5'
+              : 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-400 shadow-emerald-900/5'
+          }`}>
+            <div className="flex items-center gap-3">
+              <div className={`h-2 w-2 rounded-full ${feedbackType === 'error' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+              {feedbackMessage}
+            </div>
           </div>
         )}
 
@@ -186,19 +190,28 @@ export default function SucursalesPage() {
         />
 
         {loading ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
-            Cargando sucursales...
+          <div className="flex flex-col items-center justify-center py-24 bg-wine-50/5 rounded-[2.5rem] border-2 border-dashed border-wine-100/50 dark:bg-black/10 dark:border-wine-900/20">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-wine-200 border-t-wine-600 dark:border-wine-900/20 dark:border-t-wine-500" />
+            <p className="mt-4 text-xs font-bold uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">Sincronizando sucursales...</p>
           </div>
         ) : filteredSucursales.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
-            <Store size={48} />
-            <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-slate-100">No hay sucursales</h3>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-              {search 
-                ? 'No se encontraron sucursales con ese criterio de búsqueda'
-                : 'Comienza creando una nueva sucursal'
-              }
-            </p>
+          <div className="glass-card rounded-[2.5rem] border-2 border-dashed border-wine-100/50 bg-wine-50/5 py-24 text-center dark:border-wine-900/20 dark:bg-black/10">
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-wine-500/10 text-wine-600 dark:text-wine-400">
+                <Store size={32} />
+              </div>
+              <div className="max-w-xs">
+                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-wine-950 dark:text-white">
+                  No hay sucursales
+                </h3>
+                <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">
+                  {search 
+                    ? 'No se encontraron sucursales con ese criterio de búsqueda'
+                    : 'Registra tu primera sucursal para comenzar la expansión de tu negocio'
+                  }
+                </p>
+              </div>
+            </div>
           </div>
         ) : (
           <SucursalesTable
