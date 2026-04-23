@@ -149,7 +149,7 @@ export function LoginPageView({
                     type="button"
                     onClick={onSendCode}
                     isLoading={isLoading && !isCodeSent}
-                    variant="outline"
+                    variant="secondary"
                     className="h-12 w-12 p-0 flex items-center justify-center shrink-0 rounded-2xl"
                     title="Enviar código"
                   >

@@ -2,6 +2,8 @@ interface PasswordRulesViewProps {
   rules: {
     minLength: boolean
     hasNumber: boolean
+    hasUpper: boolean
+    hasLower: boolean
   }
 }
 
