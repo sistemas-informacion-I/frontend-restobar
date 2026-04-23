@@ -10,6 +10,7 @@ import { Role } from '@/modules/acceso/services/api'
 interface EmployeesPageViewProps {
   employees: Empleado[]
   roles: Role[]
+  total: number
   isLoading: boolean
   isSubmitLoading: boolean
   search: string
@@ -34,6 +35,7 @@ interface EmployeesPageViewProps {
 export function EmployeesPageView({
   employees,
   roles,
+  total,
   isLoading,
   isSubmitLoading,
   search,
@@ -74,9 +76,11 @@ export function EmployeesPageView({
         <EmployeesToolbar
           search={search}
           onSearchChange={onSearchChange}
+          total={total}
           canCreate={canCreate}
           onCreate={onCreate}
         />
+
 
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 bg-wine-50/10 rounded-[2.5rem] border-2 border-dashed border-wine-100/50 dark:bg-black/10 dark:border-wine-900/20">

@@ -3,7 +3,6 @@ import { EmpleadosService, Empleado, CreateEmpleadoData } from '../../services/e
 import { rolesService, Role, getErrorMessage } from '@/modules/acceso/services/api'
 import { EmployeesPageView } from './EmployeesPage.view'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
-import { toast } from 'sonner' // Keeping sonner only for successful actions outside modals if needed, or removing it completely if user prefers.
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Empleado[]>([])
@@ -127,6 +126,7 @@ export default function EmployeesPage() {
   return (
     <EmployeesPageView
       employees={filteredEmployees}
+      total={employees.length}
       roles={roles}
       isLoading={isLoading}
       isSubmitLoading={isSubmitLoading}
@@ -143,6 +143,7 @@ export default function EmployeesPage() {
       setIsViewModalOpen={setIsViewModalOpen}
       selectedEmployee={selectedEmployee}
       onCreate={handleCreate}
+
       onEdit={handleEdit}
       onView={handleView}
       onDelete={handleDelete}
