@@ -15,6 +15,17 @@ export function Layout({ children }: LayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    'Sistema y Acceso': true,
+    'Operaciones': true
+  })
+
+  const toggleSection = (title: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [title]: !prev[title]
+    }))
+  }
 
   const handleLogout = async () => {
     try {
@@ -25,15 +36,26 @@ export function Layout({ children }: LayoutProps) {
     }
   }
 
-  const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, show: true },
-    { path: '/perfil', label: 'Mi Perfil', icon: User, show: true },
-    { path: '/users', label: 'Usuarios', icon: Users, show: canRead('users') },
-    { path: '/roles', label: 'Roles', icon: Shield, show: canRead('roles') },
-    { path: '/auditoria', label: 'Auditoría', icon: Activity, show: canRead('audit') },
-    { path: '/sucursales', label: 'Sucursales', icon: Store, show: canRead('sucursales') },
-    { path: '/sectores', label: 'Sectores', icon: Map, show: canRead('sectores') },
-    { path: '/mesas', label: 'Mesas', icon: Grid, show: canRead('mesas') },
+  const sections = [
+    {
+      title: 'Sistema y Acceso',
+      items: [
+        { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, show: true },
+        { path: '/perfil', label: 'Mi Perfil', icon: User, show: true },
+        { path: '/users', label: 'Usuarios', icon: Users, show: canRead('users') },
+        { path: '/empleados', label: 'Personal', icon: Users, show: canRead('employees') },
+        { path: '/roles', label: 'Roles', icon: Shield, show: canRead('roles') },
+        { path: '/auditoria', label: 'Auditoría', icon: Activity, show: canRead('audit') },
+      ]
+    },
+    {
+      title: 'Operaciones',
+      items: [
+        { path: '/sucursales', label: 'Sucursales', icon: Store, show: canRead('sucursales') },
+        { path: '/sectores', label: 'Sectores', icon: Map, show: canRead('sectores') },
+        { path: '/mesas', label: 'Mesas', icon: Grid, show: canRead('mesas') },
+      ]
+    }
   ]
 
   return LayoutView({
@@ -44,7 +66,9 @@ export function Layout({ children }: LayoutProps) {
     sidebarOpen,
     setSidebarOpen,
     handleLogout,
-    navItems,
+    navSections: sections,
+    expandedSections,
+    toggleSection,
     currentPath: location.pathname
   })
 }

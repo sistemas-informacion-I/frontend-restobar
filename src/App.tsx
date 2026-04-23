@@ -15,6 +15,8 @@ import { httpClient } from './modules/acceso/services/http-client'
 import SucursalesPage from './modules/operaciones/pages/SucursalesPage'
 import SectoresPage from './modules/operaciones/pages/SectoresPage'
 import MesasPage from './modules/operaciones/pages/MesasPage'
+import EmployeesPage from './modules/acceso/pages/EmployeesPage'
+import { Toaster } from 'sonner'
 
 function App() {
   return (
@@ -27,6 +29,7 @@ function App() {
     >
       <QueryProvider>
         <ThemeProvider>
+          <Toaster richColors position="top-right" />
           <AuthProvider>
             <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -92,6 +95,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MesasPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/empleados"
+              element={
+                <ProtectedRoute>
+                  <EmployeesPage />
                 </ProtectedRoute>
               }
             />
