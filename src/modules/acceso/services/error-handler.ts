@@ -75,6 +75,18 @@ export class ErrorHandler {
       return 'Debes seleccionar al menos un permiso.'
     }
 
+    if (lower.includes('ci') && (lower.includes('registrado') || lower.includes('exist') || lower.includes('already'))) {
+      return 'Este número de CI ya está registrado en el sistema.'
+    }
+
+    if (lower.includes('salario') && lower.includes('obligatorio')) {
+      return 'El salario es un campo obligatorio.'
+    }
+
+    if (lower.includes('código') && lower.includes('registrado')) {
+      return 'Este código de empleado ya está asignado.'
+    }
+
     if (lower.includes('not found')) {
       return 'No encontramos la información solicitada.'
     }
