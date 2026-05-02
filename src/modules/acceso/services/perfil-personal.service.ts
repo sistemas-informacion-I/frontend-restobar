@@ -1,4 +1,4 @@
-import { httpClient } from './http-client';
+import { httpClient } from '../../../core/api/http-client';
 import { PerfilPersonalResponse, PerfilPersonalUpdate, CambioPasswordRequest } from '../models/perfil-personal.model';
 
 export const perfilPersonalService = {

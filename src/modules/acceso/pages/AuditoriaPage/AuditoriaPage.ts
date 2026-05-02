@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { AuditLog, AuditFilters } from '../../models'
 import { useAuditoria } from '../../hooks/useAuditoria'
-import { getErrorMessage } from '../../services/api'
+import { getErrorMessage } from '../../../../core/api'
 import { AuditoriaPageView } from './AuditoriaPage.view'
 
 export function AuditoriaPage() {

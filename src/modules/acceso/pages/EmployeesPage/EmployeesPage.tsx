@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { EmpleadosService, Empleado, CreateEmpleadoData } from '../../services/empleados.service'
-import { rolesService, Role, getErrorMessage } from '@/modules/acceso/services/api'
+import { rolesService, Role } from '@/modules/acceso/services/api'
+import { getErrorMessage } from '@/core/api'
 import { EmployeesPageView } from './EmployeesPage.view'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 

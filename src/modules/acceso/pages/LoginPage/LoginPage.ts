@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useCountdown } from '@/shared/hooks/useCountdown'
 import { useAuth } from '../../context/AuthContext'
-import { ErrorHandler } from '../../services/error-handler'
+import { ErrorHandler } from '../../../../core/api/error-handler'
 import type { LoginData } from '../../models'
 import { LoginPageView } from './LoginPage.view'
 

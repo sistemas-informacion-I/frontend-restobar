@@ -1,4 +1,4 @@
-import { httpClient } from './http-client'
+import { httpClient } from '../../../core/api/http-client'
 import { LoginData, RegisterData, AuthResponse, User, Permission } from '../models'
 
 interface AuthApiResponse {

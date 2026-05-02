@@ -1,4 +1,4 @@
-import { httpClient } from './http-client'
+import { httpClient } from '../../../core/api/http-client'
 
 export interface Empleado {
   idEmpleado: number

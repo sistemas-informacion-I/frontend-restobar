@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { User, CreateUserData, UpdateUserData } from '../../models'
 import { useUsers } from '../../hooks/useUsers'
-import { getErrorMessage } from '../../services/api'
+import { getErrorMessage } from '../../../../core/api'
 import { UsersPageView } from './UsersPage.view'
 
 export function UsersPage() {

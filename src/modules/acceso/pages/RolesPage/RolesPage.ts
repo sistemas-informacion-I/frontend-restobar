@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Role, CreateRoleData, UpdateRoleData } from '../../models'
 import { useRoles } from '../../hooks/useRoles'
 import { usePermissions } from '../../hooks/usePermissions'
-import { getErrorMessage } from '../../services/api'
+import { getErrorMessage } from '../../../../core/api'
 import { useAuth } from '../../context/AuthContext'
 import { RolesPageView } from './RolesPage.view'
 
