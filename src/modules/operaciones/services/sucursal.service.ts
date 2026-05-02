@@ -1,4 +1,4 @@
-import { httpClient } from '../../acceso/services/http-client'
+import { httpClient } from '../../../core/api/http-client'
 import { CreateSucursalData, UpdateSucursalData } from '../../acceso/services/types'
 
 interface SucursalApiResponse {

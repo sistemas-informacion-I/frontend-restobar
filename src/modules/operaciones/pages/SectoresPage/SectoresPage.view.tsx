@@ -1,184 +1,103 @@
-import { useState, useEffect, useCallback } from 'react'
 import { Layout } from '@/shared/components/layout/Layout'
 import { Modal } from '@/shared/components/ui/Modal'
-import { SectoresToolbar, SectoresTable, SectorView, SectorFormEdit } from '../components/sectores'
-import { MesaForm } from '../components/mesas/MesaForm'
-import { sucursalService, sectorService, mesaService, getErrorMessage } from '../../acceso/services/api'
+import { SectoresToolbar, SectoresTable, SectorView, SectorFormEdit } from '../../components/sectores'
+import { MesaForm } from '../../components/mesas/MesaForm'
 import { Grid3X3, AlertCircle } from 'lucide-react'
 import { Button } from '@/shared/components/ui/Button'
-import { Sucursal, Sector as SectorType, CreateSectorData, UpdateSectorData, CreateMesaData } from '../services/types'
+import { Sucursal, Sector as SectorType } from '../../services/types'
 
-export default function SectoresPage() {
-  const [sectores, setSectores] = useState<SectorType[]>([])
-  const [sucursales, setSucursales] = useState<Sucursal[]>([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [feedbackMessage, setFeedbackMessage] = useState('')
-  const [feedbackType, setFeedbackType] = useState<'error' | 'success' | ''>('')
+interface SectoresPageViewProps {
+  sectores: SectorType[]
+  sucursales: Sucursal[]
+  loading: boolean
+  search: string
+  setSearch: (value: string) => void
+  feedbackMessage: string
+  feedbackType: 'error' | 'success' | ''
+  showCreateModal: boolean
+  setShowCreateModal: (value: boolean) => void
+  showEditModal: boolean
+  setShowEditModal: (value: boolean) => void
+  showViewModal: boolean
+  setShowViewModal: (value: boolean) => void
+  showDeleteModal: boolean
+  setShowDeleteModal: (value: boolean) => void
+  showSelectSucursalModal: boolean
+  setShowSelectSucursalModal: (value: boolean) => void
+  showAddMesaModal: boolean
+  setShowAddMesaModal: (value: boolean) => void
+  selectedSector: SectorType | null
+  setSelectedSector: (value: SectorType | null) => void
+  selectedSectorForMesa: SectorType | null
+  setSelectedSectorForMesa: (value: SectorType | null) => void
+  selectedSucursalId: number | null
+  setSelectedSucursalId: (value: number | null) => void
+  isSubmitting: boolean
+  handleCreate: (data: any) => Promise<void>
+  handleUpdate: (data: any) => Promise<void>
+  handleDelete: () => Promise<void>
+  openView: (sector: SectorType) => void
+  openEdit: (sector: SectorType) => void
+  openDelete: (sector: SectorType) => void
+  openAddMesa: (sector: SectorType) => void
+  handleAddMesa: (data: any) => Promise<void>
+  openCreate: () => void
+  handleSelectSucursal: (idSucursal: number) => void
+  getSucursalNombre: (idSucursal: number) => string
+  canViewSectores: boolean
+  canCreateSectores: boolean
+  canUpdateSectores: boolean
+  canDeleteSectores: boolean
+}
 
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [showViewModal, setShowViewModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [showSelectSucursalModal, setShowSelectSucursalModal] = useState(false)
-  const [showAddMesaModal, setShowAddMesaModal] = useState(false)
-  const [selectedSector, setSelectedSector] = useState<SectorType | null>(null)
-  const [selectedSectorForMesa, setSelectedSectorForMesa] = useState<SectorType | null>(null)
-  const [selectedSucursalId, setSelectedSucursalId] = useState<number | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      const [sectoresData, sucursalesData] = await Promise.all([
-        sectorService.getAll(),
-        sucursalService.getAll(),
-      ])
-      setSectores(sectoresData)
-      setSucursales(sucursalesData)
-    } catch (error) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'cargar los sectores'))
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-
-  const filteredSectores = sectores.filter((sector) =>
-    sector.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    (sector.nombreSucursal && sector.nombreSucursal.toLowerCase().includes(search.toLowerCase())) ||
-    sector.tipoSector.toLowerCase().includes(search.toLowerCase())
-  )
-
-  const handleCreate = async (data: CreateSectorData | UpdateSectorData) => {
-    if (!selectedSucursalId) return
-    try {
-      setIsSubmitting(true)
-      await sectorService.create({
-        ...data,
-        idSucursal: selectedSucursalId,
-      } as CreateSectorData)
-      setFeedbackType('success')
-      setFeedbackMessage('Sector creado exitosamente')
-      setShowCreateModal(false)
-      setShowSelectSucursalModal(false)
-      setSelectedSucursalId(null)
-      loadData()
-    } catch (error: unknown) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'crear el sector'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleUpdate = async (data: CreateSectorData | UpdateSectorData) => {
-    if (!selectedSector) return
-    try {
-      setIsSubmitting(true)
-      await sectorService.update(selectedSector.idSector, data as UpdateSectorData)
-      setFeedbackType('success')
-      setFeedbackMessage('Sector actualizado exitosamente')
-      setShowEditModal(false)
-      setSelectedSector(null)
-      loadData()
-    } catch (error: unknown) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'actualizar el sector'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (!selectedSector) return
-    try {
-      setIsSubmitting(true)
-      await sectorService.delete(selectedSector.idSector)
-      setFeedbackType('success')
-      setFeedbackMessage('Sector eliminado exitosamente')
-      setShowDeleteModal(false)
-      setSelectedSector(null)
-      loadData()
-    } catch (error: unknown) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'eliminar el sector'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const openView = (sector: SectorType) => {
-    setSelectedSector(sector)
-    setShowViewModal(true)
-  }
-
-  const openEdit = (sector: SectorType) => {
-    setSelectedSector(sector)
-    setShowEditModal(true)
-  }
-
-  const openDelete = (sector: SectorType) => {
-    setSelectedSector(sector)
-    setShowDeleteModal(true)
-  }
-
-  const openAddMesa = (sector: SectorType) => {
-    setSelectedSectorForMesa(sector)
-    setShowAddMesaModal(true)
-  }
-
-  const handleAddMesa = async (data: CreateMesaData) => {
-    if (!selectedSectorForMesa) return
-    try {
-      setIsSubmitting(true)
-      await mesaService.create({
-        ...data,
-        idSector: selectedSectorForMesa.idSector,
-      })
-      setFeedbackType('success')
-      setFeedbackMessage('Mesa creada exitosamente')
-      setShowAddMesaModal(false)
-      setSelectedSectorForMesa(null)
-    } catch (error: unknown) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'crear la mesa'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const openCreate = () => {
-    setSelectedSucursalId(null)
-    setShowSelectSucursalModal(true)
-  }
-
-  const handleSelectSucursal = (idSucursal: number) => {
-    setSelectedSucursalId(idSucursal)
-    setShowSelectSucursalModal(false)
-    setShowCreateModal(true)
-  }
-
-  const getSucursalNombre = (idSucursal: number) => {
-    const sucursal = sucursales.find(s => s.idSucursal === idSucursal)
-    return sucursal?.nombre || `Sucursal #${idSucursal}`
-  }
-
-  const canViewSectores = true
-  const canCreateSectores = true
-  const canUpdateSectores = true
-  const canDeleteSectores = true
-
+export function SectoresPageView({
+  sectores,
+  sucursales,
+  loading,
+  search,
+  setSearch,
+  feedbackMessage,
+  feedbackType,
+  showCreateModal,
+  setShowCreateModal,
+  showEditModal,
+  setShowEditModal,
+  showViewModal,
+  setShowViewModal,
+  showDeleteModal,
+  setShowDeleteModal,
+  showSelectSucursalModal,
+  setShowSelectSucursalModal,
+  showAddMesaModal,
+  setShowAddMesaModal,
+  selectedSector,
+  setSelectedSector,
+  selectedSectorForMesa,
+  setSelectedSectorForMesa,
+  selectedSucursalId,
+  setSelectedSucursalId,
+  isSubmitting,
+  handleCreate,
+  handleUpdate,
+  handleDelete,
+  openView,
+  openEdit,
+  openDelete,
+  openAddMesa,
+  handleAddMesa,
+  openCreate,
+  handleSelectSucursal,
+  getSucursalNombre,
+  canViewSectores,
+  canCreateSectores,
+  canUpdateSectores,
+  canDeleteSectores
+}: SectoresPageViewProps) {
   if (!canViewSectores) {
     return (
       <Layout>
         <div className="rounded-xl border border-slate-200 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
-          <AlertCircle size={48} />
+          <AlertCircle size={48} className="mx-auto text-wine-600" />
           <h2 className="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-100">Acceso Denegado</h2>
           <p className="mt-2 text-slate-600 dark:text-slate-400">No tienes permiso para ver los sectores</p>
         </div>
@@ -188,7 +107,7 @@ export default function SectoresPage() {
 
   return (
     <Layout>
-      <div className="animate-in fade-in slide-in-from-bottom-1">
+      <div className="mx-auto max-w-7xl px-4 py-6 animate-in fade-in slide-in-from-bottom-1">
         {feedbackMessage && (
           <div className={`mb-6 rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg animate-in fade-in slide-in-from-top-2 duration-500 ${
             feedbackType === 'error'
@@ -205,7 +124,7 @@ export default function SectoresPage() {
         <SectoresToolbar
           search={search}
           onSearchChange={setSearch}
-          total={filteredSectores.length}
+          total={sectores.length}
           canCreateSectores={canCreateSectores}
           onCreateSector={openCreate}
         />
@@ -215,7 +134,7 @@ export default function SectoresPage() {
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-wine-200 border-t-wine-600 dark:border-wine-900/20 dark:border-t-wine-500" />
             <p className="mt-4 text-xs font-bold uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">Sincronizando sectores...</p>
           </div>
-        ) : filteredSectores.length === 0 ? (
+        ) : sectores.length === 0 ? (
           <div className="glass-card rounded-[2.5rem] border-2 border-dashed border-wine-100/50 bg-wine-50/5 py-24 text-center dark:border-wine-900/20 dark:bg-black/10">
             <div className="flex flex-col items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-wine-500/10 text-wine-600 dark:text-wine-400">
@@ -236,7 +155,7 @@ export default function SectoresPage() {
           </div>
         ) : (
           <SectoresTable
-            sectores={filteredSectores}
+            sectores={sectores}
             canUpdateSectores={canUpdateSectores}
             canDeleteSectores={canDeleteSectores}
             onView={openView}
@@ -259,16 +178,18 @@ export default function SectoresPage() {
           <Modal.Body>
             <div className="flex flex-col gap-2">
               {sucursales.length === 0 ? (
-                <p className="text-center text-slate-500">No hay sucursales disponibles</p>
+                <p className="text-center text-slate-500 py-6">No hay sucursales disponibles</p>
               ) : (
                 sucursales.map((sucursal) => (
                   <button
                     key={sucursal.idSucursal}
                     onClick={() => handleSelectSucursal(sucursal.idSucursal)}
-                    className="flex items-center gap-3 rounded-xl border border-slate-200 p-3 text-left hover:border-indigo-500 hover:bg-indigo-50 dark:border-slate-700 dark:hover:border-indigo-500 dark:hover:bg-indigo-500/10"
+                    className="flex items-center gap-4 rounded-2xl border border-wine-100/30 p-4 text-left transition-all hover:border-wine-500 hover:bg-wine-50/50 dark:border-wine-900/20 dark:hover:border-wine-500 dark:hover:bg-wine-900/20 group"
                   >
-                    <Grid3X3 size={18} className="text-indigo-600 dark:text-indigo-400" />
-                    <span className="font-medium text-slate-900 dark:text-slate-100">{sucursal.nombre}</span>
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-wine-50 text-wine-600 group-hover:bg-wine-600 group-hover:text-white transition-all">
+                      <Grid3X3 size={20} />
+                    </div>
+                    <span className="font-black text-xs uppercase tracking-widest text-slate-900 dark:text-slate-100">{sucursal.nombre}</span>
                   </button>
                 ))
               )}
@@ -353,35 +274,41 @@ export default function SectoresPage() {
         >
           <Modal.Header>Confirmar Eliminación</Modal.Header>
           <Modal.Body>
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400">
-                <Grid3X3 size={24} />
+            <div className="text-center flex flex-col gap-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400">
+                <Grid3X3 size={32} />
               </div>
-              <p>
-                ¿Estás seguro de que deseas eliminar el sector <strong>{selectedSector?.nombre}</strong>?
-              </p>
-              <p className="mt-2 text-sm text-rose-500">
-                Esta acción no se puede deshacer.
-              </p>
+              <div>
+                <p className="text-slate-700 dark:text-slate-200">
+                  ¿Estás seguro de que deseas eliminar el sector <strong>{selectedSector?.nombre}</strong>?
+                </p>
+                <p className="mt-2 text-sm text-rose-500">
+                  Esta acción no se puede deshacer.
+                </p>
+              </div>
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setShowDeleteModal(false)
-                setSelectedSector(null)
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="danger"
-              onClick={handleDelete}
-              isLoading={isSubmitting}
-            >
-              Eliminar
-            </Button>
+            <div className="flex w-full justify-end gap-3">
+              <Button
+                variant="secondary"
+                className="!rounded-xl text-[10px] font-black uppercase tracking-widest px-6"
+                onClick={() => {
+                  setShowDeleteModal(false)
+                  setSelectedSector(null)
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="danger"
+                className="!rounded-xl text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-rose-900/20"
+                onClick={handleDelete}
+                isLoading={isSubmitting}
+              >
+                Eliminar
+              </Button>
+            </div>
           </Modal.Footer>
         </Modal.Root>
 

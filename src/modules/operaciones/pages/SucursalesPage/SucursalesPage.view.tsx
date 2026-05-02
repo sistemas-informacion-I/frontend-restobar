@@ -1,163 +1,84 @@
-import { useState, useEffect, useCallback } from 'react'
 import { Layout } from '@/shared/components/layout/Layout'
 import { Modal } from '@/shared/components/ui/Modal'
-import { SucursalesToolbar, SucursalesTable, SucursalForm, SucursalView, SectorForm } from '../components/sucursales'
-import { sucursalService, sectorService, getErrorMessage } from '../../acceso/services/api'
+import { SucursalesToolbar, SucursalesTable, SucursalForm, SucursalView, SectorForm } from '../../components/sucursales'
 import { Store, AlertCircle } from 'lucide-react'
 import { Button } from '@/shared/components/ui/Button'
-import { Sucursal as SucursalType, Sector as SectorType, CreateSucursalData, UpdateSucursalData } from '../services/types'
+import { Sucursal as SucursalType, Sector as SectorType } from '../../services/types'
 
-export default function SucursalesPage() {
-  const [sucursales, setSucursales] = useState<SucursalType[]>([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [feedbackMessage, setFeedbackMessage] = useState('')
-  const [feedbackType, setFeedbackType] = useState<'error' | 'success' | ''>('')
-  
-  // Modal states
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [showViewModal, setShowViewModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [showAddSectorModal, setShowAddSectorModal] = useState(false)
-  const [selectedSucursal, setSelectedSucursal] = useState<SucursalType | null>(null)
-  const [sectoresView, setSectoresView] = useState<SectorType[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
+interface SucursalesPageViewProps {
+  sucursales: SucursalType[]
+  loading: boolean
+  search: string
+  setSearch: (value: string) => void
+  feedbackMessage: string
+  feedbackType: 'error' | 'success' | ''
+  showCreateModal: boolean
+  setShowCreateModal: (value: boolean) => void
+  showEditModal: boolean
+  setShowEditModal: (value: boolean) => void
+  showViewModal: boolean
+  setShowViewModal: (value: boolean) => void
+  showDeleteModal: boolean
+  setShowDeleteModal: (value: boolean) => void
+  showAddSectorModal: boolean
+  setShowAddSectorModal: (value: boolean) => void
+  selectedSucursal: SucursalType | null
+  setSelectedSucursal: (value: SucursalType | null) => void
+  sectoresView: SectorType[]
+  isSubmitting: boolean
+  handleCreate: (data: any) => Promise<void>
+  handleUpdate: (data: any) => Promise<void>
+  handleDelete: () => Promise<void>
+  openView: (sucursal: SucursalType) => Promise<void>
+  openEdit: (sucursal: SucursalType) => void
+  openDelete: (sucursal: SucursalType) => void
+  openAddSector: (sucursal: SucursalType) => void
+  handleAddSector: (data: any) => Promise<void>
+  canViewSucursales: boolean
+  canCreateSucursales: boolean
+  canUpdateSucursales: boolean
+  canDeleteSucursales: boolean
+}
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await sucursalService.getAll()
-      setSucursales(data)
-    } catch (error) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'cargar las sucursales'))
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-
-  const filteredSucursales = sucursales.filter((sucursal) =>
-    sucursal.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    (sucursal.ciudad && sucursal.ciudad.toLowerCase().includes(search.toLowerCase())) ||
-    (sucursal.direccion && sucursal.direccion.toLowerCase().includes(search.toLowerCase()))
-  )
-
-  // Handlers
-  const handleCreate = async (data: CreateSucursalData | UpdateSucursalData) => {
-    try {
-      setIsSubmitting(true)
-      await sucursalService.create(data as CreateSucursalData)
-      setFeedbackType('success')
-      setFeedbackMessage('Sucursal creada exitosamente')
-      setShowCreateModal(false)
-      loadData()
-    } catch (error: unknown) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'crear la sucursal'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleUpdate = async (data: CreateSucursalData | UpdateSucursalData) => {
-    if (!selectedSucursal) return
-    try {
-      setIsSubmitting(true)
-      await sucursalService.update(selectedSucursal.idSucursal, data as UpdateSucursalData)
-      setFeedbackType('success')
-      setFeedbackMessage('Sucursal actualizada exitosamente')
-      setShowEditModal(false)
-      setSelectedSucursal(null)
-      loadData()
-    } catch (error: unknown) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'actualizar la sucursal'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (!selectedSucursal) return
-    try {
-      setIsSubmitting(true)
-      await sucursalService.delete(selectedSucursal.idSucursal)
-      setFeedbackType('success')
-      setFeedbackMessage('Sucursal eliminada exitosamente')
-      setShowDeleteModal(false)
-      setSelectedSucursal(null)
-      loadData()
-    } catch (error: unknown) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'eliminar la sucursal'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const openView = async (sucursal: SucursalType) => {
-    setSelectedSucursal(sucursal)
-    try {
-      const sectoresData = await sectorService.getBySucursal(sucursal.idSucursal)
-      setSectoresView(sectoresData)
-    } catch (error) {
-      console.error('Error loading sectores:', error)
-      setSectoresView([])
-    }
-    setShowViewModal(true)
-  }
-
-  const openEdit = (sucursal: SucursalType) => {
-    setSelectedSucursal(sucursal)
-    setShowEditModal(true)
-  }
-
-  const openDelete = (sucursal: SucursalType) => {
-    setSelectedSucursal(sucursal)
-    setShowDeleteModal(true)
-  }
-
-  const openAddSector = (sucursal: SucursalType) => {
-    setSelectedSucursal(sucursal)
-    setShowAddSectorModal(true)
-  }
-
-  const handleAddSector = async (data: { nombre: string; descripcion?: string; tipoSector: string }) => {
-    if (!selectedSucursal) return
-    try {
-      setIsSubmitting(true)
-      await sectorService.create({
-        ...data,
-        idSucursal: selectedSucursal.idSucursal,
-      })
-      setFeedbackType('success')
-      setFeedbackMessage('Sector creado exitosamente')
-      setShowAddSectorModal(false)
-    } catch (error: unknown) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'crear el sector'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  // Permission checks
-  const canViewSucursales = true
-  const canCreateSucursales = true
-  const canUpdateSucursales = true
-  const canDeleteSucursales = true
-
+export function SucursalesPageView({
+  sucursales,
+  loading,
+  search,
+  setSearch,
+  feedbackMessage,
+  feedbackType,
+  showCreateModal,
+  setShowCreateModal,
+  showEditModal,
+  setShowEditModal,
+  showViewModal,
+  setShowViewModal,
+  showDeleteModal,
+  setShowDeleteModal,
+  showAddSectorModal,
+  setShowAddSectorModal,
+  selectedSucursal,
+  setSelectedSucursal,
+  sectoresView,
+  isSubmitting,
+  handleCreate,
+  handleUpdate,
+  handleDelete,
+  openView,
+  openEdit,
+  openDelete,
+  openAddSector,
+  handleAddSector,
+  canViewSucursales,
+  canCreateSucursales,
+  canUpdateSucursales,
+  canDeleteSucursales
+}: SucursalesPageViewProps) {
   if (!canViewSucursales) {
     return (
       <Layout>
         <div className="rounded-xl border border-slate-200 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
-          <AlertCircle size={48} />
+          <AlertCircle size={48} className="mx-auto text-wine-600" />
           <h2 className="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-100">Acceso Denegado</h2>
           <p className="mt-2 text-slate-600 dark:text-slate-400">No tienes permiso para ver las sucursales</p>
         </div>
@@ -167,7 +88,7 @@ export default function SucursalesPage() {
 
   return (
     <Layout>
-      <div className="animate-in fade-in slide-in-from-bottom-1">
+      <div className="mx-auto max-w-7xl px-4 py-6 animate-in fade-in slide-in-from-bottom-1">
         {feedbackMessage && (
           <div className={`mb-6 rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg animate-in fade-in slide-in-from-top-2 duration-500 ${
             feedbackType === 'error'
@@ -184,7 +105,7 @@ export default function SucursalesPage() {
         <SucursalesToolbar
           search={search}
           onSearchChange={setSearch}
-          total={filteredSucursales.length}
+          total={sucursales.length}
           canCreateSucursales={canCreateSucursales}
           onCreateSucursal={() => setShowCreateModal(true)}
         />
@@ -194,7 +115,7 @@ export default function SucursalesPage() {
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-wine-200 border-t-wine-600 dark:border-wine-900/20 dark:border-t-wine-500" />
             <p className="mt-4 text-xs font-bold uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">Sincronizando sucursales...</p>
           </div>
-        ) : filteredSucursales.length === 0 ? (
+        ) : sucursales.length === 0 ? (
           <div className="glass-card rounded-[2.5rem] border-2 border-dashed border-wine-100/50 bg-wine-50/5 py-24 text-center dark:border-wine-900/20 dark:bg-black/10">
             <div className="flex flex-col items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-wine-500/10 text-wine-600 dark:text-wine-400">
@@ -215,7 +136,7 @@ export default function SucursalesPage() {
           </div>
         ) : (
           <SucursalesTable
-            sucursales={filteredSucursales}
+            sucursales={sucursales}
             canUpdateSucursales={canUpdateSucursales}
             canDeleteSucursales={canDeleteSucursales}
             onView={openView}
@@ -292,35 +213,41 @@ export default function SucursalesPage() {
         >
           <Modal.Header>Confirmar Eliminación</Modal.Header>
           <Modal.Body>
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400">
-                <Store size={24} />
+            <div className="text-center flex flex-col gap-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400">
+                <Store size={32} />
               </div>
-              <p>
-                ¿Estás seguro de que deseas eliminar la sucursal <strong>{selectedSucursal?.nombre}</strong>?
-              </p>
-              <p className="mt-2 text-sm text-rose-500">
-                Esta acción no se puede deshacer.
-              </p>
+              <div>
+                <p className="text-slate-700 dark:text-slate-200">
+                  ¿Estás seguro de que deseas eliminar la sucursal <strong>{selectedSucursal?.nombre}</strong>?
+                </p>
+                <p className="mt-2 text-sm text-rose-500">
+                  Esta acción no se puede deshacer.
+                </p>
+              </div>
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button 
-              variant="secondary" 
-              onClick={() => {
-                setShowDeleteModal(false)
-                setSelectedSucursal(null)
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button 
-              variant="danger" 
-              onClick={handleDelete}
-              isLoading={isSubmitting}
-            >
-              Eliminar
-            </Button>
+            <div className="flex w-full justify-end gap-3">
+              <Button 
+                variant="secondary" 
+                className="!rounded-xl text-[10px] font-black uppercase tracking-widest px-6"
+                onClick={() => {
+                  setShowDeleteModal(false)
+                  setSelectedSucursal(null)
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                variant="danger" 
+                className="!rounded-xl text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-rose-900/20"
+                onClick={handleDelete}
+                isLoading={isSubmitting}
+              >
+                Eliminar
+              </Button>
+            </div>
           </Modal.Footer>
         </Modal.Root>
 

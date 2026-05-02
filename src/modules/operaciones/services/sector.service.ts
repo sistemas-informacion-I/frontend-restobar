@@ -1,4 +1,4 @@
-import { httpClient } from '../../acceso/services/http-client'
+import { httpClient } from '../../../core/api/http-client'
 import { CreateSectorData, UpdateSectorData } from '../../acceso/services/types'
 
 interface SectorApiResponse {
