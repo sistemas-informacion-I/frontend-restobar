@@ -11,7 +11,7 @@ import AuditoriaPage from './modules/acceso/pages/AuditoriaPage'
 import PerfilPersonalPage from './modules/acceso/pages/PerfilPersonalPage'
 
 import { SWRConfig } from 'swr'
-import { httpClient } from './modules/acceso/services/http-client'
+import { httpClient } from './core/api/http-client'
 import SucursalesPage from './modules/operaciones/pages/SucursalesPage'
 import SectoresPage from './modules/operaciones/pages/SectoresPage'
 import MesasPage from './modules/operaciones/pages/MesasPage'

@@ -210,3 +210,10 @@ export class ErrorHandler {
     return null
   }
 }
+
+/**
+ * Utility function for error messages
+ */
+export const getErrorMessage = (error: unknown, context?: string): string => {
+  return ErrorHandler.handle(error, context)
+}

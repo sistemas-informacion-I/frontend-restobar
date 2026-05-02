@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
-import { User, authService, LoginData, ErrorHandler, Permission } from '../services/api'
+import { User, authService, LoginData, Permission } from '../services/api'
+import { ErrorHandler } from '../../../core/api'
 import { Role } from '../models'
 
 interface AuthContextType {
