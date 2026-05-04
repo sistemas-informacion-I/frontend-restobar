@@ -8,10 +8,9 @@ interface SidebarProps {
   sidebarOpen: boolean
   setSidebarOpen: (value: boolean) => void
   sidebarMinimized: boolean
-  setSidebarMinimized: (value: boolean) => void
 }
 
-export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized, setSidebarMinimized }: SidebarProps) {
+export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized }: SidebarProps) {
   const { user, canRead } = useAuth()
   const location = useLocation()
   const currentPath = location.pathname

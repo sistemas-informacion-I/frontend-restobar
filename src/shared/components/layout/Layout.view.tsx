@@ -30,7 +30,6 @@ export const LayoutView: React.FC<LayoutViewProps> = ({
         sidebarOpen={sidebarOpen} 
         setSidebarOpen={setSidebarOpen} 
         sidebarMinimized={sidebarMinimized}
-        setSidebarMinimized={setSidebarMinimized}
       />
 
       {/* Overlay for mobile */}
