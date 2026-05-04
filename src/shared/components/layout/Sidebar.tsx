@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Users, Shield, LayoutDashboard, Activity, User, Store, Map, Grid, Truck } from 'lucide-react'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
-import { SidebarView } from './Sidebar.view'
+import { SidebarView } from './SidebarView'
 
 interface SidebarProps {
   sidebarOpen: boolean
