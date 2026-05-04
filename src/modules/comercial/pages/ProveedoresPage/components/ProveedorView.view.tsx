@@ -1,5 +1,5 @@
 import { Truck, Hash, User, Phone, Mail, MapPin, Tag, Calendar } from 'lucide-react'
-import { Proveedor } from '@/modules/acceso/services/proveedores.service'
+import { Proveedor } from '@/modules/comercial/services/proveedores.service'
 
 interface ProveedorViewProps {
   proveedor: Proveedor

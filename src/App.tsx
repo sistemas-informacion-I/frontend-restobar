@@ -16,6 +16,7 @@ import SucursalesPage from './modules/operaciones/pages/SucursalesPage'
 import SectoresPage from './modules/operaciones/pages/SectoresPage'
 import MesasPage from './modules/operaciones/pages/MesasPage'
 import EmployeesPage from './modules/acceso/pages/EmployeesPage'
+import ProveedoresPage from './modules/comercial/pages/ProveedoresPage'
 import { Toaster } from 'sonner'
 
 function App() {
@@ -103,6 +104,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <EmployeesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/proveedores"
+              element={
+                <ProtectedRoute>
+                  <ProveedoresPage />
                 </ProtectedRoute>
               }
             />

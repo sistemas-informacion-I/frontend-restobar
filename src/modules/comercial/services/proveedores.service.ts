@@ -1,4 +1,6 @@
-import { httpClient } from './http-client'
+import { httpClient } from '../../../core/api/http-client'
+
+export type CategoriaProducto = 'BEBIDAS' | 'ALIMENTOS' | 'INSUMOS' | 'LIMPIEZA' | 'UTENSILIOS' | 'SERVICIOS' | 'OTROS'
 
 export interface Proveedor {
   idProveedor: number
@@ -8,7 +10,7 @@ export interface Proveedor {
   telefono: string
   correo?: string
   direccion?: string
-  categoriaProductos?: string
+  categoriaProductos?: CategoriaProducto
   activo: boolean
   creadoPor?: number
   createdAt?: string
@@ -22,7 +24,7 @@ export interface CreateProveedorData {
   telefono: string
   correo?: string
   direccion?: string
-  categoriaProductos?: string
+  categoriaProductos?: CategoriaProducto
   activo?: boolean
 }
 

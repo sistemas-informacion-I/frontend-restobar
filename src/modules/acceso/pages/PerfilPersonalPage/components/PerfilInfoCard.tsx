@@ -1,4 +1,4 @@
-import { User, Mail, Phone, MapPin, Building, Star, Briefcase, Key } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Star, Briefcase, Key } from 'lucide-react';
 import { PerfilPersonalResponse } from '../../../models/perfil-personal.model';
 
 interface Props {
@@ -74,18 +74,8 @@ export function PerfilInfoCard({ perfil, onEditOpen }: Props) {
             </div>
           )}
 
-          {perfil.proveedor && (
-            <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 backdrop-blur-sm">
-              <h4 className="font-black text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-3 flex items-center gap-2"><div className="p-1.5 rounded-lg bg-amber-500/10"><Building className="w-3 h-3"/></div> Perfil Proveedor</h4>
-              <ul className="text-sm space-y-2 text-slate-700 dark:text-slate-300">
-                <li className="flex justify-between"><span className="text-[10px] font-black uppercase tracking-widest opacity-50">Empresa</span> <span className="font-bold">{perfil.proveedor.empresa}</span></li>
-                <li className="flex justify-between"><span className="text-[10px] font-black uppercase tracking-widest opacity-50">NIT</span> <span className="font-bold">{perfil.proveedor.nit}</span></li>
-                {perfil.proveedor.nombreContacto && <li className="flex justify-between"><span className="text-[10px] font-black uppercase tracking-widest opacity-50">Contacto</span> <span className="font-bold">{perfil.proveedor.nombreContacto}</span></li>}
-              </ul>
-            </div>
-          )}
 
-          {!perfil.cliente && !perfil.empleado && !perfil.proveedor && (
+          {!perfil.cliente && !perfil.empleado && (
              <p className="text-sm text-wine-900/40 dark:text-wine-400/40 italic px-2">No tienes perfiles de rol adicionales vinculados en este sistema.</p>
           )}
         </div>

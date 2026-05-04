@@ -1,6 +1,6 @@
 import { Edit2, Eye, PowerOff, Truck, Tag } from 'lucide-react'
 import { Button } from '@/shared/components/ui/Button'
-import { Proveedor } from '@/modules/acceso/services/proveedores.service'
+import { Proveedor } from '@/modules/comercial/services/proveedores.service'
 
 interface ProveedoresTableProps {
   proveedores: Proveedor[]

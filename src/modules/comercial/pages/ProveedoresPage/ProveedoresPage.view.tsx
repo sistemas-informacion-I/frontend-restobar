@@ -4,7 +4,7 @@ import { ProveedoresToolbar } from './components/ProveedoresToolbar.view'
 import { ProveedoresTable } from './components/ProveedoresTable.view'
 import { ProveedorForm } from './components/ProveedorForm.view'
 import { ProveedorView } from './components/ProveedorView.view'
-import { Proveedor, CreateProveedorData } from '@/modules/acceso/services/proveedores.service'
+import { Proveedor, CreateProveedorData } from '@/modules/comercial/services/proveedores.service'
 
 interface ProveedoresPageViewProps {
   proveedores: Proveedor[]

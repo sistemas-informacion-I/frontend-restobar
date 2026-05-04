@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { ProveedoresService, Proveedor, CreateProveedorData } from '../../services/proveedores.service'
-import { getErrorMessage } from '@/modules/acceso/services/api'
+import { ProveedoresService, Proveedor, CreateProveedorData } from '@/modules/comercial/services/proveedores.service'
+import { getErrorMessage } from '@/core/api'
 import { ProveedoresPageView } from './ProveedoresPage.view'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 

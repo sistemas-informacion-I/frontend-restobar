@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
+import { FormSelect } from '@/shared/components/ui/forms'
 import { Button } from '@/shared/components/ui/Button'
-import { Truck, Hash, User, Phone, Mail, MapPin, Tag } from 'lucide-react'
-import { Proveedor, CreateProveedorData } from '@/modules/acceso/services/proveedores.service'
+import { Truck, Hash, User, Phone, Mail, MapPin, Tag, AlertCircle } from 'lucide-react'
+import { Proveedor, CreateProveedorData } from '@/modules/comercial/services/proveedores.service'
 
 interface ProveedorFormProps {
   proveedor: Proveedor | null
@@ -10,6 +11,17 @@ interface ProveedorFormProps {
   onCancel: () => void
   isLoading: boolean
 }
+
+const CATEGORIA_OPTIONS = [
+  { value: '', label: 'Seleccionar categoría' },
+  { value: 'BEBIDAS', label: 'Bebidas' },
+  { value: 'ALIMENTOS', label: 'Alimentos' },
+  { value: 'INSUMOS', label: 'Insumos' },
+  { value: 'LIMPIEZA', label: 'Limpieza' },
+  { value: 'UTENSILIOS', label: 'Utensilios' },
+  { value: 'SERVICIOS', label: 'Servicios' },
+  { value: 'OTROS', label: 'Otros' },
+]
 
 export function ProveedorForm({ proveedor, onSubmit, onCancel, isLoading }: ProveedorFormProps) {
   const isEdit = !!proveedor
@@ -26,7 +38,7 @@ export function ProveedorForm({ proveedor, onSubmit, onCancel, isLoading }: Prov
       telefono: proveedor.telefono,
       correo: proveedor.correo || '',
       direccion: proveedor.direccion || '',
-      categoriaProductos: proveedor.categoriaProductos || '',
+      categoriaProductos: proveedor.categoriaProductos,
       activo: proveedor.activo,
     } : {
       empresa: '',
@@ -35,7 +47,7 @@ export function ProveedorForm({ proveedor, onSubmit, onCancel, isLoading }: Prov
       telefono: '',
       correo: '',
       direccion: '',
-      categoriaProductos: '',
+      categoriaProductos: undefined,
       activo: true,
     },
   })
@@ -70,13 +82,27 @@ export function ProveedorForm({ proveedor, onSubmit, onCancel, isLoading }: Prov
           {...register('nit')}
         />
 
-        <Input
-          label="Categoría de Productos"
-          type="text"
-          placeholder="Ej: Bebidas, Carnes, Lácteos..."
-          icon={<Tag size={18} />}
-          {...register('categoriaProductos')}
-        />
+        <div className="flex flex-col gap-1.5 group">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40 px-1">
+            Categoría de Productos
+          </label>
+          <div className="relative flex items-center group/input">
+            <span className="pointer-events-none absolute left-4 text-slate-400 group-focus-within/input:text-wine-600 dark:group-focus-within/input:text-wine-400 transition-colors">
+              <Tag size={18} />
+            </span>
+            <FormSelect
+              className="pl-12"
+              options={CATEGORIA_OPTIONS}
+              {...register('categoriaProductos', { required: 'La categoría es obligatoria' })}
+            />
+          </div>
+          {errors.categoriaProductos && (
+            <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-rose-600 px-1 animate-in slide-in-from-top-1">
+              <AlertCircle size={12} className="shrink-0" />
+              {errors.categoriaProductos.message}
+            </span>
+          )}
+        </div>
 
         <div className="md:col-span-2">
           <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-wine-900/40 dark:text-wine-100/30 mb-4 mt-2 flex items-center gap-2">

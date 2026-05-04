@@ -45,9 +45,14 @@ export function Layout({ children }: LayoutProps) {
         { path: '/perfil', label: 'Mi Perfil', icon: User, show: true },
         { path: '/users', label: 'Usuarios', icon: Users, show: canRead('users') },
         { path: '/empleados', label: 'Personal', icon: Users, show: canRead('employees') },
-        { path: '/proveedores',  label: 'Proveedores',  icon: Truck, show: canRead('providers') }, // ← aquí
         { path: '/roles', label: 'Roles', icon: Shield, show: canRead('roles') },
         { path: '/auditoria', label: 'Auditoría', icon: Activity, show: canRead('audit') },
+      ]
+    },
+    {
+      title: 'Comercial',
+      items: [
+        { path: '/proveedores', label: 'Proveedores', icon: Truck, show: canRead('providers') },
       ]
     },
     {

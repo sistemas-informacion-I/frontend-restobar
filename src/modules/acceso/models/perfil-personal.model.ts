@@ -18,16 +18,6 @@ export interface EmpleadoResponse {
   fechaFinalizacion?: string;
 }
 
-export interface ProveedorResponse {
-  idProveedor: number;
-  idUsuario: number;
-  empresa: string;
-  nit: string;
-  nombreContacto: string;
-  telefonoContacto: string;
-  correoContacto: string;
-  categoriaProducto: string;
-}
 
 export interface PerfilPersonalResponse {
   idUsuario: number;
@@ -42,7 +32,6 @@ export interface PerfilPersonalResponse {
   fechaRegistro: string;
   cliente?: ClienteResponse;
   empleado?: EmpleadoResponse;
-  proveedor?: ProveedorResponse;
 }
 
 export interface PerfilPersonalUpdate {
