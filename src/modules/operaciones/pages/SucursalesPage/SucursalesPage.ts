@@ -1,12 +1,21 @@
-import { useState, useEffect, useCallback } from 'react'
-import { sucursalService, sectorService } from '../../services/api'
+import { useState, useMemo } from 'react'
+import { sectorService } from '../../services/api'
 import { getErrorMessage } from '../../../../core/api'
 import { Sucursal as SucursalType, Sector as SectorType, CreateSucursalData, UpdateSucursalData } from '../../services/types'
 import { SucursalesPageView } from './SucursalesPage.view'
+import { useSucursales } from '../../hooks/useSucursales'
 
 export function SucursalesPage() {
-  const [sucursales, setSucursales] = useState<SucursalType[]>([])
-  const [loading, setLoading] = useState(true)
+  const {
+    sucursales,
+    isLoading: loading,
+    isSubmitting,
+    createSucursal,
+    updateSucursal,
+    deleteSucursal,
+    loadError
+  } = useSucursales()
+
   const [search, setSearch] = useState('')
   const [feedbackMessage, setFeedbackMessage] = useState('')
   const [feedbackType, setFeedbackType] = useState<'error' | 'success' | ''>('')
@@ -18,81 +27,52 @@ export function SucursalesPage() {
   const [showAddSectorModal, setShowAddSectorModal] = useState(false)
   const [selectedSucursal, setSelectedSucursal] = useState<SucursalType | null>(null)
   const [sectoresView, setSectoresView] = useState<SectorType[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await sucursalService.getAll()
-      setSucursales(data)
-    } catch (error) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'cargar las sucursales'))
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-
-  const filteredSucursales = sucursales.filter((sucursal) =>
-    sucursal.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    (sucursal.ciudad && sucursal.ciudad.toLowerCase().includes(search.toLowerCase())) ||
-    (sucursal.direccion && sucursal.direccion.toLowerCase().includes(search.toLowerCase()))
-  )
+  const filteredSucursales = useMemo(() => {
+    return sucursales.filter((sucursal: any) =>
+      sucursal.nombre.toLowerCase().includes(search.toLowerCase()) ||
+      (sucursal.ciudad && sucursal.ciudad.toLowerCase().includes(search.toLowerCase())) ||
+      (sucursal.direccion && sucursal.direccion.toLowerCase().includes(search.toLowerCase()))
+    )
+  }, [sucursales, search])
 
   const handleCreate = async (data: CreateSucursalData | UpdateSucursalData) => {
     try {
-      setIsSubmitting(true)
-      await sucursalService.create(data as CreateSucursalData)
+      await createSucursal(data as CreateSucursalData)
       setFeedbackType('success')
       setFeedbackMessage('Sucursal creada exitosamente')
       setShowCreateModal(false)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'crear la sucursal'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   const handleUpdate = async (data: CreateSucursalData | UpdateSucursalData) => {
     if (!selectedSucursal) return
     try {
-      setIsSubmitting(true)
-      await sucursalService.update(selectedSucursal.idSucursal, data as UpdateSucursalData)
+      await updateSucursal({ id: selectedSucursal.idSucursal, data: data as UpdateSucursalData })
       setFeedbackType('success')
       setFeedbackMessage('Sucursal actualizada exitosamente')
       setShowEditModal(false)
       setSelectedSucursal(null)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'actualizar la sucursal'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   const handleDelete = async () => {
     if (!selectedSucursal) return
     try {
-      setIsSubmitting(true)
-      await sucursalService.delete(selectedSucursal.idSucursal)
+      await deleteSucursal(selectedSucursal.idSucursal)
       setFeedbackType('success')
       setFeedbackMessage('Sucursal eliminada exitosamente')
       setShowDeleteModal(false)
       setSelectedSucursal(null)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'eliminar la sucursal'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -126,7 +106,6 @@ export function SucursalesPage() {
   const handleAddSector = async (data: { nombre: string; descripcion?: string; tipoSector: string }) => {
     if (!selectedSucursal) return
     try {
-      setIsSubmitting(true)
       await sectorService.create({
         ...data,
         idSucursal: selectedSucursal.idSucursal,
@@ -137,8 +116,6 @@ export function SucursalesPage() {
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'crear el sector'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -153,8 +130,8 @@ export function SucursalesPage() {
     loading,
     search,
     setSearch,
-    feedbackMessage,
-    feedbackType,
+    feedbackMessage: feedbackMessage || (loadError ? getErrorMessage(loadError) : ''),
+    feedbackType: feedbackType || (loadError ? 'error' : ''),
     showCreateModal,
     setShowCreateModal,
     showEditModal,

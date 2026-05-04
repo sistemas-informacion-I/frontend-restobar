@@ -1,13 +1,28 @@
-import { useState, useEffect, useCallback } from 'react'
-import { sucursalService, sectorService, mesaService } from '../../services/api'
+import { useState, useMemo } from 'react'
+import { mesaService } from '../../services/api'
 import { getErrorMessage } from '../../../../core/api'
-import { Sucursal, Sector as SectorType, CreateSectorData, UpdateSectorData, CreateMesaData } from '../../services/types'
+import { Sector as SectorType, CreateSectorData, UpdateSectorData, CreateMesaData } from '../../services/types'
 import { SectoresPageView } from './SectoresPage.view'
+import { useSectores } from '../../hooks/useSectores'
+import { useSucursales } from '../../hooks/useSucursales'
 
 export function SectoresPage() {
-  const [sectores, setSectores] = useState<SectorType[]>([])
-  const [sucursales, setSucursales] = useState<Sucursal[]>([])
-  const [loading, setLoading] = useState(true)
+  const {
+    sectores,
+    isLoading: sectoresLoading,
+    isSubmitting: sectoresSubmitting,
+    createSector,
+    updateSector,
+    deleteSector,
+    loadError: sectoresError
+  } = useSectores()
+
+  const {
+    sucursales,
+    isLoading: sucursalesLoading,
+    loadError: sucursalesError
+  } = useSucursales()
+
   const [search, setSearch] = useState('')
   const [feedbackMessage, setFeedbackMessage] = useState('')
   const [feedbackType, setFeedbackType] = useState<'error' | 'success' | ''>('')
@@ -21,41 +36,24 @@ export function SectoresPage() {
   const [selectedSector, setSelectedSector] = useState<SectorType | null>(null)
   const [selectedSectorForMesa, setSelectedSectorForMesa] = useState<SectorType | null>(null)
   const [selectedSucursalId, setSelectedSucursalId] = useState<number | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isMesaSubmitting, setIsMesaSubmitting] = useState(false)
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      const [sectoresData, sucursalesData] = await Promise.all([
-        sectorService.getAll(),
-        sucursalService.getAll(),
-      ])
-      setSectores(sectoresData)
-      setSucursales(sucursalesData)
-    } catch (error) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'cargar los sectores'))
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const loading = sectoresLoading || sucursalesLoading
+  const loadError = sectoresError || sucursalesError
+  const isSubmitting = sectoresSubmitting || isMesaSubmitting
 
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-
-  const filteredSectores = sectores.filter((sector) =>
-    sector.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    (sector.nombreSucursal && sector.nombreSucursal.toLowerCase().includes(search.toLowerCase())) ||
-    sector.tipoSector.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredSectores = useMemo(() => {
+    return sectores.filter((sector: any) =>
+      sector.nombre.toLowerCase().includes(search.toLowerCase()) ||
+      (sector.nombreSucursal && sector.nombreSucursal.toLowerCase().includes(search.toLowerCase())) ||
+      sector.tipoSector.toLowerCase().includes(search.toLowerCase())
+    )
+  }, [sectores, search])
 
   const handleCreate = async (data: CreateSectorData | UpdateSectorData) => {
     if (!selectedSucursalId) return
     try {
-      setIsSubmitting(true)
-      await sectorService.create({
+      await createSector({
         ...data,
         idSucursal: selectedSucursalId,
       } as CreateSectorData)
@@ -64,48 +62,37 @@ export function SectoresPage() {
       setShowCreateModal(false)
       setShowSelectSucursalModal(false)
       setSelectedSucursalId(null)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'crear el sector'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   const handleUpdate = async (data: CreateSectorData | UpdateSectorData) => {
     if (!selectedSector) return
     try {
-      setIsSubmitting(true)
-      await sectorService.update(selectedSector.idSector, data as UpdateSectorData)
+      await updateSector({ id: selectedSector.idSector, data: data as UpdateSectorData })
       setFeedbackType('success')
       setFeedbackMessage('Sector actualizado exitosamente')
       setShowEditModal(false)
       setSelectedSector(null)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'actualizar el sector'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   const handleDelete = async () => {
     if (!selectedSector) return
     try {
-      setIsSubmitting(true)
-      await sectorService.delete(selectedSector.idSector)
+      await deleteSector(selectedSector.idSector)
       setFeedbackType('success')
       setFeedbackMessage('Sector eliminado exitosamente')
       setShowDeleteModal(false)
       setSelectedSector(null)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'eliminar el sector'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -132,7 +119,7 @@ export function SectoresPage() {
   const handleAddMesa = async (data: CreateMesaData) => {
     if (!selectedSectorForMesa) return
     try {
-      setIsSubmitting(true)
+      setIsMesaSubmitting(true)
       await mesaService.create({
         ...data,
         idSector: selectedSectorForMesa.idSector,
@@ -145,7 +132,7 @@ export function SectoresPage() {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'crear la mesa'))
     } finally {
-      setIsSubmitting(false)
+      setIsMesaSubmitting(false)
     }
   }
 
@@ -161,7 +148,7 @@ export function SectoresPage() {
   }
 
   const getSucursalNombre = (idSucursal: number) => {
-    const sucursal = sucursales.find(s => s.idSucursal === idSucursal)
+    const sucursal = sucursales.find((s: any) => s.idSucursal === idSucursal)
     return sucursal?.nombre || `Sucursal #${idSucursal}`
   }
 
@@ -177,8 +164,8 @@ export function SectoresPage() {
     loading,
     search,
     setSearch,
-    feedbackMessage,
-    feedbackType,
+    feedbackMessage: feedbackMessage || (loadError ? getErrorMessage(loadError) : ''),
+    feedbackType: feedbackType || (loadError ? 'error' : ''),
     showCreateModal,
     setShowCreateModal,
     showEditModal,

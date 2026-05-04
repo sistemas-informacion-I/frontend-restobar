@@ -1,13 +1,21 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { ProveedoresService, Proveedor, CreateProveedorData } from '@/modules/comercial/services/proveedores.service'
+import { useState, useMemo, useCallback } from 'react'
+import { Proveedor, CreateProveedorData } from '@/modules/comercial/services/proveedores.service'
+import { useProveedores } from '../../hooks/useProveedores'
 import { getErrorMessage } from '@/core/api'
 import { ProveedoresPageView } from './ProveedoresPage.view'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 
 export default function ProveedoresPage() {
-  const [proveedores, setProveedores] = useState<Proveedor[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+  const {
+    proveedores,
+    isLoading,
+    isSubmitting,
+    createProveedor,
+    updateProveedor,
+    deactivateProveedor,
+    loadError
+  } = useProveedores()
+
   const [search, setSearch] = useState('')
 
   const [feedbackMessage, setFeedbackMessage] = useState('')
@@ -33,24 +41,8 @@ export default function ProveedoresPage() {
     }
   }, [])
 
-  const loadData = async () => {
-    setIsLoading(true)
-    try {
-      const data = await ProveedoresService.getAll()
-      setProveedores(data)
-    } catch (error) {
-      showFeedback(getErrorMessage(error, 'Cargar proveedores'), 'error')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    loadData()
-  }, [])
-
   const filteredProveedores = useMemo(() => {
-    return proveedores.filter(p =>
+    return proveedores.filter((p: Proveedor) =>
       p.empresa.toLowerCase().includes(search.toLowerCase()) ||
       p.nombreContacto.toLowerCase().includes(search.toLowerCase()) ||
       (p.nit && p.nit.includes(search)) ||
@@ -80,32 +72,27 @@ export default function ProveedoresPage() {
   const handleDesactivar = async (proveedor: Proveedor) => {
     if (!confirm(`¿Desactivar al proveedor "${proveedor.empresa}"?`)) return
     try {
-      await ProveedoresService.desactivar(proveedor.idProveedor)
+      await deactivateProveedor(proveedor.idProveedor)
       showFeedback('Proveedor desactivado correctamente', 'success')
-      loadData()
     } catch (error: any) {
       showFeedback(getErrorMessage(error, 'Desactivar proveedor'), 'error')
     }
   }
 
   const onSubmit = async (data: CreateProveedorData) => {
-    setIsSubmitLoading(true)
     setFeedbackMessage('')
     setFeedbackType('')
     try {
       if (selectedProveedor) {
-        await ProveedoresService.update(selectedProveedor.idProveedor, data)
+        await updateProveedor({ id: selectedProveedor.idProveedor, data })
         showFeedback('Proveedor actualizado correctamente', 'success')
       } else {
-        await ProveedoresService.create(data)
+        await createProveedor(data)
         showFeedback('Proveedor registrado correctamente', 'success')
       }
       setIsFormModalOpen(false)
-      loadData()
     } catch (error: any) {
       showFeedback(getErrorMessage(error, 'Guardar proveedor'), 'error')
-    } finally {
-      setIsSubmitLoading(false)
     }
   }
 
@@ -114,11 +101,11 @@ export default function ProveedoresPage() {
       proveedores={filteredProveedores}
       total={proveedores.length}
       isLoading={isLoading}
-      isSubmitLoading={isSubmitLoading}
+      isSubmitLoading={isSubmitting}
       search={search}
       onSearchChange={setSearch}
-      feedbackMessage={feedbackMessage}
-      feedbackType={feedbackType}
+      feedbackMessage={feedbackMessage || (loadError ? getErrorMessage(loadError) : '')}
+      feedbackType={feedbackType || (loadError ? 'error' : '')}
       canCreate={canCreate}
       canUpdate={canUpdate}
       isFormModalOpen={isFormModalOpen}

@@ -1,13 +1,27 @@
-import { useState, useEffect, useCallback } from 'react'
-import { mesaService, sectorService } from '../../services/api'
+import { useState, useMemo } from 'react'
 import { getErrorMessage } from '../../../../core/api'
-import { Mesa, Sector, CreateMesaData, UpdateMesaData } from '../../services/types'
+import { Mesa, CreateMesaData, UpdateMesaData } from '../../services/types'
 import { MesasPageView } from './MesasPage.view'
+import { useMesas } from '../../hooks/useMesas'
+import { useSectores } from '../../hooks/useSectores'
 
 export function MesasPage() {
-  const [mesas, setMesas] = useState<Mesa[]>([])
-  const [sectores, setSectores] = useState<Sector[]>([])
-  const [loading, setLoading] = useState(true)
+  const {
+    mesas,
+    isLoading: mesasLoading,
+    isSubmitting,
+    createMesa,
+    updateMesa,
+    deleteMesa,
+    loadError: mesasError
+  } = useMesas()
+
+  const {
+    sectores,
+    isLoading: sectoresLoading,
+    loadError: sectoresError
+  } = useSectores()
+
   const [search, setSearch] = useState('')
   const [feedbackMessage, setFeedbackMessage] = useState('')
   const [feedbackType, setFeedbackType] = useState<'error' | 'success' | ''>('')
@@ -17,85 +31,55 @@ export function MesasPage() {
   const [showViewModal, setShowViewModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedMesa, setSelectedMesa] = useState<Mesa | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      const [mesasData, sectoresData] = await Promise.all([
-        mesaService.getAll(),
-        sectorService.getAll(),
-      ])
-      setMesas(mesasData)
-      setSectores(sectoresData)
-    } catch (error) {
-      setFeedbackType('error')
-      setFeedbackMessage(getErrorMessage(error, 'cargar las mesas'))
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const loading = mesasLoading || sectoresLoading
+  const loadError = mesasError || sectoresError
 
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-
-  const filteredMesas = mesas.filter((mesa) =>
-    mesa.numeroMesa.toLowerCase().includes(search.toLowerCase()) ||
-    (mesa.nombreSector && mesa.nombreSector.toLowerCase().includes(search.toLowerCase())) ||
-    mesa.disponibilidad.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredMesas = useMemo(() => {
+    return mesas.filter((mesa: any) =>
+      mesa.numeroMesa.toLowerCase().includes(search.toLowerCase()) ||
+      (mesa.nombreSector && mesa.nombreSector.toLowerCase().includes(search.toLowerCase())) ||
+      mesa.disponibilidad.toLowerCase().includes(search.toLowerCase())
+    )
+  }, [mesas, search])
 
   const handleCreate = async (data: CreateMesaData | UpdateMesaData) => {
     try {
-      setIsSubmitting(true)
-      await mesaService.create(data as CreateMesaData)
+      await createMesa(data as CreateMesaData)
       setFeedbackType('success')
       setFeedbackMessage('Mesa creada exitosamente')
       setShowCreateModal(false)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'crear la mesa'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   const handleUpdate = async (data: CreateMesaData | UpdateMesaData) => {
     if (!selectedMesa) return
     try {
-      setIsSubmitting(true)
-      await mesaService.update(selectedMesa.idMesa, data as UpdateMesaData)
+      await updateMesa({ id: selectedMesa.idMesa, data: data as UpdateMesaData })
       setFeedbackType('success')
       setFeedbackMessage('Mesa actualizada exitosamente')
       setShowEditModal(false)
       setSelectedMesa(null)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'actualizar la mesa'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   const handleDelete = async () => {
     if (!selectedMesa) return
     try {
-      setIsSubmitting(true)
-      await mesaService.delete(selectedMesa.idMesa)
+      await deleteMesa(selectedMesa.idMesa)
       setFeedbackType('success')
       setFeedbackMessage('Mesa eliminada exitosamente')
       setShowDeleteModal(false)
       setSelectedMesa(null)
-      loadData()
     } catch (error: unknown) {
       setFeedbackType('error')
       setFeedbackMessage(getErrorMessage(error, 'eliminar la mesa'))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -116,7 +100,7 @@ export function MesasPage() {
 
   // Permissions (could be moved to a hook or context later)
   const canViewMesas = true
-  const canCreateMesas = true // En el original estaba false, lo cambio a true si el usuario tiene permiso
+  const canCreateMesas = true 
   const canUpdateMesas = true
   const canDeleteMesas = true
 
@@ -126,8 +110,8 @@ export function MesasPage() {
     loading,
     search,
     setSearch,
-    feedbackMessage,
-    feedbackType,
+    feedbackMessage: feedbackMessage || (loadError ? getErrorMessage(loadError) : ''),
+    feedbackType: feedbackType || (loadError ? 'error' : ''),
     showCreateModal,
     setShowCreateModal,
     showEditModal,

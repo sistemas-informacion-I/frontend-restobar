@@ -1,15 +1,29 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { EmpleadosService, Empleado, CreateEmpleadoData } from '../../services/empleados.service'
-import { rolesService, Role } from '@/modules/acceso/services/api'
+import { useState, useMemo, useCallback } from 'react'
+import { Empleado, CreateEmpleadoData } from '../../services/empleados.service'
+import { Role } from '@/modules/acceso/models'
+import { useEmployees } from '../../hooks/useEmployees'
+import { useRoles } from '../../hooks/useRoles'
 import { getErrorMessage } from '@/core/api'
 import { EmployeesPageView } from './EmployeesPage.view'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 
 export default function EmployeesPage() {
-  const [employees, setEmployees] = useState<Empleado[]>([])
-  const [roles, setRoles] = useState<Role[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+  const { 
+    employees, 
+    isLoading: employeesLoading, 
+    isSubmitting: employeesSubmitting,
+    createEmployee,
+    updateEmployee,
+    deleteEmployee,
+    loadError: employeesError
+  } = useEmployees()
+
+  const {
+    roles: allRoles,
+    isLoading: rolesLoading,
+    loadError: rolesError
+  } = useRoles()
+
   const [search, setSearch] = useState('')
   
   // Feedback state (Following project's pattern)
@@ -27,6 +41,9 @@ export default function EmployeesPage() {
   const canUpdate = hasPermission('employees:update')
   const canDelete = hasPermission('employees:delete')
 
+  const isLoading = employeesLoading || rolesLoading
+  const loadError = employeesError || rolesError
+
   const showFeedback = useCallback((message: string, type: 'error' | 'success') => {
     setFeedbackMessage(message)
     setFeedbackType(type)
@@ -38,33 +55,15 @@ export default function EmployeesPage() {
     }
   }, [])
 
-  const loadData = async () => {
-    setIsLoading(true)
-    try {
-      const [empData, rolesData] = await Promise.all([
-        EmpleadosService.getAll(),
-        rolesService.getAll()
-      ])
-      const employeeRoleNames = ['CAJERO', 'BARTENDER', 'COCINERO', 'MESERO']
-      const filteredRoles = rolesData.filter(role => 
-        employeeRoleNames.includes(role.name.toUpperCase())
-      )
-      
-      setEmployees(empData)
-      setRoles(filteredRoles)
-    } catch (error) {
-      showFeedback(getErrorMessage(error, 'Cargar datos'), 'error')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    loadData()
-  }, [])
+  const roles = useMemo(() => {
+    const employeeRoleNames = ['CAJERO', 'BARTENDER', 'COCINERO', 'MESERO']
+    return allRoles.filter((role: Role) => 
+      employeeRoleNames.includes(role.name.toUpperCase())
+    )
+  }, [allRoles])
 
   const filteredEmployees = useMemo(() => {
-    return employees.filter(emp => 
+    return employees.filter((emp: Empleado) => 
       emp.nombre.toLowerCase().includes(search.toLowerCase()) ||
       emp.apellido.toLowerCase().includes(search.toLowerCase()) ||
       emp.ci.includes(search) ||
@@ -95,32 +94,27 @@ export default function EmployeesPage() {
     if (!confirm(`¿Estás seguro de eliminar al empleado ${employee.nombre} ${employee.apellido}?`)) return
     
     try {
-      await EmpleadosService.delete(employee.idEmpleado)
+      await deleteEmployee(employee.idEmpleado)
       showFeedback('Empleado eliminado correctamente', 'success')
-      loadData()
     } catch (error: any) {
       showFeedback(getErrorMessage(error, 'Eliminar empleado'), 'error')
     }
   }
 
   const onSubmit = async (data: CreateEmpleadoData) => {
-    setIsSubmitLoading(true)
     setFeedbackMessage('')
     setFeedbackType('')
     try {
       if (selectedEmployee) {
-        await EmpleadosService.update(selectedEmployee.idEmpleado, data)
-        showFeedback('Empleado actualizado correctamente', 'success') // This will be shown on the main page after modal close if intended
+        await updateEmployee({ id: selectedEmployee.idEmpleado, data })
+        showFeedback('Empleado actualizado correctamente', 'success')
       } else {
-        await EmpleadosService.create(data)
+        await createEmployee(data)
         showFeedback('Empleado registrado correctamente', 'success')
       }
       setIsFormModalOpen(false)
-      loadData()
     } catch (error: any) {
       showFeedback(getErrorMessage(error, 'Procesar contratación'), 'error')
-    } finally {
-      setIsSubmitLoading(false)
     }
   }
 
@@ -130,11 +124,11 @@ export default function EmployeesPage() {
       total={employees.length}
       roles={roles}
       isLoading={isLoading}
-      isSubmitLoading={isSubmitLoading}
+      isSubmitLoading={employeesSubmitting}
       search={search}
       onSearchChange={setSearch}
-      feedbackMessage={feedbackMessage}
-      feedbackType={feedbackType}
+      feedbackMessage={feedbackMessage || (loadError ? getErrorMessage(loadError) : '')}
+      feedbackType={feedbackType || (loadError ? 'error' : '')}
       canCreate={canCreate}
       canUpdate={canUpdate}
       canDelete={canDelete}
