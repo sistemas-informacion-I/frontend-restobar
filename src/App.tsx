@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './modules/acceso/context/AuthContext'
 import { QueryProvider, ThemeProvider } from './core/providers'
-import { ProtectedRoute } from './modules/acceso/components/common'
 import LoginPage from './modules/acceso/pages/LoginPage'
 import RegisterPage from './modules/acceso/pages/RegisterPage'
 import DashboardPage from './modules/acceso/pages/DashboardPage'
@@ -19,6 +18,8 @@ import EmployeesPage from './modules/acceso/pages/EmployeesPage'
 import ProveedoresPage from './modules/comercial/pages/ProveedoresPage'
 import { Toaster } from 'sonner'
 
+import { ProtectedLayout } from './shared/components/layout/ProtectedLayout'
+
 function App() {
   return (
     <SWRConfig 
@@ -33,91 +34,26 @@ function App() {
           <Toaster richColors position="top-right" />
           <AuthProvider>
             <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/users"
-              element={
-                <ProtectedRoute>
-                  <UsersPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/roles"
-              element={
-                <ProtectedRoute>
-                  <RolesPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/auditoria"
-              element={
-                <ProtectedRoute>
-                  <AuditoriaPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/perfil"
-              element={
-                <ProtectedRoute>
-                  <PerfilPersonalPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/sucursales"
-              element={
-                <ProtectedRoute>
-                  <SucursalesPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/sectores"
-              element={
-                <ProtectedRoute>
-                  <SectoresPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/mesas"
-              element={
-                <ProtectedRoute>
-                  <MesasPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/empleados"
-              element={
-                <ProtectedRoute>
-                  <EmployeesPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/proveedores"
-              element={
-                <ProtectedRoute>
-                  <ProveedoresPage />
-                </ProtectedRoute>
-              }
-            />
-            
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              
+              {/* Rutas Protegidas (Comparten el mismo Layout) */}
+              <Route element={<ProtectedLayout />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/users" element={<UsersPage />} />
+                <Route path="/roles" element={<RolesPage />} />
+                <Route path="/auditoria" element={<AuditoriaPage />} />
+                <Route path="/perfil" element={<PerfilPersonalPage />} />
+                <Route path="/sucursales" element={<SucursalesPage />} />
+                <Route path="/sectores" element={<SectoresPage />} />
+                <Route path="/mesas" element={<MesasPage />} />
+                <Route path="/empleados" element={<EmployeesPage />} />
+                <Route path="/proveedores" element={<ProveedoresPage />} />
+                <Route path="/restobar" element={<DashboardPage />} />
+              </Route>
+              
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
           </AuthProvider>
         </ThemeProvider>

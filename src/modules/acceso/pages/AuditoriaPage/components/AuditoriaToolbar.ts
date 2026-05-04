@@ -6,12 +6,13 @@ export interface AuditoriaToolbarProps {
   filters: AuditFilters
   onFilterChange: (filters: Partial<AuditFilters>) => void
   onClearFilters: () => void
+  userType?: string
 }
 
 export function AuditoriaToolbar(props: AuditoriaToolbarProps) {
   const [showFilters, setShowFilters] = useState(false)
   const { filters } = props
-  const hasActiveFilters = !!(filters.tabla || filters.operacion || filters.idUsuario || filters.desde || filters.hasta)
+  const hasActiveFilters = !!(filters.tabla || filters.operacion || filters.idUsuario || filters.idSucursal || filters.desde || filters.hasta)
 
   const toggleFilters = () => setShowFilters(!showFilters)
   

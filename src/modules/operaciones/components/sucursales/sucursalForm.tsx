@@ -1,7 +1,10 @@
 import { useForm } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
-import { Store, MapPin, Phone, Mail, Globe, Activity } from 'lucide-react'
+import { FormSelect } from '@/shared/components/ui/forms'
+import { Store, MapPin, Phone, Mail, Globe, Activity, User } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { EmpleadosService, Empleado } from '@/modules/acceso/services/empleados.service'
 
 interface Sucursal {
   idSucursal?: number
@@ -15,31 +18,12 @@ interface Sucursal {
   horarioCierre?: string
   estadoOperativo?: string
   activo?: boolean
-}
-
-interface CreateSucursalData {
-  nombre: string
-  direccion: string
-  telefono?: string
-  correo?: string
-  ciudad?: string
-  departamento?: string
-  estadoOperativo?: string
-}
-
-interface UpdateSucursalData {
-  nombre?: string
-  direccion?: string
-  telefono?: string
-  correo?: string
-  ciudad?: string
-  departamento?: string
-  estadoOperativo?: string
+  idResponsable?: number
 }
 
 interface SucursalFormProps {
   sucursal?: Sucursal
-  onSubmit: (data: CreateSucursalData | UpdateSucursalData) => Promise<void>
+  onSubmit: (data: any) => Promise<void>
   onCancel: () => void
   isLoading: boolean
 }
@@ -52,10 +36,28 @@ interface FormData {
   ciudad: string
   departamento: string
   estadoOperativo: string
+  idUsuarioResponsable?: number
 }
 
 export function SucursalForm({ sucursal, onSubmit, onCancel, isLoading }: SucursalFormProps) {
   const isEdit = !!sucursal
+  const [empleados, setEmpleados] = useState<Empleado[]>([])
+  const [loadingEmpleados, setLoadingEmpleados] = useState(false)
+
+  useEffect(() => {
+    const fetchEmpleados = async () => {
+      setLoadingEmpleados(true)
+      try {
+        const data = await EmpleadosService.getAll()
+        setEmpleados(data)
+      } catch (error) {
+        console.error('Error fetching empleados:', error)
+      } finally {
+        setLoadingEmpleados(false)
+      }
+    }
+    fetchEmpleados()
+  }, [])
 
   const {
     register,
@@ -70,6 +72,7 @@ export function SucursalForm({ sucursal, onSubmit, onCancel, isLoading }: Sucurs
       ciudad: sucursal.ciudad || '',
       departamento: sucursal.departamento || '',
       estadoOperativo: sucursal.estadoOperativo || '',
+      idUsuarioResponsable: sucursal.idResponsable
     } : {
       nombre: '',
       direccion: '',
@@ -77,7 +80,8 @@ export function SucursalForm({ sucursal, onSubmit, onCancel, isLoading }: Sucurs
       correo: '',
       ciudad: '',
       departamento: '',
-      estadoOperativo: '',
+      estadoOperativo: 'ACTIVO',
+      idUsuarioResponsable: undefined
     },
   })
 
@@ -161,6 +165,32 @@ export function SucursalForm({ sucursal, onSubmit, onCancel, isLoading }: Sucurs
           error={errors.estadoOperativo?.message as string}
           {...register('estadoOperativo')}
         />
+
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+            <User size={16} className="text-wine-500" />
+            Responsable de Sucursal
+          </label>
+          <FormSelect
+            {...register('idUsuarioResponsable', { 
+              required: 'Debe asignar un responsable',
+              valueAsNumber: true 
+            })}
+            options={[
+              { value: '', label: loadingEmpleados ? 'Cargando empleados...' : 'Seleccione un responsable' },
+              ...empleados.map(e => ({ 
+                value: e.idUsuario, 
+                label: `${e.nombre} ${e.apellido} (${e.username})` 
+              }))
+            ]}
+            disabled={loadingEmpleados}
+          />
+          {errors.idUsuarioResponsable && (
+            <span className="text-xs font-bold text-rose-500 px-1 uppercase tracking-widest">
+              {errors.idUsuarioResponsable.message}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="mt-4 flex flex-col-reverse justify-end gap-3 border-t border-wine-100/30 pt-6 dark:border-wine-900/10 sm:flex-row">

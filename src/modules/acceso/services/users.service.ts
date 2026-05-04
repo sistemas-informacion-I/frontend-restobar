@@ -14,6 +14,7 @@ interface UsuarioApiResponse {
   estadoAcceso?: string
   intentosFallidos?: number
   fechaRegistro?: string
+  tipoUsuario?: 'S' | 'E' | 'C'
   activo?: boolean
   roles?: any[]
 }
@@ -33,6 +34,7 @@ const mapUsuario = (usuario: UsuarioApiResponse): User => {
     gender: usuario.sexo,
     address: usuario.direccion,
     isActive: usuario.activo ?? true,
+    tipoUsuario: usuario.tipoUsuario || 'C', // Mapeo de identidad
     estadoAcceso: usuario.estadoAcceso,
     intentosFallidos: usuario.intentosFallidos,
     roles: usuario.roles ? usuario.roles.map((r: any) => ({

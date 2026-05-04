@@ -21,6 +21,7 @@ interface UserFormData {
   sexo?: 'M' | 'F' | 'O'
   correo?: string
   direccion?: string
+  tipoUsuario: 'S' | 'E' | 'C'
   activo?: boolean
   estadoAcceso?: string
 }
@@ -58,11 +59,13 @@ export function UserForm({ user, onSubmit, onCancel, isLoading }: UserFormProps)
       telefono: user.phone,
       sexo: user.gender,
       direccion: user.address,
+      tipoUsuario: user.tipoUsuario,
       activo: user.isActive,
       estadoAcceso: user.estadoAcceso,
     } : {
       activo: true,
       sexo: 'O',
+      tipoUsuario: 'C',
       estadoAcceso: 'HABILITADO',
     },
   })

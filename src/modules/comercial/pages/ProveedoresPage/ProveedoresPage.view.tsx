@@ -1,4 +1,3 @@
-import { Layout } from '@/shared/components/layout'
 import { Modal } from '@/shared/components/ui/Modal'
 import { ProveedoresToolbar } from './components/ProveedoresToolbar.view'
 import { ProveedoresTable } from './components/ProveedoresTable.view'
@@ -52,7 +51,6 @@ export function ProveedoresPageView({
   onSubmit,
 }: ProveedoresPageViewProps) {
   return (
-    <Layout>
       <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
         {feedbackMessage && !isFormModalOpen && !isViewModalOpen && (
           <div className={`rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg animate-in fade-in slide-in-from-top-2 duration-500 ${
@@ -129,6 +127,5 @@ export function ProveedoresPageView({
           </Modal.Body>
         </Modal.Root>
       </div>
-    </Layout>
   )
 }

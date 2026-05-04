@@ -28,6 +28,7 @@ export function EmployeesTable({
               <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Empleado</th>
               <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Identificación</th>
               <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Cargo</th>
+              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Sucursal</th>
               <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Salario / Turno</th>
               <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Estado</th>
               <th className="px-6 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Acciones</th>
@@ -79,6 +80,11 @@ export function EmployeesTable({
                       ) : (
                         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600 italic">Sin cargo</span>
                       )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col gap-0.5 text-sm font-bold text-slate-600 dark:text-slate-300">
+                      {emp.nombreSucursal || 'Sin sucursal'}
                     </div>
                   </td>
 

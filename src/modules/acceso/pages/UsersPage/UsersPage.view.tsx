@@ -1,4 +1,3 @@
-import { Layout } from '@/shared/components/layout'
 import { Button } from '@/shared/components/ui/Button'
 import { Modal } from '@/shared/components/ui/Modal'
 import { UserForm, UserView, UsersTable, UsersToolbar } from './components'
@@ -57,7 +56,6 @@ export function UsersPageView({
   closeModals
 }: UsersPageViewProps) {
   return (
-    <Layout>
       <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
         {feedbackMessage && !showCreateModal && !showEditModal && !showDeleteModal && (
           <div className={`mb-6 rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg ${feedbackType === 'error'
@@ -196,6 +194,5 @@ export function UsersPageView({
           </Modal.Footer>
         </Modal.Root>
       </div>
-    </Layout>
   )
 }

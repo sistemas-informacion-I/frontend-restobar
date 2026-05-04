@@ -12,7 +12,8 @@ export function AuditoriaTableView({
   page, 
   totalPages, 
   onPageChange,
-  getOperationBadge 
+  getOperationBadge,
+  userType
 }: AuditoriaTableViewProps) {
   if (logs.length === 0) {
     return (
@@ -38,6 +39,7 @@ export function AuditoriaTableView({
               <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Entidad / ID</th>
               <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Operación</th>
               <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Responsable</th>
+              {userType === 'S' && <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Sucursal</th>}
               <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Seguridad (IP)</th>
               <th className="px-6 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Acciones</th>
             </tr>
@@ -77,6 +79,13 @@ export function AuditoriaTableView({
                     <span className="text-xs font-bold text-slate-900 dark:text-white tracking-tight">{log.username || 'Sistema'}</span>
                   </div>
                 </td>
+                {userType === 'S' && (
+                  <td className="px-6 py-5">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                      {log.idSucursal ? `Sucursal #${log.idSucursal}` : 'GLOBAL'}
+                    </span>
+                  </td>
+                )}
                 <td className="px-6 py-5">
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-black/20 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-wine-900/10">
                     {log.ipOrigen || 'LOCAL'}

@@ -47,8 +47,14 @@ export function LoginPage() {
     stopCountdown()
 
     try {
-      await login(data)
-      navigate('/dashboard')
+      const user = await login(data)
+      
+      // Redirección inteligente basada en tipo de usuario
+      if (user.tipoUsuario === 'C') {
+        navigate('/dashboard') // Por ahora al dashboard (portal de clientes pendiente)
+      } else {
+        navigate('/dashboard') // Panel de gestión (SU/Empleado)
+      }
     } catch (error) {
       if (ErrorHandler.isLockoutError(error)) {
         const lockedUntil = ErrorHandler.getLockoutUntil(error)

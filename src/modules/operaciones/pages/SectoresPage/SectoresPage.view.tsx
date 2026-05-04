@@ -1,4 +1,3 @@
-import { Layout } from '@/shared/components/layout/Layout'
 import { Modal } from '@/shared/components/ui/Modal'
 import { SectoresToolbar, SectoresTable, SectorView, SectorFormEdit } from '../../components/sectores'
 import { MesaForm } from '../../components/mesas/MesaForm'
@@ -95,18 +94,15 @@ export function SectoresPageView({
 }: SectoresPageViewProps) {
   if (!canViewSectores) {
     return (
-      <Layout>
         <div className="rounded-xl border border-slate-200 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
           <AlertCircle size={48} className="mx-auto text-wine-600" />
           <h2 className="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-100">Acceso Denegado</h2>
           <p className="mt-2 text-slate-600 dark:text-slate-400">No tienes permiso para ver los sectores</p>
         </div>
-      </Layout>
     )
   }
 
   return (
-    <Layout>
       <div className="mx-auto max-w-7xl px-4 py-6 animate-in fade-in slide-in-from-bottom-1">
         {feedbackMessage && (
           <div className={`mb-6 rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg animate-in fade-in slide-in-from-top-2 duration-500 ${
@@ -336,6 +332,5 @@ export function SectoresPageView({
           </Modal.Body>
         </Modal.Root>
       </div>
-    </Layout>
   )
 }

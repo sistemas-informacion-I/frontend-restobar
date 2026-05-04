@@ -25,6 +25,7 @@ export interface AuditFilters {
   tabla?: string
   operacion?: string
   idUsuario?: number
+  idSucursal?: number
   desde?: string
   hasta?: string
   page: number

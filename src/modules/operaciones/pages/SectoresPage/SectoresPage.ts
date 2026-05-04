@@ -5,8 +5,12 @@ import { Sector as SectorType, CreateSectorData, UpdateSectorData, CreateMesaDat
 import { SectoresPageView } from './SectoresPage.view'
 import { useSectores } from '../../hooks/useSectores'
 import { useSucursales } from '../../hooks/useSucursales'
+import { useAuth } from '../../../acceso/context/AuthContext'
 
 export function SectoresPage() {
+  const { user } = useAuth()
+  const isSuperUser = user?.tipoUsuario === 'S'
+
   const {
     sectores,
     isLoading: sectoresLoading,
@@ -51,11 +55,11 @@ export function SectoresPage() {
   }, [sectores, search])
 
   const handleCreate = async (data: CreateSectorData | UpdateSectorData) => {
-    if (!selectedSucursalId) return
+    // If not SU, selectedSucursalId won't be set by modal but backend handles it
     try {
       await createSector({
         ...data,
-        idSucursal: selectedSucursalId,
+        idSucursal: selectedSucursalId, // Backend will override if not SU
       } as CreateSectorData)
       setFeedbackType('success')
       setFeedbackMessage('Sector creado exitosamente')
@@ -138,7 +142,11 @@ export function SectoresPage() {
 
   const openCreate = () => {
     setSelectedSucursalId(null)
-    setShowSelectSucursalModal(true)
+    if (isSuperUser) {
+      setShowSelectSucursalModal(true)
+    } else {
+      setShowCreateModal(true)
+    }
   }
 
   const handleSelectSucursal = (idSucursal: number) => {

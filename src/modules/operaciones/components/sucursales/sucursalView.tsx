@@ -1,4 +1,4 @@
-import { Store, Phone, Mail, Clock, Globe, MapPin } from 'lucide-react'
+import { Store, Phone, Mail, Clock, Globe, MapPin, User } from 'lucide-react'
 import { Grid3X3 } from 'lucide-react'
 import { Sucursal, Sector } from '../../services/types'
 
@@ -77,6 +77,13 @@ export function SucursalView({sucursal, sectores}: SucursalViewProps) {
           label="Estado Operativo" 
           value={sucursal.estadoOperativo || 'Estándar'} 
         />
+
+        {/* Responsable */}
+        <InfoCard 
+          icon={<User size={20} />} 
+          label="Responsable de Sucursal" 
+          value={sucursal.nombreResponsable || 'Sin asignar'} 
+        />
       </div>
 
       {/* Sectores Section */}
@@ -104,6 +111,35 @@ export function SucursalView({sucursal, sectores}: SucursalViewProps) {
         ) : (
           <div className="rounded-[2rem] border-2 border-dashed border-wine-100/30 py-8 text-center bg-wine-50/5">
             <span className="text-[10px] font-bold uppercase tracking-widest text-wine-900/30 dark:text-wine-100/20">No hay sectores registrados</span>
+          </div>
+        )}
+      </div>
+
+      {/* Personal Asignado Section */}
+      <div className="flex flex-col gap-4 mt-2">
+        <h4 className="text-xs font-black uppercase tracking-[0.3em] text-wine-900/40 dark:text-wine-100/30 flex items-center gap-2">
+          <div className="h-px flex-1 bg-wine-100/50 dark:bg-wine-900/20" />
+          Personal Asignado
+          <div className="h-px flex-1 bg-wine-100/50 dark:bg-wine-900/20" />
+        </h4>
+        
+        {sucursal.empleados && sucursal.empleados.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {sucursal.empleados.map((emp) => (
+              <div key={emp.idUsuario} className="group relative flex items-center gap-4 rounded-3xl border border-wine-100/30 bg-wine-50/20 p-4 transition-all hover:bg-wine-50/50 dark:border-wine-900/10 dark:bg-wine-900/5 dark:hover:bg-wine-900/10">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm border border-wine-100/50 dark:bg-wine-950/20 dark:border-wine-900/30 text-wine-600 dark:text-wine-400">
+                  <User size={18} />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-bold text-slate-900 dark:text-white truncate tracking-tight">{emp.nombreCompleto}</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-600 dark:text-wine-400">{emp.rol}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[2rem] border-2 border-dashed border-wine-100/30 py-8 text-center bg-wine-50/5">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-wine-900/30 dark:text-wine-100/20">Sin personal asignado</span>
           </div>
         )}
       </div>

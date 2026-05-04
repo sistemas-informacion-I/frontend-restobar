@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form'
+import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
 import { User, CreditCard, Mail, Phone, MapPin, Briefcase, KeyRound } from 'lucide-react'
@@ -8,12 +9,15 @@ import { Role } from '@/modules/acceso/services/api'
 interface EmployeeFormProps {
   employee: Empleado | null
   roles: Role[]
+  sucursales: any[]
   onSubmit: (data: CreateEmpleadoData) => Promise<void>
   onCancel: () => void
   isLoading: boolean
 }
 
-export function EmployeeForm({ employee, roles, onSubmit, onCancel, isLoading }: EmployeeFormProps) {
+export function EmployeeForm({ employee, roles, sucursales, onSubmit, onCancel, isLoading }: EmployeeFormProps) {
+  const { user } = useAuth()
+  const isSuperUser = user?.tipoUsuario === 'S'
   const isEdit = !!employee
 
   const {
@@ -37,6 +41,7 @@ export function EmployeeForm({ employee, roles, onSubmit, onCancel, isLoading }:
       salario: employee.salario,
       turno: employee.turno || '',
       roles: employee.roles || [],
+      idSucursal: employee.idSucursal,
     } : {
       ci: '',
       nombre: '',
@@ -51,10 +56,10 @@ export function EmployeeForm({ employee, roles, onSubmit, onCancel, isLoading }:
       salario: 0,
       turno: 'MA',
       roles: [],
+      idSucursal: '',
     },
   })
 
-  // Helper to handle role changes since we want an array of numbers
   const handleRoleChange = (roleId: number, checked: boolean) => {
     const currentRoles = getValues('roles') || []
     if (checked) {
@@ -67,7 +72,6 @@ export function EmployeeForm({ employee, roles, onSubmit, onCancel, isLoading }:
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        {/* User Info */}
         <div className="md:col-span-2">
           <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-wine-900/40 dark:text-wine-100/30 mb-4 flex items-center gap-2">
             Información Básica y Acceso
@@ -196,6 +200,24 @@ export function EmployeeForm({ employee, roles, onSubmit, onCancel, isLoading }:
             <option value="NO">Noche</option>
           </select>
         </div>
+
+        {isSuperUser && (
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 pl-1">Asignar Sucursal</label>
+            <select
+              {...register('idSucursal', { required: isSuperUser ? 'La sucursal es obligatoria' : false })}
+              className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
+            >
+              <option value="">Seleccionar Sucursal...</option>
+              {sucursales.map((suc) => (
+                <option key={suc.idSucursal} value={suc.idSucursal}>
+                  {suc.nombre} ({suc.ciudad})
+                </option>
+              ))}
+            </select>
+            {errors.idSucursal && <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest pl-1">{errors.idSucursal.message as string}</p>}
+          </div>
+        )}
 
         <div className="md:col-span-2">
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 pl-1 mb-3 block">Cargos / Roles Operativos</label>

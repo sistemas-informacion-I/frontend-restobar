@@ -74,8 +74,9 @@ export function RolesTableView({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30"
-                        title="Editar"
+                        disabled={role.name === 'SUPERUSER'}
+                        className={`bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 ${role.name === 'SUPERUSER' ? 'opacity-20 cursor-not-allowed' : ''}`}
+                        title={role.name === 'SUPERUSER' ? 'El rol Superusuario es inmutable' : 'Editar'}
                         onClick={() => onEdit(role)}
                       >
                         <Edit2 size={16} />
@@ -86,7 +87,9 @@ export function RolesTableView({
                       <Button
                         variant="danger"
                         size="sm"
-                        title="Eliminar"
+                        disabled={role.name === 'SUPERUSER'}
+                        className={role.name === 'SUPERUSER' ? 'opacity-20 cursor-not-allowed' : ''}
+                        title={role.name === 'SUPERUSER' ? 'No se puede eliminar el rol base' : 'Eliminar'}
                         onClick={() => onDelete(role)}
                       >
                         <Trash2 size={16} />

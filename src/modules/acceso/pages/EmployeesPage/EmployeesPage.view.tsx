@@ -1,4 +1,3 @@
-import { Layout } from '@/shared/components/layout'
 import { Modal } from '@/shared/components/ui/Modal'
 import { EmployeesToolbar } from './components/EmployeesToolbar.view'
 import { EmployeesTable } from './components/EmployeesTable.view'
@@ -30,6 +29,7 @@ interface EmployeesPageViewProps {
   onView: (employee: Empleado) => void
   onDelete: (employee: Empleado) => void
   onSubmit: (data: CreateEmpleadoData) => Promise<void>
+  sucursales: any[]
 }
 
 export function EmployeesPageView({
@@ -55,9 +55,9 @@ export function EmployeesPageView({
   onView,
   onDelete,
   onSubmit,
+  sucursales,
 }: EmployeesPageViewProps) {
   return (
-    <Layout>
       <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
         {/* Feedback Section (Following Project Pattern) */}
         {feedbackMessage && !isFormModalOpen && !isViewModalOpen && (
@@ -120,6 +120,7 @@ export function EmployeesPageView({
             <EmployeeForm
               employee={selectedEmployee}
               roles={roles}
+              sucursales={sucursales}
               isLoading={isSubmitLoading}
               onCancel={() => setIsFormModalOpen(false)}
               onSubmit={onSubmit}
@@ -139,6 +140,5 @@ export function EmployeesPageView({
           </Modal.Body>
         </Modal.Root>
       </div>
-    </Layout>
   )
 }

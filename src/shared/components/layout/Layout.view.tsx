@@ -9,6 +9,8 @@ interface LayoutViewProps {
   toggleTheme: () => void
   sidebarOpen: boolean
   setSidebarOpen: (value: boolean) => void
+  sidebarMinimized: boolean
+  setSidebarMinimized: (value: boolean) => void
   handleLogout: () => void
 }
 
@@ -18,6 +20,8 @@ export const LayoutView: React.FC<LayoutViewProps> = ({
   toggleTheme,
   sidebarOpen,
   setSidebarOpen,
+  sidebarMinimized,
+  setSidebarMinimized,
   handleLogout
 }) => {
   return (
@@ -25,6 +29,8 @@ export const LayoutView: React.FC<LayoutViewProps> = ({
       <Sidebar 
         sidebarOpen={sidebarOpen} 
         setSidebarOpen={setSidebarOpen} 
+        sidebarMinimized={sidebarMinimized}
+        setSidebarMinimized={setSidebarMinimized}
       />
 
       {/* Overlay for mobile */}
@@ -36,14 +42,25 @@ export const LayoutView: React.FC<LayoutViewProps> = ({
       )}
 
       {/* Main content */}
-      <div className="flex min-h-screen flex-1 flex-col md:ml-72 transition-all duration-500">
-        <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-wine-100/30 bg-white/70 px-6 backdrop-blur-2xl dark:border-wine-900/10 dark:bg-black/40 md:h-20 md:justify-end">
-          <button 
-            className="rounded-xl p-2.5 text-slate-700 transition-all hover:bg-wine-50 dark:text-slate-200 dark:hover:bg-wine-900/30 md:hidden border border-wine-100/30 dark:border-wine-900/20 shadow-sm"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu size={24} />
-          </button>
+      <div className={`flex min-h-screen flex-1 flex-col transition-all duration-500 ease-in-out ${sidebarMinimized ? 'md:ml-20' : 'md:ml-72'}`}>
+        <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-wine-100/30 bg-white/70 px-6 backdrop-blur-2xl dark:border-wine-900/10 dark:bg-black/40 md:h-20">
+          <div className="flex items-center gap-4">
+            <button 
+              className="rounded-xl p-2.5 text-slate-700 transition-all hover:bg-wine-50 dark:text-slate-200 dark:hover:bg-wine-900/30 md:hidden border border-wine-100/30 dark:border-wine-900/20 shadow-sm"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={24} />
+            </button>
+            
+            {/* Desktop Toggle Button */}
+            <button 
+              className="hidden md:flex rounded-xl p-2.5 text-slate-700 transition-all hover:bg-wine-50 dark:text-slate-200 dark:hover:bg-wine-900/30 border border-wine-100/30 dark:border-wine-900/20 shadow-sm"
+              onClick={() => setSidebarMinimized(!sidebarMinimized)}
+            >
+              <Menu size={20} />
+            </button>
+          </div>
+
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 

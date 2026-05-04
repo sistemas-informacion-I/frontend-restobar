@@ -4,8 +4,10 @@ import { getErrorMessage } from '../../../../core/api'
 import { Sucursal as SucursalType, Sector as SectorType, CreateSucursalData, UpdateSucursalData } from '../../services/types'
 import { SucursalesPageView } from './SucursalesPage.view'
 import { useSucursales } from '../../hooks/useSucursales'
+import { useAuth } from '../../../acceso/context/AuthContext'
 
 export function SucursalesPage() {
+  const { user } = useAuth()
   const {
     sucursales,
     isLoading: loading,
@@ -36,9 +38,9 @@ export function SucursalesPage() {
     )
   }, [sucursales, search])
 
-  const handleCreate = async (data: CreateSucursalData | UpdateSucursalData) => {
+  const handleCreate = async (data: CreateSucursalData) => {
     try {
-      await createSucursal(data as CreateSucursalData)
+      await createSucursal(data)
       setFeedbackType('success')
       setFeedbackMessage('Sucursal creada exitosamente')
       setShowCreateModal(false)
@@ -48,10 +50,10 @@ export function SucursalesPage() {
     }
   }
 
-  const handleUpdate = async (data: CreateSucursalData | UpdateSucursalData) => {
+  const handleUpdate = async (data: UpdateSucursalData) => {
     if (!selectedSucursal) return
     try {
-      await updateSucursal({ id: selectedSucursal.idSucursal, data: data as UpdateSucursalData })
+      await updateSucursal({ id: selectedSucursal.idSucursal, data })
       setFeedbackType('success')
       setFeedbackMessage('Sucursal actualizada exitosamente')
       setShowEditModal(false)
@@ -121,9 +123,9 @@ export function SucursalesPage() {
 
   // Permission checks
   const canViewSucursales = true
-  const canCreateSucursales = true
-  const canUpdateSucursales = true
-  const canDeleteSucursales = true
+  const canCreateSucursales = user?.tipoUsuario === 'S'
+  const canUpdateSucursales = user?.tipoUsuario === 'S' || user?.tipoUsuario === 'E'
+  const canDeleteSucursales = user?.tipoUsuario === 'S'
 
   return SucursalesPageView({
     sucursales: filteredSucursales,

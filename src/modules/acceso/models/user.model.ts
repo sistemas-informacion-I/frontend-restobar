@@ -13,6 +13,8 @@ export interface User {
   gender?: 'M' | 'F' | 'O'
   address?: string
   isActive: boolean
+  tipoUsuario: 'S' | 'E' | 'C'
+  sucursalId?: number
   estadoAcceso?: string
   intentosFallidos?: number
   roles: Role[]
@@ -32,6 +34,7 @@ export interface CreateUserData {
   direccion?: string
   username?: string
   password?: string
+  tipoUsuario: 'S' | 'E' | 'C'
   activo?: boolean
   roles?: number[]
 }
@@ -45,6 +48,7 @@ export interface UpdateUserData {
   correo?: string
   direccion?: string
   activo?: boolean
+  tipoUsuario?: 'S' | 'E' | 'C'
   estadoAcceso?: string
   roles?: number[]
 }

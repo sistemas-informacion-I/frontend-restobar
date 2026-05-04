@@ -136,6 +136,22 @@ export function UserFormView({
           </select>
         </div>
 
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 flex items-center gap-2">
+            <ShieldAlert size={14} className="text-wine-600" />
+            Identidad (Tipo Usuario)
+          </label>
+          <select
+            {...register('tipoUsuario')}
+            disabled={isEdit}
+            className={`h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500 ${isEdit ? 'opacity-60 cursor-not-allowed' : ''}`}
+          >
+            <option value="S" className="bg-white dark:bg-wine-950">Superusuario (Global)</option>
+            <option value="E" className="bg-white dark:bg-wine-950">Empleado / Administrador Sucursal</option>
+            <option value="C" className="bg-white dark:bg-wine-950">Cliente</option>
+          </select>
+        </div>
+
         {isEdit && (
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 flex items-center gap-2">

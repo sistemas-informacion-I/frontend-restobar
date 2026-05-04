@@ -7,6 +7,7 @@ export interface AuditoriaTableProps {
   page: number
   totalPages: number
   onPageChange: (page: number) => void
+  userType?: string
 }
 
 export function AuditoriaTable(props: AuditoriaTableProps) {

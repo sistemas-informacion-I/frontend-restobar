@@ -6,6 +6,7 @@ import { useRoles } from '../../hooks/useRoles'
 import { getErrorMessage } from '@/core/api'
 import { EmployeesPageView } from './EmployeesPage.view'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
+import { useSucursales } from '@/modules/operaciones/hooks/useSucursales'
 
 export default function EmployeesPage() {
   const { 
@@ -24,13 +25,16 @@ export default function EmployeesPage() {
     loadError: rolesError
   } = useRoles()
 
+  const {
+    sucursales,
+    isLoading: sucursalesLoading
+  } = useSucursales()
+
   const [search, setSearch] = useState('')
   
-  // Feedback state (Following project's pattern)
   const [feedbackMessage, setFeedbackMessage] = useState('')
   const [feedbackType, setFeedbackType] = useState<'error' | 'success' | ''>('')
 
-  // Modal states
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState<Empleado | null>(null)
@@ -41,7 +45,7 @@ export default function EmployeesPage() {
   const canUpdate = hasPermission('employees:update')
   const canDelete = hasPermission('employees:delete')
 
-  const isLoading = employeesLoading || rolesLoading
+  const isLoading = employeesLoading || rolesLoading || sucursalesLoading
   const loadError = employeesError || rolesError
 
   const showFeedback = useCallback((message: string, type: 'error' | 'success') => {
@@ -95,7 +99,7 @@ export default function EmployeesPage() {
     
     try {
       await deleteEmployee(employee.idEmpleado)
-      showFeedback('Empleado eliminado correctamente', 'success')
+      showFeedback('Empleado desvinculado correctamente', 'success')
     } catch (error: any) {
       showFeedback(getErrorMessage(error, 'Eliminar empleado'), 'error')
     }
@@ -138,11 +142,11 @@ export default function EmployeesPage() {
       setIsViewModalOpen={setIsViewModalOpen}
       selectedEmployee={selectedEmployee}
       onCreate={handleCreate}
-
       onEdit={handleEdit}
       onView={handleView}
       onDelete={handleDelete}
       onSubmit={onSubmit}
+      sucursales={sucursales}
     />
   )
 }

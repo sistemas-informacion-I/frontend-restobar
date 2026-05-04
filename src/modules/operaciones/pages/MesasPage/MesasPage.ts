@@ -6,6 +6,7 @@ import { useMesas } from '../../hooks/useMesas'
 import { useSectores } from '../../hooks/useSectores'
 
 export function MesasPage() {
+
   const {
     mesas,
     isLoading: mesasLoading,
@@ -74,7 +75,7 @@ export function MesasPage() {
     try {
       await deleteMesa(selectedMesa.idMesa)
       setFeedbackType('success')
-      setFeedbackMessage('Mesa eliminada exitosamente')
+      setFeedbackMessage('Mesa deshabilitada exitosamente')
       setShowDeleteModal(false)
       setSelectedMesa(null)
     } catch (error: unknown) {
@@ -98,7 +99,7 @@ export function MesasPage() {
     setShowDeleteModal(true)
   }
 
-  // Permissions (could be moved to a hook or context later)
+  // Permissions
   const canViewMesas = true
   const canCreateMesas = true 
   const canUpdateMesas = true

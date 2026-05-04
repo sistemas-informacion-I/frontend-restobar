@@ -62,6 +62,20 @@ export function UserViewView({ user, formatDate }: UserViewViewProps) {
             <Shield size={22} />
           </div>
           <div className="flex min-w-0 flex-col gap-1">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40">Identidad del Sistema</span>
+            <span className="break-all text-sm font-black text-slate-900 dark:text-white tracking-tighter">
+              {user.tipoUsuario === 'S' ? 'Superusuario (Acceso Global)' : 
+               user.tipoUsuario === 'E' ? 'Empleado / Administrador Sucursal' : 
+               'Cliente / Usuario Final'}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-4 rounded-3xl bg-wine-50/20 p-5 glass-card dark:bg-white/5 border-wine-100/30 dark:border-wine-900/10">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-wine-500/10 text-wine-600 dark:text-wine-400">
+            <Shield size={22} />
+          </div>
+          <div className="flex min-w-0 flex-col gap-1">
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40">Estado de Acceso</span>
             <span className="break-all text-sm font-black text-slate-900 dark:text-white tracking-tighter">
               {user.estadoAcceso || 'HABILITADO'} 

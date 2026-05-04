@@ -14,6 +14,7 @@ export function Layout({ children }: LayoutProps) {
   const { theme, toggleTheme } = useAppStore()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarMinimized, setSidebarMinimized] = useState(false)
 
   const handleLogout = async () => {
     try {
@@ -30,6 +31,8 @@ export function Layout({ children }: LayoutProps) {
     toggleTheme,
     sidebarOpen,
     setSidebarOpen,
+    sidebarMinimized,
+    setSidebarMinimized,
     handleLogout
   })
 }

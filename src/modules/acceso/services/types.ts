@@ -164,6 +164,8 @@ export interface Sucursal {
   departamento?: string
   estadoOperativo?: string
   activo: boolean
+  idResponsable?: number
+  nombreResponsable?: string
 }
 
 export interface CreateSucursalData {
@@ -176,6 +178,7 @@ export interface CreateSucursalData {
   ciudad?: string
   departamento?: string
   estadoOperativo?: string
+  idUsuarioResponsable?: number
 }
 
 export interface UpdateSucursalData {
@@ -188,6 +191,7 @@ export interface UpdateSucursalData {
   ciudad?: string
   departamento?: string
   estadoOperativo?: string
+  idUsuarioResponsable?: number
 }
 
 export interface Sector {

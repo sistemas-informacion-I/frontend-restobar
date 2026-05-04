@@ -12,6 +12,7 @@ interface AuditoriaToolbarViewProps extends AuditoriaToolbarProps {
 export function AuditoriaToolbarView({ 
   filters, 
   onFilterChange, 
+  userType,
   showFilters, 
   toggleFilters, 
   handleClear, 
@@ -94,6 +95,19 @@ export function AuditoriaToolbarView({
               className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm transition-all focus:border-wine-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-wine-500/10 dark:border-wine-900/30 dark:bg-black/30 dark:text-white dark:focus:border-wine-700 dark:focus:bg-black/50"
             />
           </div>
+
+          {userType === 'S' && (
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">ID Sucursal</label>
+              <input
+                type="number"
+                placeholder="0..."
+                value={filters.idSucursal || ''}
+                onChange={(e) => onFilterChange({ idSucursal: e.target.value ? Number(e.target.value) : undefined })}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm transition-all focus:border-wine-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-wine-500/10 dark:border-wine-900/30 dark:bg-black/30 dark:text-white dark:focus:border-wine-700 dark:focus:bg-black/50"
+              />
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">Desde</label>

@@ -1,5 +1,4 @@
 import { Trash2, Shield, AlertCircle } from 'lucide-react'
-import { Layout } from '@/shared/components/layout/Layout'
 import { Modal } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
 import { RoleForm, RoleView, RolesTable, RolesToolbar } from './components'
@@ -67,7 +66,6 @@ export function RolesPageView({
 }: RolesPageViewProps) {
   if (!canViewRoles) {
     return (
-      <Layout>
         <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-wine-100/50 bg-wine-50/10 py-16 dark:border-wine-900/20 dark:bg-black/20">
           <div className="rounded-2xl bg-rose-500/10 p-4 text-rose-600 shadow-lg shadow-rose-900/10 mb-6">
             <AlertCircle size={48} />
@@ -75,12 +73,10 @@ export function RolesPageView({
           <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Acceso Restringido</h2>
           <p className="mt-2 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">No posees los privilegios necesarios para administrar roles</p>
         </div>
-      </Layout>
     )
   }
 
   return (
-    <Layout>
       <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
         {feedbackMessage && !showCreateModal && !showEditModal && !showDeleteModal && (
           <div className={`mb-6 rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg ${feedbackType === 'error'
@@ -248,6 +244,5 @@ export function RolesPageView({
           </Modal.Footer>
         </Modal.Root>
       </div>
-    </Layout>
   )
 }

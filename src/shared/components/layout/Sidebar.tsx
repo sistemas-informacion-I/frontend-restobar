@@ -7,9 +7,11 @@ import { SidebarView } from './SidebarView'
 interface SidebarProps {
   sidebarOpen: boolean
   setSidebarOpen: (value: boolean) => void
+  sidebarMinimized: boolean
+  setSidebarMinimized: (value: boolean) => void
 }
 
-export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
+export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized, setSidebarMinimized }: SidebarProps) {
   const { user, canRead } = useAuth()
   const location = useLocation()
   const currentPath = location.pathname
@@ -20,9 +22,9 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
       items: [
         { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, show: true },
         { path: '/perfil', label: 'Mi Perfil', icon: User, show: true },
-        { path: '/users', label: 'Usuarios', icon: Users, show: canRead('users') },
+        { path: '/users', label: 'Usuarios', icon: Users, show: user?.tipoUsuario === 'S' && canRead('users') },
         { path: '/empleados', label: 'Personal', icon: Users, show: canRead('employees') },
-        { path: '/roles', label: 'Roles', icon: Shield, show: canRead('roles') },
+        { path: '/roles', label: 'Roles', icon: Shield, show: user?.tipoUsuario === 'S' && canRead('roles') },
         { path: '/auditoria', label: 'Auditoría', icon: Activity, show: canRead('audit') },
       ]
     },
@@ -73,6 +75,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
     user,
     sidebarOpen,
     setSidebarOpen,
+    sidebarMinimized,
     navSections: sections,
     expandedSections,
     toggleSection,

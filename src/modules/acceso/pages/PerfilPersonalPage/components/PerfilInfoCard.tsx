@@ -20,7 +20,18 @@ export function PerfilInfoCard({ perfil, onEditOpen }: Props) {
             <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               {perfil.nombre} {perfil.apellido}
             </h2>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-wine-600 dark:text-wine-400 mt-1">@{perfil.username}</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-wine-600 dark:text-wine-400 mt-1 flex items-center gap-3">
+              @{perfil.username}
+              <span className={`px-2 py-0.5 rounded-md text-[8px] border ${
+                perfil.tipoUsuario === 'S' 
+                  ? 'bg-wine-500/10 border-wine-500/20 text-wine-600' 
+                  : perfil.tipoUsuario === 'E' 
+                    ? 'bg-blue-500/10 border-blue-500/20 text-blue-600' 
+                    : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600'
+              }`}>
+                {perfil.tipoUsuario === 'S' ? 'Superusuario' : perfil.tipoUsuario === 'E' ? 'Empleado' : 'Cliente'}
+              </span>
+            </p>
           </div>
         </div>
         <button

@@ -6,7 +6,7 @@ import { getErrorMessage } from '../../../../core/api'
 import { AuditoriaPageView } from './AuditoriaPage.view'
 
 export function AuditoriaPage() {
-  const { canRead } = useAuth()
+  const { canRead, user } = useAuth()
   
   // State for filtering and pagination (initial state)
   const [filters, setFilters] = useState<AuditFilters>({
@@ -47,6 +47,7 @@ export function AuditoriaPage() {
 
   return AuditoriaPageView({
     canRead: (p: string) => canRead(p as any),
+    user,
     error: loadError ? getErrorMessage(loadError, 'cargar registros de auditoría') : '',
     isLoading,
     filters,

@@ -19,6 +19,8 @@ export interface Empleado {
   fechaContratacion: string
   fechaFinalizacion?: string
   roles: string[]
+  idSucursal?: number
+  nombreSucursal?: string
 }
 
 export interface CreateEmpleadoData {
@@ -35,6 +37,7 @@ export interface CreateEmpleadoData {
   salario: number
   turno?: string
   roles?: number[]
+  idSucursal?: number
 }
 
 export const EmpleadosService = {

@@ -20,6 +20,7 @@ export function UsersTableView({
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Nombre</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">CI</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Correo</th>
+              <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Tipo</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Rol</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Estado</th>
               <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Acciones</th>
@@ -28,7 +29,7 @@ export function UsersTableView({
           <tbody className="divide-y divide-wine-50 dark:divide-wine-950/30">
             {users.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center">
+                <td colSpan={7} className="px-6 py-12 text-center">
                   <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">No se encontraron usuarios</span>
                 </td>
               </tr>
@@ -47,6 +48,18 @@ export function UsersTableView({
                   <td className="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400">{user.ci || 'N/A'}</td>
 
                   <td className="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400">{user.email || 'N/A'}</td>
+
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-tighter ${
+                      user.tipoUsuario === 'S' 
+                        ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
+                        : user.tipoUsuario === 'E'
+                        ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                        : 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20'
+                    }`}>
+                      {user.tipoUsuario === 'S' ? 'SU' : user.tipoUsuario === 'E' ? 'EMP' : 'CLI'}
+                    </span>
+                  </td>
 
                   <td className="px-6 py-4">
                     <span className="inline-flex rounded-lg bg-wine-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-wine-700 dark:text-wine-300 border border-wine-100/50 dark:border-wine-900/20">

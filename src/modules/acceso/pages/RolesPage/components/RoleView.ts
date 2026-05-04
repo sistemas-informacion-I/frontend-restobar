@@ -16,9 +16,20 @@ export function RoleView({ role }: RoleViewProps) {
   }, {} as Record<string, typeof role.permissions>) || {}
 
   const moduleNames: Record<string, string> = {
-    users: 'Usuarios',
-    roles: 'Roles',
-    permissions: 'Permisos',
+    USUARIOS: 'Usuarios',
+    ROLES: 'Roles',
+    PERMISOS: 'Permisos',
+    CLIENTES: 'Clientes',
+    EMPLEADOS: 'Empleados',
+    PROVEEDORES: 'Proveedores',
+    SUCURSALES: 'Sucursales',
+    SECTORES: 'Sectores',
+    MESAS: 'Mesas',
+    INVENTARIO: 'Inventario',
+    VENTAS: 'Ventas',
+    CAJA: 'Caja',
+    SESIONES: 'Sesiones',
+    AUDITORIA: 'Auditoría',
     Otros: 'Otros',
   }
 

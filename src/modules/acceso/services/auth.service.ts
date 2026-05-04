@@ -4,6 +4,8 @@ import { LoginData, RegisterData, AuthResponse, User, Permission } from '../mode
 interface AuthApiResponse {
   accessToken: string
   refreshToken: string
+  tipoUsuario: 'S' | 'E' | 'C'
+  sucursalId?: number
   usuario?: {
     idUsuario: number
     ci: string
@@ -17,6 +19,7 @@ interface AuthApiResponse {
     estadoAcceso?: string
     intentosFallidos?: number
     fechaRegistro?: string
+    tipoUsuario?: string
     activo?: boolean
     roles?: any[]
   }
@@ -30,6 +33,8 @@ interface MeApiResponse {
   email?: string
   authorities?: string[]
   roles?: any[]
+  tipoUsuario?: 'S' | 'E' | 'C'
+  sucursalId?: number
 }
 
 const ACCESS_TOKEN_KEY = 'gaira_access_token'
@@ -64,6 +69,8 @@ const mapAuthUser = (response: AuthApiResponse): User => {
       email: username,
       username,
       isActive: true,
+      tipoUsuario: response.tipoUsuario || 'C',
+      sucursalId: response.sucursalId,
       roles: [],
       permissions,
       authorities,
@@ -85,6 +92,8 @@ const mapAuthUser = (response: AuthApiResponse): User => {
     gender: apiUser.sexo,
     address: apiUser.direccion,
     isActive: apiUser.activo ?? true,
+    tipoUsuario: (apiUser.tipoUsuario || response.tipoUsuario || 'C') as 'S' | 'E' | 'C',
+    sucursalId: response.sucursalId,
     estadoAcceso: apiUser.estadoAcceso,
     intentosFallidos: apiUser.intentosFallidos,
     roles: apiUser.roles ? apiUser.roles.map((r: any) => ({
@@ -153,6 +162,8 @@ class AuthService {
       email: response.email || response.username,
       username: response.username,
       isActive: true,
+      tipoUsuario: response.tipoUsuario || 'C',
+      sucursalId: response.sucursalId,
       roles: response.roles ? response.roles.map((r: any) => ({
         id: String(r.idRol),
         name: r.nombre,

@@ -10,6 +10,7 @@ interface Sucursal {
   ciudad?: string
   departamento?: string
   activo: boolean
+  nombreResponsable?: string
 }
 
 interface SucursalesTableProps {
@@ -135,7 +136,7 @@ export function SucursalesTable({
               <tr className="border-b border-wine-100/50 bg-wine-50/30 dark:border-wine-900/20 dark:bg-wine-950/20">
                 <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Sucursal</th>
                 <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Dirección</th>
-                <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Contacto</th>
+                <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Responsable</th>
                 <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Estado</th>
                 <th className="px-6 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Acciones</th>
               </tr>
@@ -173,9 +174,11 @@ export function SucursalesTable({
                     </td>
 
                     <td className="px-6 py-4">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-sm font-bold text-slate-600 dark:text-slate-300 tracking-tight">{sucursal.telefono || 'Sin teléfono'}</span>
-                        <span className="text-[10px] font-bold lowercase tracking-widest text-slate-400 dark:text-slate-500">{sucursal.correo || 'sin@correo.com'}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-wine-500" />
+                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">
+                          {sucursal.nombreResponsable || 'Sin asignar'}
+                        </span>
                       </div>
                     </td>
 

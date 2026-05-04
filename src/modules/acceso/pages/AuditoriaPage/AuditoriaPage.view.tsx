@@ -1,8 +1,8 @@
-import { Layout } from '@/shared/components/layout/Layout'
 import { AuditoriaTable, AuditoriaToolbar, AuditoriaDetail } from './components'
 
 interface AuditoriaPageViewProps {
   canRead: (p: string) => boolean
+  user: any
   error: string
   isLoading: boolean
   filters: any
@@ -16,6 +16,7 @@ interface AuditoriaPageViewProps {
 
 export function AuditoriaPageView({
   canRead,
+  user,
   error,
   isLoading,
   filters,
@@ -28,7 +29,6 @@ export function AuditoriaPageView({
 }: AuditoriaPageViewProps) {
   if (!canRead('audit')) {
     return (
-      <Layout>
         <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-wine-100/50 bg-wine-50/10 py-16 dark:border-wine-900/20 dark:bg-black/20">
           <div className="rounded-2xl bg-rose-500/10 p-4 text-rose-600 shadow-lg shadow-rose-900/10 mb-6">
             <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -40,12 +40,10 @@ export function AuditoriaPageView({
             No posees el nivel de seguridad requerido para esta sección.
           </p>
         </div>
-      </Layout>
     )
   }
 
   return (
-    <Layout>
       <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Auditoría del Sistema</h1>
@@ -67,6 +65,7 @@ export function AuditoriaPageView({
           filters={filters}
           onFilterChange={handleFilterChange}
           onClearFilters={handleClearFilters}
+          userType={user?.tipoUsuario}
         />
 
         <div className="relative min-h-[400px]">
@@ -86,6 +85,7 @@ export function AuditoriaPageView({
               totalPages={data?.totalPages || 0}
               onPageChange={handlePageChange}
               onViewDetails={setSelectedLog}
+              userType={user?.tipoUsuario}
             />
           </div>
         </div>
@@ -97,6 +97,5 @@ export function AuditoriaPageView({
           />
         )}
       </div>
-    </Layout>
   )
 }

@@ -6,7 +6,6 @@ import { PerfilDeleteBanner } from './components/PerfilDeleteBanner';
 import { PerfilEditModal } from './components/PerfilEditModal';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Layout } from '@/shared/components/layout/Layout';
 
 export default function PerfilPersonalPage() {
   const { perfil, isLoading, error, actualizarPerfil, cambiarPassword, eliminarPerfil } = usePerfilPersonal();
@@ -50,7 +49,6 @@ export default function PerfilPersonalPage() {
   };
 
   return (
-    <Layout>
       <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500">
         <div>
           <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -75,6 +73,5 @@ export default function PerfilPersonalPage() {
           />
         )}
       </div>
-    </Layout>
   );
 }

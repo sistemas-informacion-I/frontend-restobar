@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null
   isLoading: boolean
   isAuthenticated: boolean
-  login: (credentials: LoginData) => Promise<void>
+  login: (credentials: LoginData) => Promise<User>
   logout: () => Promise<void>
   updateUser: (user: User) => void
   hasPermission: (permissionName: string) => boolean
@@ -47,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginData) => {
     const userData = await authService.login(credentials)
     setUser(userData)
+    return userData
   }
 
   const logout = async () => {

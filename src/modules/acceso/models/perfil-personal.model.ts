@@ -30,6 +30,7 @@ export interface PerfilPersonalResponse {
   correo: string;
   direccion: string;
   fechaRegistro: string;
+  tipoUsuario: string;
   cliente?: ClienteResponse;
   empleado?: EmpleadoResponse;
 }
