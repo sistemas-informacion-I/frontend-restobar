@@ -1,0 +1,6 @@
+export * from './InventarioToolbar.view'
+export * from './InventarioTable.view'
+export * from './InsumoForm.view'
+export * from './StockInitialForm.view'
+export * from './StockDrawer.view'
+export * from './LoteForm.view'
