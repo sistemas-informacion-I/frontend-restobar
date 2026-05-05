@@ -1,4 +1,4 @@
-import { Mail, User as UserIcon, CreditCard, Phone, KeyRound, ShieldAlert, Shield, Users } from 'lucide-react'
+import { Mail, User as UserIcon, CreditCard, Phone, KeyRound, ShieldAlert, Shield } from 'lucide-react'
 import { Controller } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
