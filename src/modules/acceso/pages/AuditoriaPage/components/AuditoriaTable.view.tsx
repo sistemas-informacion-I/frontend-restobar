@@ -30,81 +30,138 @@ export function AuditoriaTableView({
   }
 
   return (
-    <div className="flex flex-col glass-card rounded-[2.5rem] shadow-2xl shadow-wine-900/5 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-[800px] w-full border-collapse">
-          <thead>
-            <tr className="border-b border-wine-100/50 bg-wine-50/30 dark:border-wine-900/20 dark:bg-wine-950/20">
-              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Marca Temporal</th>
-              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Entidad / ID</th>
-              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Operación</th>
-              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Responsable</th>
-              {userType === 'S' && <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Sucursal</th>}
-              <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Seguridad (IP)</th>
-              <th className="px-6 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-wine-50 dark:divide-wine-950/30">
-            {logs.map((log) => (
-              <tr key={log.idLog} className="transition-all duration-300 hover:bg-wine-50/30 dark:hover:bg-wine-900/10 group">
-                <td className="px-6 py-5">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-wine-500/10 text-wine-600 dark:text-wine-400 group-hover:scale-110 transition-transform">
-                      <Clock size={16} />
-                    </div>
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-tighter">
-                      {new Date(log.fechaOperacion).toLocaleString('es-ES', { 
-                        day: '2-digit', month: '2-digit', year: 'numeric', 
-                        hour: '2-digit', minute: '2-digit', second: '2-digit' 
-                      })}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-5">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-wine-800 dark:text-wine-200">{log.tabla}</span>
-                    <span className="text-[10px] font-medium text-slate-400 font-mono tracking-tighter">REF# {log.idRegistro || '---'}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-5">
-                  <span className={`inline-flex items-center rounded-lg border-2 px-3 py-1 text-[9px] font-black uppercase tracking-widest ${getOperationBadge(log.operacion).replace('bg-opacity-10', 'bg-opacity-5')}`}>
-                    {log.operacion}
+    <div className="flex flex-col gap-4">
+      {/* Mobile Card View */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {logs.map((log) => (
+          <div key={log.idLog} className="glass-card overflow-hidden rounded-[2rem] border border-wine-100/50 bg-white/50 p-6 dark:border-wine-900/20 dark:bg-black/20 shadow-xl shadow-wine-900/5 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-wine-500/10 text-wine-600 dark:text-wine-400">
+                  <Clock size={16} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {new Date(log.fechaOperacion).toLocaleDateString()}
                   </span>
-                </td>
-                <td className="px-6 py-5">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-wine-600 to-wine-900 text-[10px] font-black text-white shadow-lg shadow-wine-900/20">
-                      {(log.username || 'S').charAt(0).toUpperCase()}
-                    </div>
-                    <span className="text-xs font-bold text-slate-900 dark:text-white tracking-tight">{log.username || 'Sistema'}</span>
+                  <span className="text-[10px] font-medium text-slate-400">
+                    {new Date(log.fechaOperacion).toLocaleTimeString()}
+                  </span>
+                </div>
+              </div>
+              <span className={`inline-flex items-center rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-widest ${getOperationBadge(log.operacion).replace('bg-opacity-10', 'bg-opacity-5')}`}>
+                {log.operacion}
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-3 mb-5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">Entidad:</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-wine-800 dark:text-wine-200">{log.tabla} (REF# {log.idRegistro || '---'})</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">Responsable:</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-wine-600 to-wine-900 text-[8px] font-black text-white">
+                    {(log.username || 'S').charAt(0).toUpperCase()}
                   </div>
-                </td>
-                {userType === 'S' && (
+                  <span className="text-[11px] font-bold text-slate-900 dark:text-white">{log.username || 'Sistema'}</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">IP:</span>
+                <span className="text-[10px] font-bold text-slate-500 font-mono">{log.ipOrigen || 'LOCAL'}</span>
+              </div>
+            </div>
+
+            <Button
+              variant="ghost"
+              className="w-full !rounded-xl bg-white dark:bg-white/5 border border-wine-100/50 dark:border-wine-900/20 text-[10px] font-black uppercase tracking-widest h-11"
+              onClick={() => onViewDetails(log)}
+            >
+              Ver Detalles de Auditoría
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block glass-card rounded-[2.5rem] shadow-2xl shadow-wine-900/5 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-[800px] w-full border-collapse">
+            <thead>
+              <tr className="border-b border-wine-100/50 bg-wine-50/30 dark:border-wine-900/20 dark:bg-wine-950/20">
+                <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Marca Temporal</th>
+                <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Entidad / ID</th>
+                <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Operación</th>
+                <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Responsable</th>
+                {userType === 'S' && <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Sucursal</th>}
+                <th className="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Seguridad (IP)</th>
+                <th className="px-6 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-300/60">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-wine-50 dark:divide-wine-950/30">
+              {logs.map((log) => (
+                <tr key={log.idLog} className="transition-all duration-300 hover:bg-wine-50/30 dark:hover:bg-wine-900/10 group">
                   <td className="px-6 py-5">
-                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                      {log.idSucursal ? `Sucursal #${log.idSucursal}` : 'GLOBAL'}
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-wine-500/10 text-wine-600 dark:text-wine-400 group-hover:scale-110 transition-transform">
+                        <Clock size={16} />
+                      </div>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-tighter">
+                        {new Date(log.fechaOperacion).toLocaleString('es-ES', { 
+                          day: '2-digit', month: '2-digit', year: 'numeric', 
+                          hour: '2-digit', minute: '2-digit', second: '2-digit' 
+                        })}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-wine-800 dark:text-wine-200">{log.tabla}</span>
+                      <span className="text-[10px] font-medium text-slate-400 font-mono tracking-tighter">REF# {log.idRegistro || '---'}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className={`inline-flex items-center rounded-lg border-2 px-3 py-1 text-[9px] font-black uppercase tracking-widest ${getOperationBadge(log.operacion).replace('bg-opacity-10', 'bg-opacity-5')}`}>
+                      {log.operacion}
                     </span>
                   </td>
-                )}
-                <td className="px-6 py-5">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-black/20 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-wine-900/10">
-                    {log.ipOrigen || 'LOCAL'}
-                  </span>
-                </td>
-                <td className="px-6 py-5 text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onViewDetails(log)}
-                    className="bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 font-black text-[10px] uppercase tracking-widest px-4 opacity-0 group-hover:opacity-100 transition-all"
-                  >
-                    Detalles
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-wine-600 to-wine-900 text-[10px] font-black text-white shadow-lg shadow-wine-900/20">
+                        {(log.username || 'S').charAt(0).toUpperCase()}
+                      </div>
+                      <span className="text-xs font-bold text-slate-900 dark:text-white tracking-tight">{log.username || 'Sistema'}</span>
+                    </div>
+                  </td>
+                  {userType === 'S' && (
+                    <td className="px-6 py-5">
+                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                        {log.idSucursal ? `Sucursal #${log.idSucursal}` : 'GLOBAL'}
+                      </span>
+                    </td>
+                  )}
+                  <td className="px-6 py-5">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-black/20 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-wine-900/10">
+                      {log.ipOrigen || 'LOCAL'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5 text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onViewDetails(log)}
+                      className="bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 font-black text-[10px] uppercase tracking-widest px-4 opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                      Detalles
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {totalPages > 1 && (

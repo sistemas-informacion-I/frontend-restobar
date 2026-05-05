@@ -55,6 +55,7 @@ export const LayoutView: React.FC<LayoutViewProps> = ({
             <button 
               className="hidden md:flex rounded-xl p-2.5 text-slate-700 transition-all hover:bg-wine-50 dark:text-slate-200 dark:hover:bg-wine-900/30 border border-wine-100/30 dark:border-wine-900/20 shadow-sm"
               onClick={() => setSidebarMinimized(!sidebarMinimized)}
+              title={sidebarMinimized ? "Expandir Sidebar" : "Minimizar Sidebar"}
             >
               <Menu size={20} />
             </button>

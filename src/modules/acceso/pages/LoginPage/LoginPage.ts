@@ -9,12 +9,19 @@ import { LoginPageView } from './LoginPage.view'
 
 export function LoginPage() {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login, isAuthenticated } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [viewMode, setViewMode] = useState<'login' | 'recovery'>('login')
   const [isCodeSent, setIsCodeSent] = useState(false)
+
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard')
+    }
+  }, [isAuthenticated, navigate])
   
   const { 
     formattedTime, 

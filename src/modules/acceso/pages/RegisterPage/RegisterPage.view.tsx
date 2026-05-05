@@ -79,142 +79,139 @@ export function RegisterPageView({
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
-              {/* Columna 1: Datos Identidad */}
-              <div className="flex flex-col gap-5">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-wine-900/30 dark:text-wine-400/30 px-1 border-b border-wine-100/30 pb-2">Información Personal</h4>
-                <Input
-                  label="CI"
-                  type="text"
-                  placeholder="Documento de identidad"
-                  icon={<User size={18} />}
-                  error={errors.ci?.message}
-                  {...register('ci', { required: 'Ingresa tu CI' })}
-                />
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              {/* Sección 1: Identidad */}
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-wine-900/30 dark:text-wine-400/30 px-1 border-b border-wine-100/30 pb-2">Identidad</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="CI"
+                    type="text"
+                    placeholder="Documento"
+                    icon={<User size={16} />}
+                    error={errors.ci?.message}
+                    {...register('ci', { required: 'Requerido' })}
+                  />
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 px-1">Sexo</label>
+                    <select
+                      {...register('sexo', { required: 'Requerido' })}
+                      className="h-10 rounded-xl border border-wine-100/50 bg-white/50 px-3 text-xs font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500 shadow-sm"
+                    >
+                      <option value="" disabled>Seleccionar...</option>
+                      <option value="M">M</option>
+                      <option value="F">F</option>
+                      <option value="O">O</option>
+                    </select>
+                  </div>
+                </div>
 
                 <Input
                   label="Nombre"
                   type="text"
                   placeholder="Tu nombre"
-                  icon={<User size={18} />}
+                  icon={<User size={16} />}
                   error={errors.nombre?.message}
-                  {...register('nombre', { required: 'Ingresa tu nombre' })}
+                  {...register('nombre', { required: 'Requerido' })}
                 />
 
                 <Input
                   label="Apellido"
                   type="text"
                   placeholder="Tu apellido"
-                  icon={<User size={18} />}
+                  icon={<User size={16} />}
                   error={errors.apellido?.message}
-                  {...register('apellido', { required: 'Ingresa tu apellido' })}
+                  {...register('apellido', { required: 'Requerido' })}
                 />
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 px-1">Sexo</label>
-                  <select
-                    {...register('sexo', { required: 'Selecciona tu sexo' })}
-                    className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500 shadow-sm"
-                  >
-                    <option value="" disabled className="bg-white dark:bg-wine-950 font-medium">Seleccionar sexo...</option>
-                    <option value="M" className="bg-white dark:bg-wine-950">Masculino</option>
-                    <option value="F" className="bg-white dark:bg-wine-950">Femenino</option>
-                    <option value="O" className="bg-white dark:bg-wine-950">Otro</option>
-                  </select>
-                  {errors.sexo && (
-                    <span className="px-1 text-[10px] font-bold text-rose-500 animate-in fade-in slide-in-from-top-1">
-                      {errors.sexo.message}
-                    </span>
-                  )}
-                </div>
               </div>
 
-              {/* Columna 2: Contacto y Credenciales */}
-              <div className="flex flex-col gap-5">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-wine-900/30 dark:text-wine-400/30 px-1 border-b border-wine-100/30 pb-2">Contacto y Seguridad</h4>
+              {/* Sección 2: Contacto */}
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-wine-900/30 dark:text-wine-400/30 px-1 border-b border-wine-100/30 pb-2">Contacto</h4>
                 <Input
                   label="Correo"
                   type="email"
-                  placeholder="tu@email.com"
-                  icon={<Mail size={18} />}
+                  placeholder="nombre@email.com"
+                  icon={<Mail size={16} />}
                   error={errors.correo?.message}
                   {...register('correo', {
-                    required: 'Ingresa un correo',
+                    required: 'Requerido',
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Correo inválido. Ejemplo válido: nombre@dominio.com',
+                      message: 'Correo inválido',
                     },
                   })}
                 />
 
-                <Input
-                  label="Teléfono"
-                  type="tel"
-                  placeholder="Nro de celular"
-                  icon={<Phone size={18} />}
-                  error={errors.telefono?.message}
-                  {...register('telefono', { required: 'Ingresa tu número de teléfono' })}
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Teléfono"
+                    type="tel"
+                    placeholder="Celular"
+                    icon={<Phone size={16} />}
+                    error={errors.telefono?.message}
+                    {...register('telefono', { required: 'Requerido' })}
+                  />
+                  <Input
+                    label="Usuario"
+                    type="text"
+                    placeholder="nick"
+                    icon={<User size={16} />}
+                    error={errors.username?.message}
+                    {...register('username', { required: 'Requerido' })}
+                  />
+                </div>
 
                 <Input
                   label="Dirección"
                   type="text"
                   placeholder="Calle, Nro, Zona..."
-                  icon={<MapPin size={18} />}
+                  icon={<MapPin size={16} />}
                   error={errors.direccion?.message}
                   {...register('direccion')}
                 />
+              </div>
 
-                <Input
-                  label="Usuario"
-                  type="text"
-                  placeholder="usuario"
-                  icon={<User size={18} />}
-                  error={errors.username?.message}
-                  {...register('username', { required: 'Ingresa un usuario' })}
-                />
+              {/* Sección 3: Seguridad (Ancho Completo) */}
+              <div className="md:col-span-2 space-y-4 pt-4 border-t border-wine-100/30">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-wine-900/30 dark:text-wine-400/30 px-1 border-b border-wine-100/30 pb-2">Seguridad</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Input
+                    label="Contraseña"
+                    type="password"
+                    placeholder="••••••••"
+                    icon={<Lock size={16} />}
+                    error={errors.password?.message}
+                    {...register('password', {
+                      required: 'Requerido',
+                      minLength: { value: 8, message: 'Mínimo 8 caracteres' },
+                      pattern: {
+                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+                        message: 'Debe incluir mayúsculas y números',
+                      },
+                    })}
+                  />
+
+                  <Input
+                    label="Confirmar contraseña"
+                    type="password"
+                    placeholder="••••••••"
+                    icon={<Lock size={16} />}
+                    error={errors.confirmPassword?.message}
+                    {...register('confirmPassword', {
+                      required: 'Requerido',
+                      validate: (value: string) => value === password || 'No coinciden',
+                    })}
+                  />
+                </div>
+                <PasswordRules password={password} />
               </div>
             </div>
 
-            {/* Fila Inferior: Contraseñas (Ancho Completo) */}
-            <div className="flex flex-col gap-5 border-t border-wine-100/30 pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Input
-                  label="Contraseña"
-                  type="password"
-                  placeholder="••••••••"
-                  icon={<Lock size={18} />}
-                  error={errors.password?.message}
-                  {...register('password', {
-                    required: 'Ingresa una contraseña segura',
-                    minLength: { value: 8, message: 'Mínimo 8 caracteres' },
-                    pattern: {
-                      value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-                      message: 'Debe incluir mayúsculas, minúsculas y números',
-                    },
-                  })}
-                />
-
-                <Input
-                  label="Confirmar contraseña"
-                  type="password"
-                  placeholder="••••••••"
-                  icon={<Lock size={18} />}
-                  error={errors.confirmPassword?.message}
-                  {...register('confirmPassword', {
-                    required: 'Confirma tu contraseña',
-                    validate: (value: string) => value === password || 'Las contraseñas no coinciden',
-                  })}
-                />
-              </div>
-
-              <PasswordRules password={password} />
-            </div>
-
-            <div className="flex justify-center pt-4">
-              <Button type="submit" fullWidth={false} className="min-w-[280px]" isLoading={isLoading} icon={<UserPlus size={18} />}>
-                Crear Cuenta
+            <div className="flex justify-center pt-6">
+              <Button type="submit" fullWidth className="md:w-auto md:min-w-[320px] h-14 rounded-2xl shadow-xl shadow-wine-900/20" isLoading={isLoading} icon={<UserPlus size={20} />}>
+                Finalizar Registro
               </Button>
             </div>
           </form>
