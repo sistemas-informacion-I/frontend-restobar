@@ -4,6 +4,7 @@ export { Input } from './Input'
 export { Card } from './Card'
 export { Loader } from './Loader'
 export { Modal } from './Modal'
+export { Switch } from './Switch/Switch'
 
 // Container Components
 export { Container } from './Container'
@@ -22,6 +23,7 @@ export {
   FormSelect,
   FormTextarea,
 } from './forms'
+export { Select } from './Select/Select'
 
 // Advanced Components
 export { DataTable } from './DataTable'

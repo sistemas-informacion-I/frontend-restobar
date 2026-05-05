@@ -16,6 +16,7 @@ import SectoresPage from './modules/operaciones/pages/SectoresPage'
 import MesasPage from './modules/operaciones/pages/MesasPage'
 import EmployeesPage from './modules/acceso/pages/EmployeesPage'
 import ProveedoresPage from './modules/comercial/pages/ProveedoresPage'
+import InventarioPage from './modules/inventario/pages/InventarioPage'
 import { Toaster } from 'sonner'
 
 import { ProtectedLayout } from './shared/components/layout/ProtectedLayout'
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/mesas" element={<MesasPage />} />
                 <Route path="/empleados" element={<EmployeesPage />} />
                 <Route path="/proveedores" element={<ProveedoresPage />} />
+                <Route path="/inventario" element={<InventarioPage />} />
                 <Route path="/restobar" element={<DashboardPage />} />
               </Route>
               

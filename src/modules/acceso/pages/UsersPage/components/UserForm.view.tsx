@@ -1,11 +1,14 @@
-import { Mail, User as UserIcon, CreditCard, Phone, KeyRound, ShieldAlert, Shield } from 'lucide-react'
+import { Mail, User as UserIcon, CreditCard, Phone, KeyRound, ShieldAlert, Shield, Users } from 'lucide-react'
+import { Controller } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
+import { FormSelect } from '@/shared/components/ui/forms'
 import { Role } from '../../../services/api'
 
 interface UserFormViewProps {
   register: any
   handleSubmit: any
+  control: any
   errors: any
   onFormSubmit: (data: any) => Promise<void>
   isEdit: boolean
@@ -23,6 +26,7 @@ interface UserFormViewProps {
 export function UserFormView({
   register,
   handleSubmit,
+  control,
   errors,
   onFormSubmit,
   isEdit,
@@ -126,14 +130,21 @@ export function UserFormView({
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60">Sexo</label>
-          <select
-            {...register('sexo')}
-            className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
-          >
-            <option value="O" className="bg-white dark:bg-wine-950">Otro</option>
-            <option value="M" className="bg-white dark:bg-wine-950">Masculino</option>
-            <option value="F" className="bg-white dark:bg-wine-950">Femenino</option>
-          </select>
+          <Controller
+            name="sexo"
+            control={control}
+            render={({ field }) => (
+              <FormSelect
+                {...field}
+                options={[
+                  { value: 'O', label: 'Otro' },
+                  { value: 'M', label: 'Masculino' },
+                  { value: 'F', label: 'Femenino' },
+                ]}
+                placeholder="Seleccionar sexo"
+              />
+            )}
+          />
         </div>
 
         <div className="flex flex-col gap-2">
@@ -141,45 +152,65 @@ export function UserFormView({
             <ShieldAlert size={14} className="text-wine-600" />
             Identidad (Tipo Usuario)
           </label>
-          <select
-            {...register('tipoUsuario')}
-            disabled={isEdit}
-            className={`h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500 ${isEdit ? 'opacity-60 cursor-not-allowed' : ''}`}
-          >
-            <option value="S" className="bg-white dark:bg-wine-950">Superusuario (Global)</option>
-            <option value="E" className="bg-white dark:bg-wine-950">Empleado / Administrador Sucursal</option>
-            <option value="C" className="bg-white dark:bg-wine-950">Cliente</option>
-          </select>
+          <Controller
+            name="tipoUsuario"
+            control={control}
+            render={({ field }) => (
+              <FormSelect
+                {...field}
+                disabled={isEdit}
+                icon={<ShieldAlert size={18} />}
+                options={[
+                  { value: 'S', label: 'Superusuario (Global)' },
+                  { value: 'E', label: 'Empleado / Administrador Sucursal' },
+                  { value: 'C', label: 'Cliente' },
+                ]}
+                placeholder="Seleccionar tipo"
+              />
+            )}
+          />
         </div>
 
-        {isEdit && (
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 flex items-center gap-2">
               <ShieldAlert size={14} className="text-wine-600" />
               Estado de Acceso
             </label>
-            <select
-              {...register('estadoAcceso')}
-              className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
-            >
-              <option value="HABILITADO" className="bg-white dark:bg-wine-950">Habilitado</option>
-              <option value="SUSPENDIDO" className="bg-white dark:bg-wine-950">Suspendido</option>
-              <option value="BLOQUEADO" className="bg-white dark:bg-wine-950">Bloqueado</option>
-            </select>
+            <Controller
+              name="estadoAcceso"
+              control={control}
+              render={({ field }) => (
+                <FormSelect
+                  {...field}
+                  icon={<ShieldAlert size={18} />}
+                  options={[
+                    { value: 'HABILITADO', label: 'Habilitado' },
+                    { value: 'SUSPENDIDO', label: 'Suspendido' },
+                    { value: 'BLOQUEADO', label: 'Bloqueado' },
+                  ]}
+                  placeholder="Seleccionar estado"
+                />
+              )}
+            />
           </div>
-        )}
 
         <div className="flex flex-col gap-2">
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60">Activo (General)</label>
-          <select
-            {...register('activo', {
-              setValueAs: (value: any) => String(value) === 'true',
-            })}
-            className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
-          >
-            <option value="true" className="bg-white dark:bg-wine-950">Activo</option>
-            <option value="false" className="bg-white dark:bg-wine-950">Inactivo</option>
-          </select>
+          <Controller
+            name="activo"
+            control={control}
+            render={({ field }) => (
+              <FormSelect
+                value={String(field.value)}
+                onChange={(val) => field.onChange(val === 'true')}
+                options={[
+                  { value: 'true', label: 'Activo' },
+                  { value: 'false', label: 'Inactivo' },
+                ]}
+                placeholder="Estado general"
+              />
+            )}
+          />
         </div>
       </div>
 

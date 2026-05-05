@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
 import { FormSelect } from '@/shared/components/ui/forms'
 import { Button } from '@/shared/components/ui/Button'
@@ -29,6 +29,7 @@ export function ProveedorForm({ proveedor, onSubmit, onCancel, isLoading }: Prov
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<CreateProveedorData>({
     defaultValues: proveedor ? {
@@ -86,16 +87,19 @@ export function ProveedorForm({ proveedor, onSubmit, onCancel, isLoading }: Prov
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40 px-1">
             Categoría de Productos
           </label>
-          <div className="relative flex items-center group/input">
-            <span className="pointer-events-none absolute left-4 text-slate-400 group-focus-within/input:text-wine-600 dark:group-focus-within/input:text-wine-400 transition-colors">
-              <Tag size={18} />
-            </span>
-            <FormSelect
-              className="pl-12"
-              options={CATEGORIA_OPTIONS}
-              {...register('categoriaProductos', { required: 'La categoría es obligatoria' })}
-            />
-          </div>
+          <Controller
+            name="categoriaProductos"
+            control={control}
+            rules={{ required: 'La categoría es obligatoria' }}
+            render={({ field }) => (
+              <FormSelect
+                {...field}
+                options={CATEGORIA_OPTIONS}
+                icon={<Tag size={18} />}
+                placeholder="Seleccionar categoría"
+              />
+            )}
+          />
           {errors.categoriaProductos && (
             <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-rose-600 px-1 animate-in slide-in-from-top-1">
               <AlertCircle size={12} className="shrink-0" />

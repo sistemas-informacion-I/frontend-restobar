@@ -1,15 +1,23 @@
-import { SelectHTMLAttributes, forwardRef } from 'react'
 import { FormSelectView } from './FormSelect.view'
 
-export interface FormSelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+export interface FormSelectProps {
   disabled?: boolean
   options?: Array<{ value: string | number; label: string }>
+  className?: string
+  value?: any
+  onChange?: (val: any) => void
+  [key: string]: any
 }
 
-export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
-  ({ disabled = false, options = [], className = '', children, ...props }, ref) => {
-    return FormSelectView({ disabled, options, className, children, ref, ...props })
-  }
-)
+export const FormSelect = ({ 
+  disabled = false, 
+  options = [], 
+  className = '', 
+  value,
+  onChange,
+  ...props 
+}: FormSelectProps) => {
+  return FormSelectView({ disabled, options, className, value, onChange, ...props })
+}
 
 FormSelect.displayName = 'FormSelect'

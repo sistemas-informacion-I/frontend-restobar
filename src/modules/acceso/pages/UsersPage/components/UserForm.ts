@@ -49,6 +49,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading }: UserFormProps)
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<UserFormData>({
     defaultValues: user ? {
@@ -86,6 +87,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading }: UserFormProps)
   return UserFormView({
     register,
     handleSubmit,
+    control,
     errors,
     onFormSubmit,
     isEdit,
