@@ -67,7 +67,7 @@ export class HttpClient {
           if (refreshToken) {
             try {
               const refreshResponse = await axios.post<{ accessToken: string; refreshToken: string }>(
-                `${this.axiosInstance.defaults.baseURL}/auth/refresh`,
+                `${this.axiosInstance.defaults.baseURL}/login/refresh`,
                 { refreshToken },
                 { withCredentials: true }
               )
