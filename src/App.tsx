@@ -20,6 +20,7 @@ import InventarioPage from './modules/inventario/pages/InventarioPage'
 import { Toaster } from 'sonner'
 
 import { ProtectedLayout } from './shared/components/layout/ProtectedLayout'
+import CategoriasPage from './modules/comercial/pages/CategoriasPage'
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
                 <Route path="/proveedores" element={<ProveedoresPage />} />
                 <Route path="/inventario" element={<InventarioPage />} />
                 <Route path="/restobar" element={<DashboardPage />} />
+                <Route path="/categorias" element={<CategoriasPage />} />
               </Route>
               
               <Route path="/" element={<Navigate to="/login" replace />} />
