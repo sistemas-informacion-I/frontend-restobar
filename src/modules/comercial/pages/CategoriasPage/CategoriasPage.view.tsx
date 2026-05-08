@@ -1,4 +1,3 @@
-import { Layout } from '@/shared/components/layout'
 import { Modal } from '@/shared/components/ui/Modal'
 import { CategoriasToolbar } from './components/CategoriasToolbar.view'
 import { CategoriasTable } from './components/CategoriasTable.view'
@@ -54,8 +53,7 @@ export function CategoriasPageView({
   onSubmit,
 }: CategoriasPageViewProps) {
   return (
-    <Layout>
-      <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
+    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
 
         {/* Feedback global (fuera de modales) */}
         {feedbackMessage && !isFormModalOpen && !isViewModalOpen && (
@@ -136,7 +134,6 @@ export function CategoriasPageView({
           </Modal.Body>
         </Modal.Root>
 
-      </div>
-    </Layout>
+    </div>
   )
 }

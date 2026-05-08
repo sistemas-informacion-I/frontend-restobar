@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
 import { LayoutList, AlignLeft, GitBranch, AlertCircle } from 'lucide-react'
@@ -13,24 +13,31 @@ interface CategoriaFormProps {
   isLoading: boolean
 }
 
+interface CategoriaFormValues {
+  nombre: string
+  descripcion: string
+  idCategoriaPadre: string
+}
+
 export function CategoriaForm({ categoria, categorias, onSubmit, onCancel, isLoading }: CategoriaFormProps) {
   const isEdit = !!categoria
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<CreateCategoriaData>({
+  } = useForm<CategoriaFormValues>({
     defaultValues: categoria
       ? {
           nombre: categoria.nombre,
           descripcion: categoria.descripcion || '',
-          idCategoriaPadre: categoria.idCategoriaPadre ?? null,
+          idCategoriaPadre: categoria.idCategoriaPadre ? String(categoria.idCategoriaPadre) : '',
         }
       : {
           nombre: '',
           descripcion: '',
-          idCategoriaPadre: null,
+          idCategoriaPadre: '',
         },
   })
 
@@ -47,11 +54,11 @@ export function CategoriaForm({ categoria, categorias, onSubmit, onCancel, isLoa
       })),
   ]
 
-  const handleFormSubmit = (data: CreateCategoriaData) => {
+  const handleFormSubmit = (data: CategoriaFormValues) => {
     return onSubmit({
       ...data,
-      // Convertir string vacío del select a null para el backend
-      idCategoriaPadre: data.idCategoriaPadre ? Number(data.idCategoriaPadre) : null,
+      // Convertir string vacío o null del select a null para el backend, de lo contrario a número
+      idCategoriaPadre: data.idCategoriaPadre && data.idCategoriaPadre !== '' ? Number(data.idCategoriaPadre) : null,
     })
   }
 
@@ -71,7 +78,7 @@ export function CategoriaForm({ categoria, categorias, onSubmit, onCancel, isLoa
           type="text"
           placeholder="Ej: Platos principales, Bebidas frías..."
           icon={<LayoutList size={18} />}
-          error={errors.nombre?.message}
+          error={errors.nombre?.message as string}
           {...register('nombre', { required: 'El nombre es obligatorio' })}
         />
 
@@ -91,16 +98,22 @@ export function CategoriaForm({ categoria, categorias, onSubmit, onCancel, isLoa
             <span className="pointer-events-none absolute left-4 text-slate-400 group-focus-within/input:text-wine-600 dark:group-focus-within/input:text-wine-400 transition-colors">
               <GitBranch size={18} />
             </span>
-            <FormSelect
-              className="pl-12"
-              options={padreOptions}
-              {...register('idCategoriaPadre')}
+            <Controller
+              name="idCategoriaPadre"
+              control={control}
+              render={({ field }) => (
+                <FormSelect
+                  className="pl-12"
+                  options={padreOptions}
+                  {...field}
+                />
+              )}
             />
           </div>
           {errors.idCategoriaPadre && (
             <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-rose-600 px-1 animate-in slide-in-from-top-1">
               <AlertCircle size={12} className="shrink-0" />
-              {errors.idCategoriaPadre.message}
+              {errors.idCategoriaPadre.message as React.ReactNode}
             </span>
           )}
           <p className="text-[10px] text-wine-900/30 dark:text-wine-100/20 px-1 mt-0.5">
