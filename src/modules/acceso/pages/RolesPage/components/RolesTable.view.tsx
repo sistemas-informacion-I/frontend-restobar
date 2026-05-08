@@ -1,5 +1,5 @@
 import { Edit2, Eye, Shield, Trash2 } from 'lucide-react'
-import { Button } from '@/shared/components/ui'
+import { Button, TableContainer } from '@/shared/components/ui'
 import { RolesTableProps } from './RolesTable'
 
 export function RolesTableView({
@@ -86,7 +86,7 @@ export function RolesTableView({
 
       {/* Desktop Table View */}
       <div className="hidden md:block glass-card rounded-[2.5rem] shadow-2xl shadow-wine-900/5 overflow-hidden">
-        <div className="overflow-x-auto">
+        <TableContainer>
           <table className="min-w-[720px] w-full border-collapse">
             <thead>
               <tr className="border-b border-wine-100/50 bg-wine-50/30 dark:border-wine-900/20 dark:bg-wine-950/20">
@@ -175,7 +175,7 @@ export function RolesTableView({
               ))}
             </tbody>
           </table>
-        </div>
+        </TableContainer>
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 import { Package, AlertTriangle, ChevronRight, Edit2 } from 'lucide-react'
 import { Button } from '@/shared/components/ui/Button'
+import { TableContainer } from '@/shared/components/ui'
 import { InventarioItemWithStock } from '../../../services/inventario.service'
 
 interface InventarioTableProps {
@@ -19,8 +20,9 @@ export function InventarioTable({
     <>
       {/* Desktop Table View */}
       <div className="hidden overflow-hidden rounded-[2.5rem] border border-wine-100/50 bg-white/60 shadow-2xl backdrop-blur-xl dark:border-wine-900/10 dark:bg-black/20 md:block">
-        <table className="w-full text-left">
-          <thead>
+        <TableContainer>
+          <table className="w-full text-left">
+            <thead>
             <tr className="bg-wine-50/50 dark:bg-wine-900/10">
               <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40">Insumo</th>
               <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40">Código / Marca</th>
@@ -29,8 +31,17 @@ export function InventarioTable({
               <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-wine-100/20 dark:divide-wine-900/5">
-            {insumos.map((item) => (
+            <tbody className="divide-y divide-wine-100/20 dark:divide-wine-900/5">
+            {insumos.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-8 py-12 text-center">
+                  <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">
+                    No se encontraron insumos
+                  </span>
+                </td>
+              </tr>
+            ) : (
+              insumos.map((item) => (
               <tr 
                 key={item.idInventario} 
                 className="group hover:bg-wine-50/30 dark:hover:bg-wine-900/5 transition-colors cursor-pointer"
@@ -96,14 +107,23 @@ export function InventarioTable({
                   </div>
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
+              ))
+            )}
+            </tbody>
+          </table>
+        </TableContainer>
       </div>
 
       {/* Mobile Card View */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
-        {insumos.map((item) => (
+        {insumos.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-wine-200/60 bg-white/70 py-10 text-center dark:border-wine-900/20 dark:bg-black/30">
+            <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">
+              No se encontraron insumos
+            </span>
+          </div>
+        ) : (
+          insumos.map((item) => (
           <div 
             key={item.idInventario} 
             className="group relative overflow-hidden rounded-3xl border border-wine-100/50 bg-white p-6 dark:border-wine-900/20 dark:bg-black/40 active:scale-95 transition-all shadow-lg"
@@ -147,7 +167,8 @@ export function InventarioTable({
               <ChevronRight size={20} className="text-wine-200" />
             </div>
           </div>
-        ))}
+          ))
+        )}
       </div>
     </>
   )

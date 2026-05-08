@@ -111,11 +111,11 @@ export const inventarioService = {
 
   // Lotes
   listarLotes: (idStock: number, page: number = 0, size: number = 10) =>
-    httpClient.get<Page<Lote>>(`/api/inventario/stock/${idStock}/lotes?page=${page}&size=${size}`),
+    httpClient.get<Page<Lote>>(`/api/inventario/lotes/stock/${idStock}?page=${page}&size=${size}`),
 
   agregarLote: (data: LoteRequest) =>
-    httpClient.post<Lote>('/api/inventario/stock/lote', data),
+    httpClient.post<Lote>('/api/inventario/lotes', data),
 
   actualizarEstadoLote: (idLote: number, estado: EstadoLote) =>
-    httpClient.post<Lote>(`/api/inventario/stock/lote/${idLote}/estado`, estado),
+    httpClient.post<Lote>(`/api/inventario/lotes/${idLote}/estado`, estado),
 }

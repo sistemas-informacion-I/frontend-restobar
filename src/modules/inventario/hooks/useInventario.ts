@@ -6,7 +6,7 @@ import { inventarioService } from '../services/inventario.service'
 const KEYS = {
   insumos: '/api/inventario',
   stock: (id: number) => `/api/inventario/stock/sucursal/${id}`,
-  lotes: (id: number) => `/api/inventario/stock/${id}/lotes`,
+  lotes: (id: number) => `/api/inventario/lotes/stock/${id}`,
 }
 
 export function useInventario() {
@@ -39,7 +39,7 @@ export function useStock(idSucursal?: number) {
 
 export function useLotes(idStock?: number, page: number = 0, size: number = 5) {
   const { data: pageData, error, mutate, isLoading } = useSWR(
-    idStock ? `/api/inventario/stock/${idStock}/lotes?page=${page}&size=${size}` : null,
+    idStock ? `${KEYS.lotes(idStock)}?page=${page}&size=${size}` : null,
     () => inventarioService.listarLotes(idStock!, page, size)
   )
 

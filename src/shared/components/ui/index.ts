@@ -28,6 +28,7 @@ export { Select } from './Select/Select'
 // Advanced Components
 export { DataTable } from './DataTable'
 export { TableCell, TableRow, TableActionCell } from './DataTable'
+export { TableContainer } from './TableContainer'
 export { Pagination } from './Pagination/Pagination'
 
 // Icons
