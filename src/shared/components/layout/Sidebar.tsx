@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Users, Shield, LayoutDashboard, Activity, User, Store, Map, Grid, Truck, Package, LayoutList } from 'lucide-react'
+import { Users, Shield, LayoutDashboard, Activity, User, Store, Map, Grid, Truck, Package, LayoutList, ShoppingCart } from 'lucide-react'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { SidebarView } from './SidebarView'
 
@@ -33,6 +33,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized }: Sideb
         { path: '/proveedores', label: 'Proveedores', icon: Truck, show: canRead('providers') },
         // ── NUEVO ──
         { path: '/categorias', label: 'Categorías', icon: LayoutList, show: canRead('categories') },
+        { path: '/compras', label: 'Compras', icon: ShoppingCart, show: canRead('compras') },
       ]
     },
     {

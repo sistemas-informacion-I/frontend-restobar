@@ -21,6 +21,7 @@ import { Toaster } from 'sonner'
 
 import { ProtectedLayout } from './shared/components/layout/ProtectedLayout'
 import CategoriasPage from './modules/comercial/pages/CategoriasPage'
+import Compra from './modules/comercial/pages/Compra'
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
                 <Route path="/inventario" element={<InventarioPage />} />
                 <Route path="/restobar" element={<DashboardPage />} />
                 <Route path="/categorias" element={<CategoriasPage />} />
+                <Route path="/compras" element={<Compra />} />
               </Route>
               
               <Route path="/" element={<Navigate to="/login" replace />} />
