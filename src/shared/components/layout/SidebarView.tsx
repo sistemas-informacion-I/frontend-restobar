@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { X, Sparkles, ChevronDown } from 'lucide-react'
+import { X, ChevronDown } from 'lucide-react'
+import { CustomAssetIcon } from '@/shared/components/ui'
 
 interface SidebarViewProps {
   user: any
@@ -29,8 +30,8 @@ export const SidebarView: React.FC<SidebarViewProps> = ({
   return (
     <aside className={`fixed inset-y-0 left-0 z-[100] flex flex-col border-r border-wine-100/50 bg-white/70 backdrop-blur-2xl transition-all duration-500 ease-in-out dark:border-wine-900/30 dark:bg-black/60 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-[20px_0_40px_-15px_rgba(76,5,25,0.05)] no-scrollbar ${sidebarMinimized ? 'w-20' : 'w-72'}`}>
       <div className={`flex items-center border-b border-wine-100/30 p-8 dark:border-wine-900/10 transition-all duration-500 ${sidebarMinimized ? 'justify-center px-4' : 'gap-4'}`}>
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-wine-600 to-wine-950 text-white shadow-xl shadow-wine-900/40 rotate-3 group hover:rotate-0 transition-transform duration-300">
-          <Sparkles size={24} className="animate-pulse" />
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center transition-all duration-300">
+          <CustomAssetIcon size={50} className="drop-shadow-lg" />
         </div>
         {!sidebarMinimized && (
           <div className="flex flex-col animate-in fade-in slide-in-from-left-2 duration-500">

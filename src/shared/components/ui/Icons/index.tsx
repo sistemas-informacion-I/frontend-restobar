@@ -493,3 +493,19 @@ export const FirefoxIcon: React.FC<IconProps> = ({ className = "w-4 h-4", size }
     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
   </svg>
 )
+// ============================================================
+// ASSET BASED ICONS (PNG/JPG)
+// ============================================================
+
+
+import customIconPng from '@/assets/Icons/logo-lagaira.png'
+
+export const CustomAssetIcon: React.FC<IconProps> = ({ className = "w-6 h-6", size }) => (
+  <img 
+    src={customIconPng} 
+    className={className} 
+    style={size ? { width: size, height: size } : undefined}
+    alt="Custom Icon" 
+  />
+)
+
