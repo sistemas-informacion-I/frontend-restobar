@@ -1,68 +1,99 @@
 import SockJS from 'sockjs-client';
 import { Client, StompSubscription } from '@stomp/stompjs';
 
+interface PendingSubscription {
+  id: string;
+  topic: string;
+  callback: (data: any) => void;
+  realSubscription?: StompSubscription;
+}
+
 /**
  * Cliente WebSocket singleton genérico, basado en STOMP con fallback a SockJS.
  * Utilizado para la conexión bidireccional en tiempo real con el backend Spring Boot.
  */
 class WebSocketClient {
   private client: Client;
+  private pendingSubscriptions: Map<string, PendingSubscription> = new Map();
+  private subscriptionIdCounter = 0;
 
   constructor() {
     // Tomamos la URL del servidor backend. 
-    // Por defecto asume que si corre en local o con vite está en la 8080 (o la de env)
     const backendUrl = import.meta.env.VITE_API_URL 
       ? import.meta.env.VITE_API_URL.replace('/api', '')
       : 'http://localhost:8080';
 
     this.client = new Client({
-      // Se utiliza SockJS como fábrica para conectarse al /ws endpoint configurado en Spring.
       webSocketFactory: () => new SockJS(`${backendUrl}/ws`),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      // Si en el futuro protegen los temas web sockets, acá se pasan los Headers STOMP (Ej. el Token JWT)
-      connectHeaders: {
+      // Se obtienen los headers de forma dinámica justo antes de conectar (útil para reconexiones tras login)
+      beforeConnect: () => {
+        this.client.connectHeaders = {
           Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+        };
+      },
+      onConnect: () => {
+        if (import.meta.env.DEV) {
+          console.debug('[STOMP] Conectado exitosamente');
+        }
+        this.processPendingSubscriptions();
       },
       debug: (str) => {
-        // Opcional: imprimir los debugs para desarrollo
         if (import.meta.env.DEV) {
           console.debug('[STOMP]', str);
         }
       },
     });
 
-    // Activar conexión de forma asincrónica.
     this.client.activate();
+  }
+
+  private processPendingSubscriptions() {
+    this.pendingSubscriptions.forEach((sub) => {
+      if (!sub.realSubscription) {
+        sub.realSubscription = this.emitSubscription(sub.topic, sub.callback);
+      }
+    });
   }
 
   /**
    * Suscripción genérica a un canal/tema específico.
+   * Maneja internamente el estado de conexión para encolar subscripciones
+   * si el cliente aún no está conectado.
    * 
-   * @param topic El canal (ej., "/topic/comandas")
-   * @param callback Función de retorno tipada genéricamente que ejecutará la información recibida.
-   * @returns Un objeto de suscripción STOMP que permite hacer unsubscribe() al desmontar el componente.
+   * @param topic El canal (ej., "/topic/sucursal/1/comandas")
+   * @param callback Función de retorno tipada genéricamente
+   * @returns Un objeto con el método unsubscribe()
    */
-  public subscribe<T>(topic: string, callback: (data: T) => void): StompSubscription | null {
-    // Si el cliente no está conectado en el exacto instante, programamos la subscripción para después.
-    // Lo ideal en React es conectarlo y manejar el estado async o suscribirse onSuccess.
-    // El onConnect del cliente no debe ser sobreescrito cada vez. STOMP encoli-rá la suscripción automáticamente
-    // gracias a su protocolo de reconnects o subscripciones pendientes si se realiza a través de su API nativa.
+  public subscribe<T>(topic: string, callback: (data: T) => void): { unsubscribe: () => void } {
+    const id = `sub_${this.subscriptionIdCounter++}`;
     
-    // Fallback: asegurarse de que se conecte
-    if (!this.client.connected) {
-       this.client.onConnect = () => {
-         return this.emitSubscription<T>(topic, callback);
-       }
+    const pendingSub: PendingSubscription = {
+      id,
+      topic,
+      callback,
+    };
+    
+    this.pendingSubscriptions.set(id, pendingSub);
+
+    if (this.client.connected) {
+      pendingSub.realSubscription = this.emitSubscription<T>(topic, callback);
     }
-    
-    return this.emitSubscription<T>(topic, callback);
+
+    return {
+      unsubscribe: () => {
+        const sub = this.pendingSubscriptions.get(id);
+        if (sub?.realSubscription) {
+          sub.realSubscription.unsubscribe();
+        }
+        this.pendingSubscriptions.delete(id);
+      }
+    };
   }
 
-  private emitSubscription<T>(topic: string, callback: (data: T) => void): StompSubscription | null {
-    if (!this.client.connected) return null; // Será encolado/ejecutado por onConnect() arribeñ
-
+  private emitSubscription<T>(topic: string, callback: (data: T) => void): StompSubscription {
     return this.client.subscribe(topic, (message) => {
       try {
         const body: T = JSON.parse(message.body);
