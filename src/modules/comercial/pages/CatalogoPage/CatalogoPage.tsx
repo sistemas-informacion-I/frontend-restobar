@@ -15,7 +15,7 @@ export default function CatalogoPage() {
 
   const canUpdate = hasPermission('catalogo:update')
   const isAdmin = user?.tipoUsuario === 'E' || user?.tipoUsuario === 'S'
-  const sucursalId = user?.sucursalId ?? 1
+  const sucursalId = user?.sucursalId || 1
 
   const { productos, isLoading, isSubmitting, loadError, actualizarProducto } = useCatalogo(
     sucursalId,
