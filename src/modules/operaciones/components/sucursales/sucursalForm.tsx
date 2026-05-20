@@ -173,7 +173,7 @@ export function SucursalForm({ sucursal, onSubmit, onCancel, isLoading }: Sucurs
           </label>
           <FormSelect
             {...register('idUsuarioResponsable', { 
-              required: 'Debe asignar un responsable',
+             // required: 'Debe asignar un responsable',
               valueAsNumber: true 
             })}
             options={[
