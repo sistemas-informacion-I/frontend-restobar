@@ -9,6 +9,7 @@ import RolesPage from './modules/acceso/pages/RolesPage'
 import AuditoriaPage from './modules/acceso/pages/AuditoriaPage'
 import PerfilPersonalPage from './modules/acceso/pages/PerfilPersonalPage'
 
+
 import { SWRConfig } from 'swr'
 import { httpClient } from './core/api/http-client'
 import SucursalesPage from './modules/operaciones/pages/SucursalesPage'
@@ -24,6 +25,8 @@ import CategoriasPage from './modules/comercial/pages/CategoriasPage'
 import Compra from './modules/comercial/pages/Compra'
 import ProductosFinalesPage from './modules/comercial/pages/ProductosFinalesPage'
 import RecetasPage from './modules/inventario/pages/RecetasPage'
+
+import CatalogoPage from './modules/comercial/pages/CatalogoPage'
 
 function App() {
   return (
@@ -60,6 +63,7 @@ function App() {
                 <Route path="/compras" element={<Compra />} />
                 <Route path="/productos-finales" element={<ProductosFinalesPage />} />
                 <Route path="/recetas" element={<RecetasPage />} />
+                <Route path="/catalogo" element={<CatalogoPage />} />
               </Route>
               
               <Route path="/" element={<Navigate to="/login" replace />} />

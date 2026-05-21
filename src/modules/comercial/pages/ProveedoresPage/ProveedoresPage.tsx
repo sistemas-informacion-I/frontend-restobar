@@ -17,16 +17,19 @@ export default function ProveedoresPage() {
   } = useProveedores()
 
   const [search, setSearch] = useState('')
-
   const [feedbackMessage, setFeedbackMessage] = useState('')
   const [feedbackType, setFeedbackType] = useState<'error' | 'success' | ''>('')
-
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
   const [selectedProveedor, setSelectedProveedor] = useState<Proveedor | null>(null)
 
-  const { hasPermission } = useAuth()
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean
+    type: 'activar' | 'desactivar'
+    proveedor: Proveedor | null
+  }>({ isOpen: false, type: 'desactivar', proveedor: null })
 
+  const { hasPermission } = useAuth()
   const canCreate = hasPermission('providers:create')
   const canUpdate = hasPermission('providers:update')
 
@@ -69,13 +72,40 @@ export default function ProveedoresPage() {
     setIsViewModalOpen(true)
   }
 
-  const handleDesactivar = async (proveedor: Proveedor) => {
-    if (!confirm(`¿Desactivar al proveedor "${proveedor.empresa}"?`)) return
+  const handleDesactivar = (proveedor: Proveedor) => {
+    setConfirmModal({ isOpen: true, type: 'desactivar', proveedor })
+  }
+
+  const handleActivar = (proveedor: Proveedor) => {
+    setConfirmModal({ isOpen: true, type: 'activar', proveedor })
+  }
+
+  const handleConfirm = async () => {
+    if (!confirmModal.proveedor) return
     try {
-      await deactivateProveedor(proveedor.idProveedor)
-      showFeedback('Proveedor desactivado correctamente', 'success')
+      if (confirmModal.type === 'desactivar') {
+        await deactivateProveedor(confirmModal.proveedor.idProveedor)
+        showFeedback('Proveedor desactivado correctamente', 'success')
+      } else {
+        await updateProveedor({
+          id: confirmModal.proveedor.idProveedor,
+          data: {
+            empresa: confirmModal.proveedor.empresa,
+            nit: confirmModal.proveedor.nit,
+            nombreContacto: confirmModal.proveedor.nombreContacto,
+            telefono: confirmModal.proveedor.telefono,
+            correo: confirmModal.proveedor.correo,
+            direccion: confirmModal.proveedor.direccion,
+            categoriaProductos: confirmModal.proveedor.categoriaProductos,
+            activo: true
+          }
+        })
+        showFeedback('Proveedor activado correctamente', 'success')
+      }
     } catch (error: any) {
-      showFeedback(getErrorMessage(error, 'Desactivar proveedor'), 'error')
+      showFeedback(getErrorMessage(error, `${confirmModal.type === 'activar' ? 'Activar' : 'Desactivar'} proveedor`), 'error')
+    } finally {
+      setConfirmModal({ isOpen: false, type: 'desactivar', proveedor: null })
     }
   }
 
@@ -113,10 +143,14 @@ export default function ProveedoresPage() {
       isViewModalOpen={isViewModalOpen}
       setIsViewModalOpen={setIsViewModalOpen}
       selectedProveedor={selectedProveedor}
+      confirmModal={confirmModal}
+      onCloseConfirm={() => setConfirmModal({ isOpen: false, type: 'desactivar', proveedor: null })}
+      onConfirm={handleConfirm}
       onCreate={handleCreate}
       onEdit={handleEdit}
       onView={handleView}
       onDesactivar={handleDesactivar}
+      onActivar={handleActivar}
       onSubmit={onSubmit}
     />
   )

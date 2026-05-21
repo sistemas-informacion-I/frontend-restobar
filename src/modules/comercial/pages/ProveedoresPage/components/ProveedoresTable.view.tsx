@@ -1,4 +1,4 @@
-import { Edit2, Eye, PowerOff, Truck, Tag } from 'lucide-react'
+import { Edit2, Eye, PowerOff, Power, Truck, Tag } from 'lucide-react'
 import { Button } from '@/shared/components/ui/Button'
 import { TableContainer } from '@/shared/components/ui'
 import { Proveedor } from '@/modules/comercial/services/proveedores.service'
@@ -9,6 +9,7 @@ interface ProveedoresTableProps {
   onView: (proveedor: Proveedor) => void
   onEdit: (proveedor: Proveedor) => void
   onDesactivar: (proveedor: Proveedor) => void
+  onActivar: (proveedor: Proveedor) => void
 }
 
 export function ProveedoresTable({
@@ -17,6 +18,7 @@ export function ProveedoresTable({
   onView,
   onEdit,
   onDesactivar,
+  onActivar,
 }: ProveedoresTableProps) {
   return (
     <div className="flex flex-col gap-4">
@@ -88,14 +90,24 @@ export function ProveedoresTable({
                     <Edit2 size={16} className="mr-2" /> Editar
                   </Button>
                 )}
-                {canUpdate && prov.activo && (
-                  <Button
-                    variant="danger"
-                    className="!rounded-xl h-12 col-span-2 shadow-lg shadow-rose-900/10"
-                    onClick={() => onDesactivar(prov)}
-                  >
-                    <PowerOff size={16} className="mr-2" /> Desactivar Proveedor
-                  </Button>
+                {canUpdate && (
+                  prov.activo ? (
+                    <Button
+                      variant="danger"
+                      className="!rounded-xl h-12 col-span-2 shadow-lg shadow-rose-900/10"
+                      onClick={() => onDesactivar(prov)}
+                    >
+                      <PowerOff size={16} className="mr-2" /> Desactivar Proveedor
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      className="!rounded-xl h-12 col-span-2 bg-emerald-50 text-emerald-600 hover:!bg-emerald-100 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-900/30 shadow-lg shadow-emerald-900/10"
+                      onClick={() => onActivar(prov)}
+                    >
+                      <Power size={16} className="mr-2" /> Activar Proveedor
+                    </Button>
+                  )
                 )}
               </div>
             </div>
@@ -128,94 +140,103 @@ export function ProveedoresTable({
                   </td>
                 </tr>
               ) : proveedores.map((prov) => (
-                  <tr key={prov.idProveedor} className="transition-all duration-300 hover:bg-wine-50/30 dark:hover:bg-wine-900/10 group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-wine-600 to-wine-950 text-white shadow-lg shadow-wine-900/20 group-hover:scale-105 transition-transform">
-                          <Truck size={20} />
-                        </div>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="font-bold text-slate-900 dark:text-white tracking-tight leading-none">{prov.empresa}</span>
-                          <span className="text-[10px] font-bold lowercase tracking-widest text-wine-600 dark:text-wine-400">{prov.correo || 'sin correo'}</span>
-                        </div>
+                <tr key={prov.idProveedor} className="transition-all duration-300 hover:bg-wine-50/30 dark:hover:bg-wine-900/10 group">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-wine-600 to-wine-950 text-white shadow-lg shadow-wine-900/20 group-hover:scale-105 transition-transform">
+                        <Truck size={20} />
                       </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{prov.nit || '—'}</span>
-                    </td>
-
-                    <td className="px-6 py-4">
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{prov.nombreContacto}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">{prov.telefono}</span>
+                        <span className="font-bold text-slate-900 dark:text-white tracking-tight leading-none">{prov.empresa}</span>
+                        <span className="text-[10px] font-bold lowercase tracking-widest text-wine-600 dark:text-wine-400">{prov.correo || 'sin correo'}</span>
                       </div>
-                    </td>
+                    </div>
+                  </td>
 
-                    <td className="px-6 py-4">
-                      {prov.categoriaProductos ? (
-                        <span className="inline-flex items-center gap-1.5 bg-wine-500/10 text-wine-700 dark:text-wine-300 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border border-wine-100/50 dark:border-wine-800/30">
-                          <Tag size={10} />
-                          {prov.categoriaProductos}
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600 italic">Sin categoría</span>
-                      )}
-                    </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{prov.nit || '—'}</span>
+                  </td>
 
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[9px] font-black uppercase tracking-tighter shadow-sm border ${
-                        prov.activo
-                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                          : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
-                      }`}>
-                        <div className={`h-1.5 w-1.5 rounded-full ${prov.activo ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
-                        {prov.activo ? 'Activo' : 'Inactivo'}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{prov.nombreContacto}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">{prov.telefono}</span>
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4">
+                    {prov.categoriaProductos ? (
+                      <span className="inline-flex items-center gap-1.5 bg-wine-500/10 text-wine-700 dark:text-wine-300 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border border-wine-100/50 dark:border-wine-800/30">
+                        <Tag size={10} />
+                        {prov.categoriaProductos}
                       </span>
-                    </td>
+                    ) : (
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600 italic">Sin categoría</span>
+                    )}
+                  </td>
 
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 border border-transparent hover:border-wine-100 dark:hover:border-wine-900/20 transition-all"
-                          onClick={() => onView(prov)}
-                          title="Ver detalles"
-                        >
-                          <Eye size={16} />
-                        </Button>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[9px] font-black uppercase tracking-tighter shadow-sm border ${
+                      prov.activo
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                        : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+                    }`}>
+                      <div className={`h-1.5 w-1.5 rounded-full ${prov.activo ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                      {prov.activo ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </td>
 
-                        {canUpdate && (
-                          <>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 border border-transparent hover:border-wine-100 dark:hover:border-wine-900/20 transition-all"
+                        onClick={() => onView(prov)}
+                        title="Ver detalles"
+                      >
+                        <Eye size={16} />
+                      </Button>
+
+                      {canUpdate && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 border border-transparent hover:border-wine-100 dark:hover:border-wine-900/20 transition-all"
+                            onClick={() => onEdit(prov)}
+                            title="Editar"
+                          >
+                            <Edit2 size={16} />
+                          </Button>
+
+                          {prov.activo ? (
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              className="!rounded-xl shadow-lg shadow-rose-900/10"
+                              onClick={() => onDesactivar(prov)}
+                              title="Desactivar"
+                            >
+                              <PowerOff size={16} />
+                            </Button>
+                          ) : (
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 border border-transparent hover:border-wine-100 dark:hover:border-wine-900/20 transition-all"
-                              onClick={() => onEdit(prov)}
-                              title="Editar"
+                              className="!rounded-xl bg-emerald-50 text-emerald-600 hover:!bg-emerald-100 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-900/30 shadow-lg shadow-emerald-900/10"
+                              onClick={() => onActivar(prov)}
+                              title="Activar"
                             >
-                              <Edit2 size={16} />
+                              <Power size={16} />
                             </Button>
-
-                            {prov.activo && (
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="!rounded-xl shadow-lg shadow-rose-900/10"
-                                onClick={() => onDesactivar(prov)}
-                                title="Desactivar"
-                              >
-                                <PowerOff size={16} />
-                              </Button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              }
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </TableContainer>
