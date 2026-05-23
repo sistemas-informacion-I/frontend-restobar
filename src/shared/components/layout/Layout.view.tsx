@@ -2,6 +2,7 @@ import React from 'react'
 import { LogOut, Sun, Moon, Menu } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { Sidebar } from './Sidebar'
+import { CarritoButton } from '@/modules/electronico/pages/CarritoPage'
 
 interface LayoutViewProps {
   children: React.ReactNode
@@ -61,7 +62,10 @@ export const LayoutView: React.FC<LayoutViewProps> = ({
             </button>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* ── Carrito ── */}
+            <CarritoButton />
+
             <Button 
               variant="ghost" 
               onClick={toggleTheme}

@@ -1,15 +1,21 @@
-import { Search, ShoppingBag } from 'lucide-react'
-import { Button } from '@/shared/components/ui/Button'
+import { Search, ShoppingBag, Store } from 'lucide-react'
 import { Input } from '@/shared/components/ui/Input'
+import { Sucursal } from '@/modules/acceso/services/types'
 
 interface CatalogoToolbarProps {
   search: string
   onSearchChange: (value: string) => void
   total: number
   isAdmin: boolean
+  sucursales: Sucursal[]
+  sucursalId: number | null
+  onSucursalChange: (id: number) => void
 }
 
-export function CatalogoToolbar({ search, onSearchChange, total, isAdmin }: CatalogoToolbarProps) {
+export function CatalogoToolbar({
+  search, onSearchChange, total, isAdmin,
+  sucursales, sucursalId, onSucursalChange
+}: CatalogoToolbarProps) {
   return (
     <>
       <header className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between animate-in fade-in slide-in-from-top-4 duration-1000">
@@ -25,6 +31,23 @@ export function CatalogoToolbar({ search, onSearchChange, total, isAdmin }: Cata
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-300/40 ml-1">
             {isAdmin ? 'Gestión del catálogo por sucursal' : 'Productos disponibles'}
           </p>
+        </div>
+
+        {/* Selector de sucursal */}
+        <div className="flex items-center gap-2">
+          <Store size={16} className="text-wine-600 shrink-0" />
+          <select
+            value={sucursalId ?? ''}
+            onChange={(e) => onSucursalChange(Number(e.target.value))}
+            className="h-10 rounded-xl border border-wine-100/50 bg-white/50 px-3 text-xs font-bold text-slate-700 backdrop-blur-sm focus:border-wine-600 focus:outline-none dark:border-wine-900/20 dark:bg-black/20 dark:text-slate-200"
+          >
+            <option value="" disabled>Seleccionar sucursal...</option>
+            {sucursales.map(s => (
+              <option key={s.idSucursal} value={s.idSucursal}>
+                {s.nombre}
+              </option>
+            ))}
+          </select>
         </div>
       </header>
 

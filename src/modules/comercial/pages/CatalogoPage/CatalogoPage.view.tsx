@@ -3,6 +3,7 @@ import { CatalogoToolbar } from './components/CatalogoToolbar.view'
 import { CatalogoTable } from './components/CatalogoTable.view'
 import { CatalogoForm } from './components/CatalogoForm.view'
 import { CatalogoProducto, CatalogoUpdateRequest } from '../../models/catalogo.model'
+import { Sucursal } from '@/modules/acceso/services/types'
 
 interface CatalogoPageViewProps {
   productos: CatalogoProducto[]
@@ -21,6 +22,9 @@ interface CatalogoPageViewProps {
   onEdit: (producto: CatalogoProducto) => void
   onAgregarCarrito: (producto: CatalogoProducto) => void
   onSubmit: (data: CatalogoUpdateRequest) => Promise<void>
+  sucursales: Sucursal[]
+  sucursalId: number | null
+  onSucursalChange: (id: number) => void
 }
 
 export function CatalogoPageView({
@@ -28,6 +32,7 @@ export function CatalogoPageView({
   search, onSearchChange, feedbackMessage, feedbackType,
   canUpdate, isAdmin, isFormModalOpen, setIsFormModalOpen,
   selectedProducto, onEdit, onAgregarCarrito, onSubmit,
+  sucursales, sucursalId, onSucursalChange,
 }: CatalogoPageViewProps) {
   return (
     <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
@@ -44,9 +49,23 @@ export function CatalogoPageView({
         </div>
       )}
 
-      <CatalogoToolbar search={search} onSearchChange={onSearchChange} total={total} isAdmin={isAdmin} />
+      <CatalogoToolbar
+        search={search}
+        onSearchChange={onSearchChange}
+        total={total}
+        isAdmin={isAdmin}
+        sucursales={sucursales}
+        sucursalId={sucursalId}
+        onSucursalChange={onSucursalChange}
+      />
 
-      {isLoading ? (
+      {!sucursalId ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-wine-50/10 rounded-[2.5rem] border-2 border-dashed border-wine-100/50 dark:bg-black/10 dark:border-wine-900/20">
+          <p className="text-xs font-bold uppercase tracking-widest text-wine-900/40">
+            Selecciona una sucursal para ver el catálogo
+          </p>
+        </div>
+      ) : isLoading ? (
         <div className="flex flex-col items-center justify-center py-20 bg-wine-50/10 rounded-[2.5rem] border-2 border-dashed border-wine-100/50 dark:bg-black/10 dark:border-wine-900/20">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-wine-200 border-t-wine-600" />
           <p className="mt-4 text-xs font-bold uppercase tracking-widest text-wine-900/40">Cargando catálogo...</p>
