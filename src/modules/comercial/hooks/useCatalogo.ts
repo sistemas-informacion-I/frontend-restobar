@@ -2,7 +2,6 @@ import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 import { catalogoService } from '../services/catalogo.service'
 import { CatalogoProducto, CatalogoUpdateRequest } from '../models/catalogo.model'
-import { getErrorMessage } from '@/core/api'
 
 export const useCatalogo = (idSucursal?: number, isAdmin = false) => {
   const key = idSucursal

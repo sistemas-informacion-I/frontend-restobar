@@ -30,5 +30,5 @@ export interface ActualizarItemRequest {
 }
 
 export interface CheckoutResponse {
-  idComanda: number
+  idNotaVenta: number
 }

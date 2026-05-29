@@ -18,6 +18,10 @@ export default function CatalogoPage() {
   const [feedbackType, setFeedbackType] = useState<'error' | 'success' | ''>('')
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [selectedProducto, setSelectedProducto] = useState<CatalogoProducto | null>(null)
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
+  const [sortBy, setSortBy] = useState<'nombre' | 'precio_asc' | 'precio_desc' | 'recientes'>('nombre')
+  const [onlyAvailable, setOnlyAvailable] = useState(false)
+  const [vistaPrevia, setVistaPrevia] = useState(false)
 
   const canUpdate = hasPermission('catalogo:update')
   const isAdmin = user?.roles?.some(r =>
@@ -42,14 +46,62 @@ export default function CatalogoPage() {
     setCarritoSucursal(id)
   }, [setCarritoSucursal])
 
+  const handleClearFilters = useCallback(() => {
+    setSearch('')
+    setSortBy('nombre')
+    setOnlyAvailable(false)
+  }, [])
+
   const filteredProductos = useMemo(() => {
-    return productos.filter(
-      (p) =>
-        p.nombre.toLowerCase().includes(search.toLowerCase()) ||
-        (p.descripcion && p.descripcion.toLowerCase().includes(search.toLowerCase())) ||
-        (p.nombreCategoria && p.nombreCategoria.toLowerCase().includes(search.toLowerCase()))
-    )
-  }, [productos, search])
+    let result = productos
+
+    if (search) {
+      const searchLower = search.toLowerCase()
+      result = result.filter(
+        (p) =>
+          p.nombre.toLowerCase().includes(searchLower) ||
+          (p.descripcion && p.descripcion.toLowerCase().includes(searchLower)) ||
+          (p.nombreCategoria && p.nombreCategoria.toLowerCase().includes(searchLower))
+      )
+    }
+
+    if (onlyAvailable) {
+      result = result.filter((p) => p.disponible && p.hayStock)
+    }
+
+    result = [...result].sort((a, b) => {
+      switch (sortBy) {
+        case 'precio_asc':
+          return a.precio - b.precio
+        case 'precio_desc':
+          return b.precio - a.precio
+        case 'recientes':
+          return 0
+        case 'nombre':
+        default:
+          return a.nombre.localeCompare(b.nombre)
+      }
+    })
+
+    return result
+  }, [productos, search, sortBy, onlyAvailable])
+
+  const uniqueCategories = useMemo(() => {
+    const cats = new Map<number, string>()
+    productos.forEach(p => {
+      if (p.idCategoria && p.nombreCategoria) {
+        cats.set(p.idCategoria, p.nombreCategoria)
+      }
+    })
+    return Array.from(cats.entries()).map(([id, nombre]) => ({ id, nombre }))
+  }, [productos])
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
+
+  const displayedProductos = useMemo(() => {
+    if (selectedCategoryId === null) return filteredProductos
+    return filteredProductos.filter(p => p.idCategoria === selectedCategoryId)
+  }, [filteredProductos, selectedCategoryId])
 
   const handleEdit = (producto: CatalogoProducto) => {
     setSelectedProducto(producto)
@@ -58,11 +110,11 @@ export default function CatalogoPage() {
     setIsFormModalOpen(true)
   }
 
-  const handleAgregarCarrito = useCallback(async (producto: CatalogoProducto) => {
+  const handleAgregarCarrito = useCallback(async (producto: CatalogoProducto, sourceEl?: HTMLElement) => {
     await agregarItem({
       idProductoFinal: producto.idProductoFinal,
       cantidad: 1,
-    })
+    }, sourceEl)
   }, [agregarItem])
 
   const onSubmit = async (data: CatalogoUpdateRequest) => {
@@ -80,8 +132,8 @@ export default function CatalogoPage() {
 
   return (
     <CatalogoPageView
-      productos={filteredProductos}
-      total={productos.length}
+      productos={displayedProductos}
+      total={displayedProductos.length}
       isLoading={isLoading}
       isSubmitLoading={isSubmitting}
       search={search}
@@ -90,6 +142,8 @@ export default function CatalogoPage() {
       feedbackType={feedbackType || (loadError ? 'error' : '')}
       canUpdate={canUpdate}
       isAdmin={isAdmin}
+      vistaPrevia={vistaPrevia}
+      onVistaPreviaChange={setVistaPrevia}
       isFormModalOpen={isFormModalOpen}
       setIsFormModalOpen={setIsFormModalOpen}
       selectedProducto={selectedProducto}
@@ -99,6 +153,16 @@ export default function CatalogoPage() {
       sucursales={sucursales ?? []}
       sucursalId={sucursalId}
       onSucursalChange={handleSucursalChange}
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+      sortBy={sortBy}
+      onSortByChange={setSortBy}
+      onlyAvailable={onlyAvailable}
+      onOnlyAvailableChange={setOnlyAvailable}
+      onClearFilters={handleClearFilters}
+      categories={uniqueCategories}
+      selectedCategoryId={selectedCategoryId}
+      onSelectedCategoryChange={setSelectedCategoryId}
     />
   )
 }
