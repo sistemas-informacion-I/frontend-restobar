@@ -53,9 +53,10 @@ export class HttpClient {
             requestUrl.endsWith('/login') ||
             requestUrl === '/register' ||
             requestUrl.endsWith('/register') ||
-            requestUrl.includes('/login/forgot/')
+            requestUrl.includes('/login/forgot/') ||
+            requestUrl.startsWith('/carrito')
 
-          // For auth entry and recovery failures, return API error without refresh/redirect.
+          // For auth entry, recovery, and cart operations, return API error without refresh/redirect.
           if (isAuthEntryEndpoint) {
             const apiError = this.handleError(error)
             return Promise.reject(apiError)
@@ -188,8 +189,8 @@ export class HttpClient {
     }
   }
 
-  async get<T>(url: string): Promise<T> {
-    const response = await this.axiosInstance.get<T>(url)
+  async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.axiosInstance.get<T>(url, config)
     return response.data
   }
 
@@ -208,8 +209,8 @@ export class HttpClient {
     return response.data
   }
 
-  async delete<T = void>(url: string): Promise<T> {
-    const response = await this.axiosInstance.delete<T>(url)
+  async delete<T = void>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.axiosInstance.delete<T>(url, config)
     return response.data
   }
 }
