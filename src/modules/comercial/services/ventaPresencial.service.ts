@@ -5,6 +5,7 @@ import type {
   ClienteMock,
   VentaPresencialRequest,
   VentaPresencial,
+  MetodoPagoResponse,
 } from '../models/ventaPresencial.model'
 
 const MOCK_COMANDAS: Comanda[] = [
@@ -90,6 +91,17 @@ function simulateDelay<T>(data: T, ms = 600): Promise<T> {
 }
 
 export const VentaPresencialService = {
+  async getMetodosPago(): Promise<MetodoPagoResponse[]> {
+    if (import.meta.env.VITE_USE_MOCK !== 'false') {
+      return simulateDelay([
+        { idMetodoPago: 1, nombre: 'Efectivo', descripcion: 'Pago en efectivo en punto de venta', comisionPorcentaje: 0, comisionFija: 0, activo: true },
+        { idMetodoPago: 2, nombre: 'Tarjeta Débito', descripcion: 'Pago con tarjeta de débito Visa/Mastercard', comisionPorcentaje: 2.5, comisionFija: 0.50, activo: true },
+        { idMetodoPago: 3, nombre: 'QR Pago Móvil', descripcion: 'Pago mediante código QR (BCP, etc.)', comisionPorcentaje: 1.5, comisionFija: 0, activo: true },
+        { idMetodoPago: 4, nombre: 'PayPal', descripcion: 'Pago a través de PayPal', comisionPorcentaje: 3.5, comisionFija: 0.30, activo: true },
+      ])
+    }
+    return httpClient.get<MetodoPagoResponse[]>('/api/metodos-pago')
+  },
   async getComandas(filtro?: string): Promise<Comanda[]> {
     if (import.meta.env.VITE_USE_MOCK !== 'false') {
       let result = MOCK_COMANDAS
@@ -168,6 +180,6 @@ export const VentaPresencialService = {
         },
       }
     }
-    return httpClient.post<VentaPresencial>('/api/ventas/presencial', data)
+    return httpClient.post<VentaPresencial>('/api/notas-venta', data)
   },
 }

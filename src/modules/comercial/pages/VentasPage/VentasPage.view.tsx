@@ -15,7 +15,7 @@ import type {
   ClienteVenta,
   ClienteMock,
   AjustesVenta as AjustesVentaType,
-  MetodoPagoType,
+  MetodoPagoResponse,
   EstadoVenta,
 } from '../../models/ventaPresencial.model'
 
@@ -53,8 +53,10 @@ interface VentasPageViewProps {
   busquedaCliente: string
   onBusquedaClienteChange: (v: string) => void
   clientes: ClienteMock[]
-  metodoPago: MetodoPagoType
-  onMetodoPagoChange: (v: MetodoPagoType) => void
+  metodosPago: MetodoPagoResponse[]
+  metodoPagoId: number
+  metodoPagoNombre: string
+  onMetodoPagoChange: (v: number) => void
   onConfirmarClick: () => void
   onCancelar: () => void
   isConfirmModalOpen: boolean
@@ -101,7 +103,9 @@ export function VentasPageView({
   busquedaCliente,
   onBusquedaClienteChange,
   clientes: clientesList,
-  metodoPago,
+  metodosPago,
+  metodoPagoId,
+  metodoPagoNombre,
   onMetodoPagoChange,
   onConfirmarClick,
   onCancelar,
@@ -170,8 +174,9 @@ export function VentasPageView({
               />
 
               <MetodoPago
-                metodoPago={metodoPago}
+                metodoPagoId={metodoPagoId}
                 onMetodoPagoChange={onMetodoPagoChange}
+                metodosPago={metodosPago}
               />
 
               <AccionesVenta
@@ -192,7 +197,7 @@ export function VentasPageView({
         onConfirm={onConfirmarVenta}
         isConfirming={isConfirming}
         total={total}
-        metodoPago={metodoPago}
+        metodoPagoNombre={metodoPagoNombre}
       />
 
       <ModalTicket
@@ -202,7 +207,7 @@ export function VentasPageView({
         comanda={comandaSeleccionada}
         productos={productos}
         total={total}
-        metodoPago={metodoPago}
+        metodoPagoNombre={metodoPagoNombre}
         estado={estadoVenta}
       />
 

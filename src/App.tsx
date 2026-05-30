@@ -33,6 +33,7 @@ import MisPedidosPage from './modules/electronico/pages/MisPedidosPage'
 import PedidoDetailPage from './modules/electronico/pages/PedidoDetailPage'
 import PasarelaPagoPage from './modules/electronico/pages/PasarelaPagoPage'
 import MetodosPagoPage from './modules/electronico/pages/MetodosPagoPage'
+import VentasPage from './modules/comercial/pages/VentasPage'
 import CheckoutPage from './modules/electronico/pages/CheckoutPage'
 import PayPalSuccessPage from './modules/electronico/pages/PayPalSuccessPage'
 import { CarritoProvider } from './modules/electronico/context/CarritoContext'
@@ -88,6 +89,7 @@ function App() {
                   <Route path="/categorias" element={<CategoriasPage />} />
                   <Route path="/compras" element={<Compra />} />
                   <Route path="/productos-finales" element={<ProductosFinalesPage />} />
+                  <Route path="/ventas" element={<VentasPage />} />
                   <Route path="/recetas" element={<RecetasPage />} />
   <Route path="/catalogo" element={<CatalogoPage />} />
   <Route path="/carrito" element={<CarritoPage />} />

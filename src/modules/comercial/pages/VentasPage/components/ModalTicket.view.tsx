@@ -1,7 +1,7 @@
 import { Modal } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
 import { Printer, CheckCircle } from 'lucide-react'
-import type { Comanda, ProductoVenta, MetodoPagoType, EstadoVenta } from '@/modules/comercial/models/ventaPresencial.model'
+import type { Comanda, ProductoVenta, EstadoVenta } from '@/modules/comercial/models/ventaPresencial.model'
 
 const estadoLabels: Record<EstadoVenta, { label: string; color: string }> = {
   PAGADO: { label: 'Pagado', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
@@ -16,14 +16,8 @@ interface ModalTicketProps {
   comanda: Comanda | null
   productos: ProductoVenta[]
   total: number
-  metodoPago: MetodoPagoType
+  metodoPagoNombre: string
   estado: EstadoVenta
-}
-
-const metodoLabels: Record<MetodoPagoType, string> = {
-  EFECTIVO: 'Efectivo',
-  TARJETA: 'Tarjeta',
-  QR: 'QR',
 }
 
 export function ModalTicket({
@@ -33,7 +27,7 @@ export function ModalTicket({
   comanda,
   productos,
   total,
-  metodoPago,
+  metodoPagoNombre,
   estado,
 }: ModalTicketProps) {
   const handleClose = () => {
@@ -104,7 +98,7 @@ export function ModalTicket({
               </div>
               <div className="flex justify-between mt-1">
                 <span className="font-bold text-[10px] text-wine-900/50 dark:text-wine-400/50 uppercase">Pago</span>
-                <span className="font-black text-[10px] text-wine-900/70 dark:text-wine-400/70 uppercase">{metodoLabels[metodoPago]}</span>
+                <span className="font-black text-[10px] text-wine-900/70 dark:text-wine-400/70 uppercase">{metodoPagoNombre}</span>
               </div>
             </div>
           </div>

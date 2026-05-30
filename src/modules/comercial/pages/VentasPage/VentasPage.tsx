@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useVentaPresencial } from '../../hooks/useVentaPresencial'
 import { VentaPresencialService } from '../../services/ventaPresencial.service'
@@ -10,7 +10,7 @@ import type {
   ClienteMock,
   ClienteVenta,
   AjustesVenta,
-  MetodoPagoType,
+  MetodoPagoResponse,
   EstadoVenta,
 } from '../../models/ventaPresencial.model'
 
@@ -39,7 +39,8 @@ export default function VentasPage() {
   const [propinaPorcentual, setPropinaPorcentual] = useState(0)
   const [propinaFija, setPropinaFija] = useState(0)
 
-  const [metodoPago, setMetodoPago] = useState<MetodoPagoType>('EFECTIVO')
+  const [metodosPago, setMetodosPago] = useState<MetodoPagoResponse[]>([])
+  const [metodoPagoId, setMetodoPagoId] = useState<number>(0)
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false)
@@ -47,6 +48,21 @@ export default function VentasPage() {
   const [isClienteModalOpen, setIsClienteModalOpen] = useState(false)
   const [clientes, setClientes] = useState<ClienteMock[]>([])
   const [busquedaCliente, setBusquedaCliente] = useState('')
+
+  useEffect(() => {
+    VentaPresencialService.getMetodosPago()
+      .then((lista) => {
+        const presenciales = lista.filter((m) => m.activo)
+        setMetodosPago(presenciales)
+        if (presenciales.length > 0) setMetodoPagoId(presenciales[0].idMetodoPago)
+      })
+      .catch(() => toast.error('Error al cargar métodos de pago'))
+  }, [])
+
+  const metodoPagoNombre = useMemo(() => {
+    const m = metodosPago.find((mp) => mp.idMetodoPago === metodoPagoId)
+    return m?.nombre ?? ''
+  }, [metodosPago, metodoPagoId])
 
   const subtotal = useMemo(() => {
     return productosComanda.reduce((sum, p) => sum + p.subtotal, 0)
@@ -70,14 +86,15 @@ export default function VentasPage() {
     setPropinaFija(0)
     setCliente({ nombre: comanda.cliente, esAnonimo: false })
     setNitManual('')
-    setMetodoPago('EFECTIVO')
+    const activos = metodosPago.filter((m) => m.activo)
+    if (activos.length > 0) setMetodoPagoId(activos[0].idMetodoPago)
     try {
       const prods = await VentaPresencialService.getProductosByComanda(comanda.idComanda)
       setProductosComanda(prods)
     } catch {
       toast.error('Error al cargar productos de la comanda')
     }
-  }, [])
+  }, [metodosPago])
 
   const handleDescuentoPorcentual = useCallback((value: number) => {
     const clamped = Math.max(0, Math.min(value, 100))
@@ -164,7 +181,7 @@ export default function VentasPage() {
         descuentoFijo,
         propinaPorcentual,
         propinaFija,
-        metodoPago,
+        idMetodoPago: metodoPagoId,
         montoPagado: total,
       }
       await confirmarVenta(payload)
@@ -187,7 +204,7 @@ export default function VentasPage() {
     descuentoFijo,
     propinaPorcentual,
     propinaFija,
-    metodoPago,
+    metodoPagoId,
     total,
     confirmarVenta,
     refetchComandas,
@@ -202,8 +219,9 @@ export default function VentasPage() {
     setPropinaFija(0)
     setCliente({ nombre: 'Anónimo', esAnonimo: true })
     setNitManual('')
-    setMetodoPago('EFECTIVO')
-  }, [])
+    const activos = metodosPago.filter((m) => m.activo)
+    if (activos.length > 0) setMetodoPagoId(activos[0].idMetodoPago)
+  }, [metodosPago])
 
   const handleImprimirTicket = useCallback(() => {
     toast.success('Ticket enviado a impresión')
@@ -273,8 +291,10 @@ export default function VentasPage() {
       busquedaCliente={busquedaCliente}
       onBusquedaClienteChange={handleBuscarClientes}
       clientes={clientes}
-      metodoPago={metodoPago}
-      onMetodoPagoChange={setMetodoPago}
+      metodosPago={metodosPago}
+      metodoPagoId={metodoPagoId}
+      metodoPagoNombre={metodoPagoNombre}
+      onMetodoPagoChange={setMetodoPagoId}
       onConfirmarClick={handleConfirmarClick}
       onCancelar={handleCancelar}
       isConfirmModalOpen={isConfirmModalOpen}

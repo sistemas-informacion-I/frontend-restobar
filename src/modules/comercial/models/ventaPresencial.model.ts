@@ -35,11 +35,13 @@ export interface AjustesVenta {
   propinaFija: number
 }
 
-export type MetodoPagoType = 'EFECTIVO' | 'TARJETA' | 'QR'
-
-export interface MetodoPago {
-  tipo: MetodoPagoType
-  monto: number
+export interface MetodoPagoResponse {
+  idMetodoPago: number
+  nombre: string
+  descripcion: string | null
+  comisionPorcentaje: number | null
+  comisionFija: number | null
+  activo: boolean
 }
 
 export interface ResumenFinanciero {
@@ -56,7 +58,7 @@ export interface VentaPresencial {
   productos: ProductoVenta[]
   cliente: ClienteVenta
   ajustes: AjustesVenta
-  metodoPago?: MetodoPago
+  metodoPago?: { id: number; nombre: string; monto: number }
   resumen: ResumenFinanciero
   estado: EstadoVenta
 }
@@ -75,7 +77,7 @@ export interface VentaPresencialRequest {
   descuentoFijo: number
   propinaPorcentual: number
   propinaFija: number
-  metodoPago: MetodoPagoType
+  idMetodoPago: number
   montoPagado: number
 }
 

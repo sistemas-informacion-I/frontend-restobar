@@ -1,7 +1,6 @@
 import { Modal } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
 import { AlertTriangle, CheckCircle } from 'lucide-react'
-import type { MetodoPagoType } from '@/modules/comercial/models/ventaPresencial.model'
 
 interface ModalConfirmarProps {
   isOpen: boolean
@@ -9,13 +8,7 @@ interface ModalConfirmarProps {
   onConfirm: () => Promise<void>
   isConfirming: boolean
   total: number
-  metodoPago: MetodoPagoType
-}
-
-const metodoLabels: Record<MetodoPagoType, string> = {
-  EFECTIVO: 'Efectivo',
-  TARJETA: 'Tarjeta',
-  QR: 'QR',
+  metodoPagoNombre: string
 }
 
 export function ModalConfirmar({
@@ -24,7 +17,7 @@ export function ModalConfirmar({
   onConfirm,
   isConfirming,
   total,
-  metodoPago,
+  metodoPagoNombre,
 }: ModalConfirmarProps) {
   return (
     <Modal.Root isOpen={isOpen} onClose={onClose} size="sm">
@@ -48,7 +41,7 @@ export function ModalConfirmar({
             </div>
             <div className="flex justify-between text-sm">
               <span className="font-bold text-wine-900/60 dark:text-wine-400/60">Pago</span>
-              <span className="font-black text-slate-900 dark:text-white">{metodoLabels[metodoPago]}</span>
+              <span className="font-black text-slate-900 dark:text-white">{metodoPagoNombre}</span>
             </div>
           </div>
         </div>
