@@ -9,11 +9,22 @@ interface ComandaCardProps {
 const stateColors: Record<string, string> = {
   LISTA: 'border-emerald-400 bg-emerald-50/80 dark:bg-emerald-950/30 dark:border-emerald-600',
   ENTREGADA: 'border-sky-400 bg-sky-50/80 dark:bg-sky-950/30 dark:border-sky-600',
+  ABIERTA: 'border-amber-400 bg-amber-50/80 dark:bg-amber-950/30 dark:border-amber-600',
+  EN_PREPARACION: 'border-purple-400 bg-purple-50/80 dark:bg-purple-950/30 dark:border-purple-600',
 }
 
 const stateBadgeColors: Record<string, string> = {
   LISTA: 'bg-emerald-500 text-white',
   ENTREGADA: 'bg-sky-500 text-white',
+  ABIERTA: 'bg-amber-500 text-white',
+  EN_PREPARACION: 'bg-purple-500 text-white',
+}
+
+const stateLabels: Record<string, string> = {
+  LISTA: 'Listo',
+  ENTREGADA: 'Entregado',
+  ABIERTA: 'Abierta',
+  EN_PREPARACION: 'En Prep.',
 }
 
 export function ComandaCard({ comanda, isSelected, onSelect }: ComandaCardProps) {
@@ -40,8 +51,8 @@ export function ComandaCard({ comanda, isSelected, onSelect }: ComandaCardProps)
                 {comanda.sucursal}
               </span>
             )}
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${stateBadgeColors[comanda.estado]}`}>
-              {comanda.estado}
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${stateBadgeColors[comanda.estado] || 'bg-wine-500 text-white'}`}>
+              {stateLabels[comanda.estado] || comanda.estado}
             </span>
           </div>
           <p className="text-base font-black text-slate-900 dark:text-white tracking-tight">

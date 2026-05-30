@@ -194,7 +194,7 @@ export function ComandaView({
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-semibold text-gray-900 dark:text-white">
-                        {item.productoNombre}
+                        {item.nombreProducto}
                       </p>
                       <Badge className="text-xs">
                         {item.estacionPreparacion === 'COCINA' ? '🍳 Cocina' : '🍹 Barra'}

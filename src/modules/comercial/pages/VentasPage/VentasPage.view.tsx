@@ -8,6 +8,7 @@ import { AccionesVenta } from './components/AccionesVenta.view'
 import { ModalConfirmar } from './components/ModalConfirmar.view'
 import { ModalTicket } from './components/ModalTicket.view'
 import { BuscarClienteModal } from './components/BuscarClienteModal.view'
+import { PayPalModal } from './components/PayPalModal.view'
 import { EmptyState } from './components/EmptyState.view'
 import type {
   Comanda,
@@ -67,6 +68,9 @@ interface VentasPageViewProps {
   onCloseTicketModal: () => void
   onImprimirTicket: () => void
   estadoVenta: EstadoVenta
+  isPayPalModalOpen?: boolean
+  payPalUrl?: string
+  onCerrarPayPal?: () => void
 }
 
 export function VentasPageView({
@@ -117,6 +121,9 @@ export function VentasPageView({
   onCloseTicketModal,
   onImprimirTicket,
   estadoVenta,
+  isPayPalModalOpen = false,
+  payPalUrl = '',
+  onCerrarPayPal,
 }: VentasPageViewProps) {
   return (
     <div className="flex h-[calc(100vh-6rem)] animate-in fade-in slide-in-from-bottom-2 duration-700">
@@ -218,6 +225,12 @@ export function VentasPageView({
         onBusquedaChange={onBusquedaClienteChange}
         clientes={clientesList}
         onSeleccionarCliente={onAsignarCliente}
+      />
+
+      <PayPalModal
+        isOpen={isPayPalModalOpen}
+        payPalUrl={payPalUrl}
+        onClose={onCerrarPayPal || (() => {})}
       />
     </div>
   )

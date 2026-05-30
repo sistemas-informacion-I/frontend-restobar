@@ -117,7 +117,7 @@ export interface Comanda {
 export interface DetalleComanda {
   idDetalleComanda: number
   idProductoFinal: number
-  productoNombre: string
+  nombreProducto: string
   precioUnitario: number
   cantidad: number
   notas?: string

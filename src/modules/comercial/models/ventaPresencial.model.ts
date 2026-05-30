@@ -1,5 +1,5 @@
-export type EstadoComanda = 'LISTA' | 'ENTREGADA'
-export type EstadoVenta = 'PAGADO' | 'PENDIENTE' | 'ANULADA'
+export type EstadoComanda = 'PENDIENTE_PAGO' | 'ABIERTA' | 'EN_PREPARACION' | 'LISTA' | 'ENTREGADA' | 'CERRADA' | 'CANCELADA'
+export type EstadoVenta = 'PAGADA' | 'PENDIENTE' | 'ANULADA' | 'PENDIENTE_PAYPAL' | 'EMITIDA'
 
 export interface Comanda {
   idComanda: number
@@ -7,9 +7,22 @@ export interface Comanda {
   mesa: string
   cliente: string
   subtotal: number
-  estado: EstadoComanda
+  estado: string
   hora: string
   sucursal?: string
+  idSucursal?: number
+  idCliente?: number
+  items?: DetalleComandaItem[]
+}
+
+export interface DetalleComandaItem {
+  idDetalleComanda: number
+  idProductoFinal: number
+  nombreProducto: string
+  precioUnitario: number
+  cantidad: number
+  notas?: string
+  estado: string
 }
 
 export interface ProductoVenta {
@@ -65,11 +78,6 @@ export interface VentaPresencial {
 
 export interface VentaPresencialRequest {
   idComanda: number
-  productos: {
-    idProducto: number
-    cantidad: number
-    observaciones?: string
-  }[]
   idCliente?: number
   nombreCliente?: string
   nit?: string
@@ -78,7 +86,19 @@ export interface VentaPresencialRequest {
   propinaPorcentual: number
   propinaFija: number
   idMetodoPago: number
-  montoPagado: number
+}
+
+export interface VentaPresencialConfirmResponse {
+  idNotaVenta: number
+  estado: string
+  total: number
+  subtotal: number
+  impuesto: number
+  descuento: number
+  propina: number
+  paypalApprovalUrl?: string
+  paypalOrderId?: string
+  idTransaccion?: number
 }
 
 export interface ClienteMock {

@@ -1,8 +1,8 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useVentaPresencial } from '../../hooks/useVentaPresencial'
 import { VentaPresencialService } from '../../services/ventaPresencial.service'
-import { getErrorMessage } from '@/core/api'
+import { getErrorMessage, httpClient } from '@/core/api'
 import { VentasPageView } from './VentasPage.view'
 import type {
   Comanda,
@@ -12,6 +12,7 @@ import type {
   AjustesVenta,
   MetodoPagoResponse,
   EstadoVenta,
+  VentaPresencialConfirmResponse,
 } from '../../models/ventaPresencial.model'
 
 const IVA_RATE = 0.18
@@ -20,7 +21,6 @@ export default function VentasPage() {
   const {
     comandas,
     comandasLoading,
-    productosLoading,
     isConfirming,
     confirmarVenta,
     refetchComandas,
@@ -44,10 +44,15 @@ export default function VentasPage() {
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false)
-  const [estadoVenta, setEstadoVenta] = useState<EstadoVenta>('PAGADO')
+  const [estadoVenta, setEstadoVenta] = useState<EstadoVenta>('PAGADA')
   const [isClienteModalOpen, setIsClienteModalOpen] = useState(false)
   const [clientes, setClientes] = useState<ClienteMock[]>([])
   const [busquedaCliente, setBusquedaCliente] = useState('')
+  const [isPayPalModalOpen, setIsPayPalModalOpen] = useState(false)
+  const [payPalUrl, setPayPalUrl] = useState('')
+
+  const payPalPopupRef = useRef<Window | null>(null)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     VentaPresencialService.getMetodosPago()
@@ -77,6 +82,34 @@ export default function VentasPage() {
   const impuesto = baseImponible * IVA_RATE
   const propinaTotal = propinaFija + subtotal * (propinaPorcentual / 100)
   const total = baseImponible + impuesto + propinaTotal
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  }, [])
+
+  const startPollingPayPal = useCallback((idNotaVenta: number) => {
+    if (pollRef.current) clearInterval(pollRef.current)
+    pollRef.current = setInterval(async () => {
+      try {
+        const data = await httpClient.get<{ estado: string }>(`/api/notas-venta/${idNotaVenta}`)
+        if (data.estado === 'PAGADA') {
+          if (pollRef.current) clearInterval(pollRef.current)
+          if (payPalPopupRef.current && !payPalPopupRef.current.closed) {
+            payPalPopupRef.current.close()
+          }
+          setIsPayPalModalOpen(false)
+          setEstadoVenta('PAGADA')
+          setIsTicketModalOpen(true)
+          toast.success('Pago PayPal completado exitosamente')
+          refetchComandas()
+        }
+      } catch {
+        // continue polling
+      }
+    }, 3000)
+  }, [refetchComandas])
 
   const handleSelectComanda = useCallback(async (comanda: Comanda) => {
     setComandaSeleccionada(comanda)
@@ -169,11 +202,6 @@ export default function VentasPage() {
     try {
       const payload = {
         idComanda: comandaSeleccionada.idComanda,
-        productos: productosComanda.map((p) => ({
-          idProducto: p.idProducto,
-          cantidad: p.cantidad,
-          observaciones: p.observaciones,
-        })),
         idCliente: cliente.idCliente,
         nombreCliente: cliente.nombre,
         nit: nitManual || undefined,
@@ -182,14 +210,23 @@ export default function VentasPage() {
         propinaPorcentual,
         propinaFija,
         idMetodoPago: metodoPagoId,
-        montoPagado: total,
       }
-      await confirmarVenta(payload)
+      const result = await confirmarVenta(payload) as unknown as VentaPresencialConfirmResponse
       setIsConfirmModalOpen(false)
-      setEstadoVenta('PAGADO')
-      setIsTicketModalOpen(true)
-      toast.success('Venta confirmada exitosamente')
-      refetchComandas()
+
+      if (result.paypalApprovalUrl) {
+        setPayPalUrl(result.paypalApprovalUrl)
+        setEstadoVenta('PENDIENTE_PAYPAL')
+        setIsPayPalModalOpen(true)
+        const popup = window.open(result.paypalApprovalUrl, 'paypal_popup', 'width=800,height=600')
+        payPalPopupRef.current = popup
+        startPollingPayPal(result.idNotaVenta)
+      } else {
+        setEstadoVenta('PAGADA')
+        setIsTicketModalOpen(true)
+        toast.success('Venta confirmada exitosamente')
+        refetchComandas()
+      }
     } catch (error: any) {
       const msg = getErrorMessage(error, 'confirmar venta')
       toast.error(msg)
@@ -197,7 +234,6 @@ export default function VentasPage() {
     }
   }, [
     comandaSeleccionada,
-    productosComanda,
     cliente,
     nitManual,
     descuentoPorcentual,
@@ -205,9 +241,9 @@ export default function VentasPage() {
     propinaPorcentual,
     propinaFija,
     metodoPagoId,
-    total,
     confirmarVenta,
     refetchComandas,
+    startPollingPayPal,
   ])
 
   const handleCancelar = useCallback(() => {
@@ -226,6 +262,16 @@ export default function VentasPage() {
   const handleImprimirTicket = useCallback(() => {
     toast.success('Ticket enviado a impresión')
   }, [])
+
+  const handleCerrarPayPalModal = useCallback(() => {
+    setIsPayPalModalOpen(false)
+    if (pollRef.current) clearInterval(pollRef.current)
+    if (payPalPopupRef.current && !payPalPopupRef.current.closed) {
+      payPalPopupRef.current.close()
+    }
+    refetchComandas()
+    handleCancelar()
+  }, [handleCancelar, refetchComandas])
 
   const filteredComandas = useMemo(() => {
     let result = comandas
@@ -268,7 +314,7 @@ export default function VentasPage() {
       comandaSeleccionada={comandaSeleccionada}
       onSelectComanda={handleSelectComanda}
       productos={productosComanda}
-      productosLoading={productosLoading}
+      productosLoading={false}
       subtotal={subtotal}
       descuentoTotal={descuentoTotal}
       impuesto={impuesto}
@@ -305,6 +351,9 @@ export default function VentasPage() {
       onCloseTicketModal={() => setIsTicketModalOpen(false)}
       onImprimirTicket={handleImprimirTicket}
       estadoVenta={estadoVenta}
+      isPayPalModalOpen={isPayPalModalOpen}
+      payPalUrl={payPalUrl}
+      onCerrarPayPal={handleCerrarPayPalModal}
     />
   )
 }
