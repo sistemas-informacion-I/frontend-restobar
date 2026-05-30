@@ -1,7 +1,7 @@
 import { Card } from '@/shared/components/ui/Card'
 import { Badge } from '@/shared/components/ui/Badge'
 import { Button } from '@/shared/components/ui/Button'
-import { X, Download, Clock, Users, FileText } from 'lucide-react'
+import { X, Download, Clock, Users, FileText, Store, Grid3X3, Armchair } from 'lucide-react'
 import type { Comanda } from '../../services/types'
 
 interface ComandaViewProps {
@@ -25,22 +25,22 @@ export function ComandaView({
 }: ComandaViewProps) {
   const getEstadoBadgeColor = (estado: string) => {
     const colors: Record<string, string> = {
-      ABIERTA: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-      EN_PREPARACION: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      LISTA: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      ENTREGADA: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-      CERRADA: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-      CANCELADA: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-      PENDIENTE_PAGO: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
+      ABIERTA: 'bg-wine-500/10 text-wine-700 dark:text-wine-300 border border-wine-500/20',
+      EN_PREPARACION: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+      LISTA: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
+      ENTREGADA: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20',
+      CERRADA: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20',
+      CANCELADA: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
+      PENDIENTE_PAGO: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20'
     }
     return colors[estado] || colors.ABIERTA
   }
 
   const getTipoServicioBadgeColor = (tipo: string) => {
     const colors: Record<string, string> = {
-      MESA: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
-      PARA_LLEVAR: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
-      ONLINE: 'bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/30 dark:text-fuchsia-300'
+      MESA: 'bg-wine-500/10 text-wine-700 dark:text-wine-300 border border-wine-500/20',
+      PARA_LLEVAR: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+      ONLINE: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20'
     }
     return colors[tipo] || colors.MESA
   }
@@ -96,6 +96,35 @@ export function ComandaView({
         </h3>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {comanda.nombreSucursal && (
+            <div>
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                <Store size={14} className="inline mr-2" />
+                Sucursal
+              </label>
+              <p className="text-sm text-gray-900 dark:text-white mt-1">
+                {comanda.nombreSucursal}
+              </p>
+            </div>
+          )}
+
+          {comanda.tipoServicio === 'MESA' && (comanda.nombreSector || comanda.mesaNombre) && (
+            <div>
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                <Grid3X3 size={14} className="inline mr-2" />
+                Sector / Mesa
+              </label>
+              <p className="mt-1 flex items-center gap-2 text-sm text-gray-900 dark:text-white">
+                {comanda.nombreSector || 'Sin sector'}
+                {comanda.mesaNombre && (
+                  <span className="inline-flex items-center gap-1 text-wine-700 dark:text-wine-300">
+                    <Armchair size={14} /> {comanda.mesaNombre}
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
+
           <div>
             <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
               <Clock size={14} className="inline mr-2" />
@@ -194,7 +223,7 @@ export function ComandaView({
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-semibold text-gray-900 dark:text-white">
-                        {item.productoNombre}
+                        {item.nombreProducto}
                       </p>
                       <Badge className="text-xs">
                         {item.estacionPreparacion === 'COCINA' ? '🍳 Cocina' : '🍹 Barra'}

@@ -97,6 +97,7 @@ export interface Comanda {
   idComanda: number
   numeroComanda: string
   idSucursal: number
+  nombreSucursal?: string
   idCliente?: number
   clienteNombre?: string
   idEmpleado?: number
@@ -104,6 +105,8 @@ export interface Comanda {
   idReserva?: number
   idMesa?: number
   mesaNombre?: string
+  idSector?: number
+  nombreSector?: string
   idCarrito?: number
   tipoServicio: 'MESA' | 'PARA_LLEVAR' | 'ONLINE'
   fechaApertura: string
@@ -117,13 +120,14 @@ export interface Comanda {
 export interface DetalleComanda {
   idDetalleComanda: number
   idProductoFinal: number
-  productoNombre: string
+  nombreProducto: string
   precioUnitario: number
   cantidad: number
   notas?: string
   estado: 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CANCELADO'
   estacionPreparacion: 'COCINA' | 'BARRA'
-  fechaCreacion: string
+  fechaAceptacion?: string
+  empleadoAsignado?: string
 }
 
 export interface CreateComandaData {

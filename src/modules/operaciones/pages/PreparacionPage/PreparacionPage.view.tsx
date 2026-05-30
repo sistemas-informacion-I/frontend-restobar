@@ -1,4 +1,5 @@
-import { RefreshCw, ChefHat, Beer, AlertCircle, Loader2 } from 'lucide-react'
+import { RefreshCw, ChefHat, Beer, AlertCircle, Loader2, Store } from 'lucide-react'
+import { Select } from '@/shared/components/ui/Select/Select'
 import { PreparacionQueueCard } from '../../components/preparacion/PreparacionQueueCard'
 import type { PreparacionQueue, EstacionPreparacion, Sucursal } from '../../services/types'
 
@@ -57,104 +58,105 @@ export function PreparacionPageView({
 
   const stationName = estacion === 'COCINA' ? 'Cocina' : 'Barra'
   const StationIcon = estacion === 'COCINA' ? ChefHat : Beer
+  const totalPendientes = queue.reduce((acc, c) => acc + c.itemsPendientes, 0)
+  const totalEnPrep = queue.reduce((acc, c) => acc + c.itemsEnPreparacion, 0)
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="mx-auto max-w-7xl px-4 py-6 space-y-6 animate-in fade-in slide-in-from-bottom-1">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <StationIcon className="w-6 h-6" />
-            Preparación de Comandas - {stationName}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            {queue.reduce((acc, c) => acc + c.itemsPendientes, 0)} pendientes · {queue.reduce((acc, c) => acc + c.itemsEnPreparacion, 0)} en preparación · {queue.length} comandas
+      <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between animate-in fade-in slide-in-from-top-4 duration-1000">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-wine-600/10 text-wine-600 dark:bg-wine-500/10 dark:text-wine-400">
+              <StationIcon size={28} />
+            </div>
+            <h1 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white sm:text-4xl">
+              Preparación · {stationName}
+            </h1>
+          </div>
+          <p className="ml-1 text-sm font-bold uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-300/40">
+            {totalPendientes} pendientes · {totalEnPrep} en preparación · {queue.length} comandas
           </p>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
           {/* Station Toggle - only for supervisors */}
           {isSupervisor && (
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="flex overflow-hidden rounded-2xl border border-wine-100/50 dark:border-wine-900/20">
               <button
                 onClick={() => handleEstacionChange('COCINA')}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                className={`flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all ${
                   estacion === 'COCINA'
-                    ? 'bg-indigo-500 text-white'
-                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ? 'bg-wine-600 text-white shadow-lg shadow-wine-900/20'
+                    : 'bg-white/50 text-wine-900/50 hover:bg-wine-50 dark:bg-black/20 dark:text-wine-300/50 dark:hover:bg-wine-900/20'
                 }`}
               >
-                <ChefHat className="w-3.5 h-3.5 inline mr-1" />
-                Cocina
+                <ChefHat className="h-3.5 w-3.5" /> Cocina
               </button>
               <button
                 onClick={() => handleEstacionChange('BARRA')}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                className={`flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all ${
                   estacion === 'BARRA'
-                    ? 'bg-indigo-500 text-white'
-                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ? 'bg-wine-600 text-white shadow-lg shadow-wine-900/20'
+                    : 'bg-white/50 text-wine-900/50 hover:bg-wine-50 dark:bg-black/20 dark:text-wine-300/50 dark:hover:bg-wine-900/20'
                 }`}
               >
-                <Beer className="w-3.5 h-3.5 inline mr-1" />
-                Barra
+                <Beer className="h-3.5 w-3.5" /> Barra
               </button>
             </div>
+          )}
 
-            {isSuperuser && (
-              <div className="flex items-center gap-2">
-                <label className="text-[11px] uppercase tracking-[0.24em] text-gray-500 dark:text-gray-400">
-                  Sucursal
-                </label>
-                {isSucursalLoading ? (
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Cargando...</div>
-                ) : (
-                  <select
-                    value={selectedSucursalId ?? ''}
-                    onChange={(event) => handleSucursalChange(Number(event.target.value))}
-                    className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    {sucursales.map((sucursal) => (
-                      <option key={sucursal.idSucursal} value={sucursal.idSucursal}>
-                        {sucursal.nombre}
-                      </option>
-                    ))}
-                  </select>
-                )}
+          {isSupervisor && isSuperuser && (
+            isSucursalLoading ? (
+              <div className="text-xs font-bold uppercase tracking-widest text-wine-900/40 dark:text-wine-300/40">Cargando...</div>
+            ) : (
+              <div className="w-full sm:w-56">
+                <Select
+                  value={selectedSucursalId}
+                  onChange={(val) => handleSucursalChange(Number(val))}
+                  options={sucursales.map((s) => ({ value: s.idSucursal, label: s.nombre }))}
+                  placeholder="Sucursal"
+                  icon={<Store size={18} />}
+                />
               </div>
-            )}
-          </div>
-        )}
+            )
+          )}
 
           {/* Refresh Button */}
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-wine-100/50 bg-white/50 text-wine-600 transition-all hover:bg-wine-50 disabled:opacity-50 dark:border-wine-900/20 dark:bg-black/20 dark:text-wine-400 dark:hover:bg-wine-900/20"
             title="Actualizar"
           >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Error Banner */}
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-sm">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+        <div className="flex items-center gap-3 rounded-2xl border-2 border-rose-200 bg-rose-50 px-6 py-4 text-xs font-bold uppercase tracking-widest text-rose-700 shadow-lg shadow-rose-900/5 dark:border-rose-900/30 dark:bg-rose-900/20 dark:text-rose-400">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
           <span>Error al cargar: {error?.message || 'Error desconocido'}</span>
         </div>
       )}
 
       {/* Queue Grid */}
       {isLoading ? (
-        <div className="flex items-center justify-center min-h-[40vh]">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+        <div className="flex flex-col items-center justify-center py-24 rounded-[2.5rem] border-2 border-dashed border-wine-100/50 bg-wine-50/5 dark:border-wine-900/20 dark:bg-black/10">
+          <Loader2 className="h-12 w-12 animate-spin text-wine-600 dark:text-wine-500" />
+          <p className="mt-4 text-xs font-bold uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">Cargando cola de preparación...</p>
         </div>
       ) : queue.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[40vh] text-gray-400 dark:text-gray-500">
-          <StationIcon className="w-16 h-16 mb-4 opacity-50" />
-          <p className="font-medium text-lg">No hay items pendientes</p>
-          <p className="text-sm">La {stationName.toLowerCase()} está al día</p>
+        <div className="glass-card flex flex-col items-center justify-center gap-4 rounded-[2.5rem] border-2 border-dashed border-wine-100/50 bg-wine-50/5 py-24 text-center dark:border-wine-900/20 dark:bg-black/10">
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-wine-500/10 text-wine-600 dark:text-wine-400">
+            <StationIcon size={32} />
+          </div>
+          <div className="max-w-xs">
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-wine-950 dark:text-white">No hay ítems pendientes</h3>
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">La {stationName.toLowerCase()} está al día</p>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">

@@ -1,14 +1,22 @@
 import { Modal } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
-import { Search, Plus, ClipboardList } from 'lucide-react'
+import { Input } from '@/shared/components/ui/Input'
+import { Select } from '@/shared/components/ui/Select/Select'
+import { Search, Plus, ClipboardList, ListFilter, Store } from 'lucide-react'
 import { ComandasTable } from '../../components/comandas/comandasTable'
 import { ComandaView } from '../../components/comandas/comandaView'
 import { ComandaForm } from '../../components/comandas/comandaForm'
-import type { Comanda, Mesa } from '../../services/types'
+import type { Comanda, Mesa, Sector, Sucursal } from '../../services/types'
 
 interface ComandasPageViewProps {
   comandas: Comanda[]
   mesas: Mesa[]
+  sectores: Sector[]
+  sucursales: Sucursal[]
+  sucursalNombre?: string
+  selectedSucursalId?: number
+  setSelectedSucursalId: (value: number | undefined) => void
+  isSuperuser: boolean
   productos: Array<{ id: number; nombre: string; precio: number }>
   loading: boolean
   search: string
@@ -54,6 +62,12 @@ const getEstadoCount = (comandas: Comanda[], estado: string): number => {
 export function ComandasPageView({
   comandas,
   mesas,
+  sectores,
+  sucursales,
+  sucursalNombre,
+  selectedSucursalId,
+  setSelectedSucursalId,
+  isSuperuser,
   productos,
   loading,
   search,
@@ -94,50 +108,70 @@ export function ComandasPageView({
         </div>
       )}
 
-      {/* Toolbar */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-wine-500/10">
-            <ClipboardList size={20} className="text-wine-600" />
-          </div>
-          <div>
-            <h1 className="text-lg font-black uppercase tracking-wider text-gray-900 dark:text-white">
+      {/* Header */}
+      <header className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between animate-in fade-in slide-in-from-top-4 duration-1000">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-wine-600/10 text-wine-600 dark:bg-wine-500/10 dark:text-wine-400">
+              <ClipboardList size={28} />
+            </div>
+            <h1 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white sm:text-4xl">
               Comandas
             </h1>
-            <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
-              {comandas.length} registro{comandas.length !== 1 ? 's' : ''}
-            </p>
           </div>
+          <p className="ml-1 text-sm font-bold uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-300/40">
+            {comandas.length} registro{comandas.length !== 1 ? 's' : ''} · Órdenes de servicio
+          </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar comanda..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-48 rounded-xl border border-gray-300 bg-white py-2 pl-9 pr-3 text-xs font-semibold uppercase tracking-wider placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-wine-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
+        <Button
+          onClick={() => setShowCreateModal(true)}
+          className="h-12 rounded-2xl px-6 shadow-xl shadow-wine-900/20 active:scale-95 transition-transform"
+        >
+          <Plus size={18} className="mr-2 stroke-[3px]" />
+          <span className="text-[10px] font-black uppercase tracking-widest">Nueva Comanda</span>
+        </Button>
+      </header>
+
+      {/* Filtros */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="w-full sm:max-w-md">
+          <Input
+            type="text"
+            placeholder="Buscar por número, cliente, estado o servicio..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-12 !rounded-2xl border-wine-100/50 bg-white/50 backdrop-blur-sm focus:border-wine-600 dark:border-wine-900/20 dark:bg-black/20"
+            icon={<Search size={18} className="text-wine-900/40" />}
+          />
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          {/* Filtro por sucursal: sólo superusuario */}
+          {isSuperuser && (
+            <div className="w-full sm:w-56">
+              <Select
+                value={selectedSucursalId}
+                onChange={(val) => setSelectedSucursalId(val ? Number(val) : undefined)}
+                options={sucursales.map(s => ({ value: s.idSucursal, label: s.nombre }))}
+                placeholder="Sucursal"
+                icon={<Store size={18} />}
+              />
+            </div>
+          )}
+
+          <div className="w-full sm:w-56">
+            <Select
+              value={filterEstado}
+              onChange={(val) => setFilterEstado(String(val))}
+              options={ESTADOS.map(e => ({
+                value: e.value,
+                label: `${e.label} (${getEstadoCount(comandas, e.value)})`
+              }))}
+              placeholder="Filtrar por estado"
+              icon={<ListFilter size={18} />}
             />
           </div>
-
-          <select
-            value={filterEstado}
-            onChange={(e) => setFilterEstado(e.target.value)}
-            className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-wine-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-          >
-            {ESTADOS.map(e => (
-              <option key={e.value} value={e.value}>
-                {e.label} ({getEstadoCount(comandas, e.value)})
-              </option>
-            ))}
-          </select>
-
-          <Button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2">
-            <Plus size={16} />
-            Nueva Comanda
-          </Button>
         </div>
       </div>
 
@@ -204,6 +238,8 @@ export function ComandasPageView({
         <Modal.Body>
           <ComandaForm
             mesas={mesas}
+            sectores={sectores}
+            sucursalNombre={sucursalNombre}
             productos={productos}
             onSubmit={handleCreate}
             onCancel={() => setShowCreateModal(false)}
@@ -219,6 +255,8 @@ export function ComandasPageView({
           <ComandaForm
             comanda={selectedComanda || undefined}
             mesas={mesas}
+            sectores={sectores}
+            sucursalNombre={sucursalNombre}
             productos={productos}
             onSubmit={handleUpdate}
             onCancel={() => {
