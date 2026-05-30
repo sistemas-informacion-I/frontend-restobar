@@ -15,6 +15,8 @@ import { httpClient } from './core/api/http-client'
 import SucursalesPage from './modules/operaciones/pages/SucursalesPage'
 import SectoresPage from './modules/operaciones/pages/SectoresPage'
 import MesasPage from './modules/operaciones/pages/MesasPage'
+import ComandasPage from './modules/operaciones/pages/ComandasPage'
+import { PreparacionPage } from './modules/operaciones/pages/PreparacionPage'
 import EmployeesPage from './modules/acceso/pages/EmployeesPage'
 import ProveedoresPage from './modules/comercial/pages/ProveedoresPage'
 import InventarioPage from './modules/inventario/pages/InventarioPage'
@@ -82,6 +84,8 @@ function App() {
                   <Route path="/sucursales" element={<SucursalesPage />} />
                   <Route path="/sectores" element={<SectoresPage />} />
                   <Route path="/mesas" element={<MesasPage />} />
+                  <Route path="/comandas" element={<ComandasPage />} />
+                  <Route path="/cocina" element={<PreparacionPage />} />
                   <Route path="/empleados" element={<EmployeesPage />} />
                   <Route path="/proveedores" element={<ProveedoresPage />} />
                   <Route path="/inventario" element={<InventarioPage />} />

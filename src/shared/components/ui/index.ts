@@ -5,6 +5,7 @@ export { Card } from './Card'
 export { Loader } from './Loader'
 export { Modal } from './Modal'
 export { Switch } from './Switch/Switch'
+export { Badge } from './Badge'
 
 // Feedback & Loading Components
 export { Skeleton, ProductoCardSkeleton, CarritoItemSkeleton, PedidoCardSkeleton, TextRowSkeleton } from './Skeleton/Skeleton'
