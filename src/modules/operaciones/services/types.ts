@@ -91,3 +91,114 @@ export interface UpdateMesaData {
   disponibilidad?: string
   idSector?: number
 }
+
+// ============ COMANDA TYPES ============
+export interface Comanda {
+  idComanda: number
+  numeroComanda: string
+  idSucursal: number
+  idCliente?: number
+  clienteNombre?: string
+  idEmpleado?: number
+  empleadoNombre?: string
+  idReserva?: number
+  idMesa?: number
+  mesaNombre?: string
+  idCarrito?: number
+  tipoServicio: 'MESA' | 'PARA_LLEVAR' | 'ONLINE'
+  fechaApertura: string
+  fechaCierre?: string
+  numeroPersonas?: number
+  estado: 'PENDIENTE_PAGO' | 'ABIERTA' | 'EN_PREPARACION' | 'LISTA' | 'ENTREGADA' | 'CERRADA' | 'CANCELADA'
+  observaciones?: string
+  items?: DetalleComanda[]
+}
+
+export interface DetalleComanda {
+  idDetalleComanda: number
+  idProductoFinal: number
+  productoNombre: string
+  precioUnitario: number
+  cantidad: number
+  notas?: string
+  estado: 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CANCELADO'
+  estacionPreparacion: 'COCINA' | 'BARRA'
+  fechaCreacion: string
+}
+
+export interface CreateComandaData {
+  idSucursal: number
+  idCliente?: number
+  idReserva?: number
+  idMesa?: number
+  tipoServicio: 'MESA' | 'PARA_LLEVAR' | 'ONLINE'
+  numeroPersonas?: number
+  observaciones?: string
+  items: CreateDetalleComandaItem[]
+}
+
+export interface UpdateComandaData {
+  estado?: string
+  observaciones?: string
+  numeroPersonas?: number
+  items?: CreateDetalleComandaItem[]
+}
+
+export interface UpdateDetalleComandaData {
+  cantidad?: number
+  notas?: string
+}
+
+export interface CreateDetalleComandaItem {
+  idProductoFinal: number
+  cantidad: number
+  notas?: string
+}
+
+// ============ PREPARACION (KDS) TYPES ============
+export interface PreparacionQueueItem {
+  idDetalleComanda: number
+  idComanda: number
+  numeroComanda: string
+  mesaNombre: string
+  tipoServicio: string
+  nombreProducto: string
+  cantidad: number
+  notas?: string
+  estado: 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO'
+  estacionPreparacion: 'COCINA' | 'BARRA'
+  fechaCreacion: string
+  fechaAceptacion?: string
+  empleadoAsignado?: string
+  tiempoTranscurrido?: number
+}
+
+export interface PreparacionQueue {
+  idComanda: number
+  numeroComanda: string
+  mesaNombre: string
+  tipoServicio: string
+  estadoComanda: string
+  totalItems: number
+  itemsPendientes: number
+  itemsEnPreparacion: number
+  itemsListos: number
+  items: PreparacionQueueItem[]
+}
+
+export interface MarcarListoResponse {
+  idDetalleComanda: number
+  idComanda: number
+  estado: string
+  estadoComanda: string
+  exitoso: boolean
+  mensaje: string
+  descuentoInventario: {
+    exitoso: boolean
+    mensaje: string
+    ingredientesDescontados: number
+    ingredientesConError: number
+  }
+}
+
+export type EstacionPreparacion = 'COCINA' | 'BARRA'
