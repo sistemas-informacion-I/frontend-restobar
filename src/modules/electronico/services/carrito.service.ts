@@ -26,7 +26,9 @@ function carritoHeaders(isAuthenticated: boolean): Record<string, string> {
 
 export const carritoService = {
   async getCarrito(idSucursal: number, isAuthenticated: boolean): Promise<CarritoResponse> {
-    return httpClient.get(`/carrito?idSucursal=${idSucursal}`)
+    return httpClient.get(`/carrito?idSucursal=${idSucursal}`, {
+      headers: carritoHeaders(isAuthenticated),
+    })
   },
 
   async agregarItem(
@@ -58,7 +60,8 @@ export const carritoService = {
     isAuthenticated: boolean
   ): Promise<CarritoResponse> {
     return httpClient.delete(
-      `/carrito/items/${idProductoFinal}?idSucursal=${idSucursal}`
+      `/carrito/items/${idProductoFinal}?idSucursal=${idSucursal}`,
+      { headers: carritoHeaders(isAuthenticated) }
     )
   },
 

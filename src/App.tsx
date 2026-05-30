@@ -21,18 +21,26 @@ import InventarioPage from './modules/inventario/pages/InventarioPage'
 import { Toaster } from 'sonner'
 
 import { ProtectedLayout } from './shared/components/layout/ProtectedLayout'
+import { PublicLayout } from './shared/components/layout/PublicLayout'
 import CategoriasPage from './modules/comercial/pages/CategoriasPage'
 import Compra from './modules/comercial/pages/Compra'
 import ProductosFinalesPage from './modules/comercial/pages/ProductosFinalesPage'
 import RecetasPage from './modules/inventario/pages/RecetasPage'
 
 import CatalogoPage from './modules/comercial/pages/CatalogoPage'
-import VentasPage from './modules/comercial/pages/VentasPage'
+import CarritoPage from './modules/electronico/pages/CarritoPage'
+import MisPedidosPage from './modules/electronico/pages/MisPedidosPage'
+import PedidoDetailPage from './modules/electronico/pages/PedidoDetailPage'
+import PasarelaPagoPage from './modules/electronico/pages/PasarelaPagoPage'
+import MetodosPagoPage from './modules/electronico/pages/MetodosPagoPage'
+import CheckoutPage from './modules/electronico/pages/CheckoutPage'
+import PayPalSuccessPage from './modules/electronico/pages/PayPalSuccessPage'
+import { CarritoProvider } from './modules/electronico/context/CarritoContext'
 
 function App() {
   return (
-    <SWRConfig 
-      value={{ 
+    <SWRConfig
+      value={{
         fetcher: (url: string) => httpClient.get(url),
         revalidateOnFocus: false,
         shouldRetryOnError: false
@@ -40,37 +48,59 @@ function App() {
     >
       <QueryProvider>
         <ThemeProvider>
-          <Toaster richColors position="top-right" />
+          <Toaster
+            richColors
+            position="top-right"
+            duration={3500}
+            visibleToasts={4}
+            expand={false}
+            closeButton
+            toastOptions={{
+              className: 'rounded-2xl px-4 py-3 text-sm font-medium',
+            }}
+          />
           <AuthProvider>
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              
-              {/* Rutas Protegidas (Comparten el mismo Layout) */}
-              <Route element={<ProtectedLayout />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/users" element={<UsersPage />} />
-                <Route path="/roles" element={<RolesPage />} />
-                <Route path="/auditoria" element={<AuditoriaPage />} />
-                <Route path="/perfil" element={<PerfilPersonalPage />} />
-                <Route path="/sucursales" element={<SucursalesPage />} />
-                <Route path="/sectores" element={<SectoresPage />} />
-                <Route path="/mesas" element={<MesasPage />} />
-                <Route path="/empleados" element={<EmployeesPage />} />
-                <Route path="/proveedores" element={<ProveedoresPage />} />
-                <Route path="/inventario" element={<InventarioPage />} />
-                <Route path="/restobar" element={<DashboardPage />} />
-                <Route path="/categorias" element={<CategoriasPage />} />
-                <Route path="/compras" element={<Compra />} />
-                <Route path="/productos-finales" element={<ProductosFinalesPage />} />
-                <Route path="/recetas" element={<RecetasPage />} />
-                <Route path="/catalogo" element={<CatalogoPage />} />
-                <Route path="/ventas-presencial" element={<VentasPage />} />
-              </Route>
-              
-              <Route path="/" element={<Navigate to="/login" replace />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
+            <CarritoProvider>
+              <Routes>
+                {/* Public Routes (no auth required) */}
+                <Route element={<PublicLayout />}>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/paypal/success" element={<PayPalSuccessPage />} />
+                  <Route path="/paypal/cancel" element={<CheckoutPage />} />
+                </Route>
+
+                {/* Protected Routes (auth required) */}
+                <Route element={<ProtectedLayout />}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/users" element={<UsersPage />} />
+                  <Route path="/roles" element={<RolesPage />} />
+                  <Route path="/auditoria" element={<AuditoriaPage />} />
+                  <Route path="/perfil" element={<PerfilPersonalPage />} />
+                  <Route path="/sucursales" element={<SucursalesPage />} />
+                  <Route path="/sectores" element={<SectoresPage />} />
+                  <Route path="/mesas" element={<MesasPage />} />
+                  <Route path="/empleados" element={<EmployeesPage />} />
+                  <Route path="/proveedores" element={<ProveedoresPage />} />
+                  <Route path="/inventario" element={<InventarioPage />} />
+                  <Route path="/restobar" element={<DashboardPage />} />
+                  <Route path="/categorias" element={<CategoriasPage />} />
+                  <Route path="/compras" element={<Compra />} />
+                  <Route path="/productos-finales" element={<ProductosFinalesPage />} />
+                  <Route path="/recetas" element={<RecetasPage />} />
+  <Route path="/catalogo" element={<CatalogoPage />} />
+  <Route path="/carrito" element={<CarritoPage />} />
+  <Route path="/pasarela-pago/:idComanda?" element={<PasarelaPagoPage />} />
+                  <Route path="/mis-pedidos" element={<MisPedidosPage />} />
+  <Route path="/metodos-pago" element={<MetodosPagoPage />} />
+                  <Route path="/mis-pedidos/:id" element={<PedidoDetailPage />} />
+                </Route>
+
+                <Route path="/" element={<Navigate to="/catalogo" replace />} />
+                <Route path="*" element={<Navigate to="/catalogo" replace />} />
+              </Routes>
+            </CarritoProvider>
           </AuthProvider>
         </ThemeProvider>
       </QueryProvider>

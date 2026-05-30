@@ -1,7 +1,9 @@
 import { Modal } from '@/shared/components/ui/Modal'
 import { CatalogoToolbar } from './components/CatalogoToolbar.view'
 import { CatalogoTable } from './components/CatalogoTable.view'
+import { CatalogoGrid } from './components/CatalogoGrid.view'
 import { CatalogoForm } from './components/CatalogoForm.view'
+import { ProductoCardSkeleton } from '@/shared/components/ui/Skeleton/Skeleton'
 import { CatalogoProducto, CatalogoUpdateRequest } from '../../models/catalogo.model'
 import { Sucursal } from '@/modules/acceso/services/types'
 
@@ -16,6 +18,8 @@ interface CatalogoPageViewProps {
   feedbackType: 'error' | 'success' | ''
   canUpdate: boolean
   isAdmin: boolean
+  vistaPrevia: boolean
+  onVistaPreviaChange: (v: boolean) => void
   isFormModalOpen: boolean
   setIsFormModalOpen: (open: boolean) => void
   selectedProducto: CatalogoProducto | null
@@ -25,14 +29,28 @@ interface CatalogoPageViewProps {
   sucursales: Sucursal[]
   sucursalId: number | null
   onSucursalChange: (id: number) => void
+  viewMode: 'table' | 'grid'
+  onViewModeChange: (mode: 'table' | 'grid') => void
+  sortBy: 'nombre' | 'precio_asc' | 'precio_desc' | 'recientes'
+  onSortByChange: (sort: 'nombre' | 'precio_asc' | 'precio_desc' | 'recientes') => void
+  onlyAvailable: boolean
+  onOnlyAvailableChange: (v: boolean) => void
+  onClearFilters: () => void
+  categories: { id: number; nombre: string }[]
+  selectedCategoryId: number | null
+  onSelectedCategoryChange: (id: number | null) => void
 }
 
 export function CatalogoPageView({
   productos, total, isLoading, isSubmitLoading,
   search, onSearchChange, feedbackMessage, feedbackType,
-  canUpdate, isAdmin, isFormModalOpen, setIsFormModalOpen,
+  canUpdate, isAdmin, vistaPrevia, onVistaPreviaChange,
+  isFormModalOpen, setIsFormModalOpen,
   selectedProducto, onEdit, onAgregarCarrito, onSubmit,
   sucursales, sucursalId, onSucursalChange,
+  viewMode, onViewModeChange, sortBy, onSortByChange,
+  onlyAvailable, onOnlyAvailableChange, onClearFilters,
+  categories, selectedCategoryId, onSelectedCategoryChange,
 }: CatalogoPageViewProps) {
   return (
     <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
@@ -54,9 +72,21 @@ export function CatalogoPageView({
         onSearchChange={onSearchChange}
         total={total}
         isAdmin={isAdmin}
+        vistaPrevia={vistaPrevia}
+        onVistaPreviaChange={onVistaPreviaChange}
         sucursales={sucursales}
         sucursalId={sucursalId}
         onSucursalChange={onSucursalChange}
+        viewMode={viewMode}
+        onViewModeChange={onViewModeChange}
+        sortBy={sortBy}
+        onSortByChange={onSortByChange}
+        onlyAvailable={onlyAvailable}
+        onOnlyAvailableChange={onOnlyAvailableChange}
+        onClearFilters={onClearFilters}
+        categories={categories}
+        selectedCategoryId={selectedCategoryId}
+        onSelectedCategoryChange={onSelectedCategoryChange}
       />
 
       {!sucursalId ? (
@@ -66,20 +96,30 @@ export function CatalogoPageView({
           </p>
         </div>
       ) : isLoading ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-wine-50/10 rounded-[2.5rem] border-2 border-dashed border-wine-100/50 dark:bg-black/10 dark:border-wine-900/20">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-wine-200 border-t-wine-600" />
-          <p className="mt-4 text-xs font-bold uppercase tracking-widest text-wine-900/40">Cargando catálogo...</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <ProductoCardSkeleton key={i} />
+          ))}
         </div>
+      ) : viewMode === 'grid' ? (
+        <CatalogoGrid
+          productos={productos}
+          canUpdate={canUpdate && !vistaPrevia}
+          isAdmin={isAdmin && !vistaPrevia}
+          onEdit={onEdit}
+          onAgregarCarrito={onAgregarCarrito}
+        />
       ) : (
         <CatalogoTable
           productos={productos}
-          canUpdate={canUpdate}
-          isAdmin={isAdmin}
+          canUpdate={canUpdate && !vistaPrevia}
+          isAdmin={isAdmin && !vistaPrevia}
           onEdit={onEdit}
           onAgregarCarrito={onAgregarCarrito}
         />
       )}
 
+      {!vistaPrevia && (
       <Modal.Root isOpen={isFormModalOpen} onClose={() => setIsFormModalOpen(false)} size="md">
         <Modal.Header>Editar Producto del Catálogo</Modal.Header>
         <Modal.Body>
@@ -99,6 +139,7 @@ export function CatalogoPageView({
           />
         </Modal.Body>
       </Modal.Root>
+      )}
     </div>
   )
 }

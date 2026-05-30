@@ -2,6 +2,7 @@ import React from 'react'
 import { LogOut, Sun, Moon, Menu } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { Sidebar } from './Sidebar'
+import { MobileBottomNav } from './MobileBottomNav'
 import { CarritoButton } from '@/modules/electronico/pages/CarritoPage'
 
 interface LayoutViewProps {
@@ -85,9 +86,11 @@ export const LayoutView: React.FC<LayoutViewProps> = ({
           </div>
         </header>
 
-        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 pb-20 lg:pb-8">
           {children}
         </main>
+
+        <MobileBottomNav onMenuClick={() => setSidebarOpen(true)} />
       </div>
     </div>
   )
