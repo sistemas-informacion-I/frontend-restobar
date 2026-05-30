@@ -4,6 +4,7 @@ import { getErrorMessage } from '@/core/api'
 import { ComandasPageView } from './ComandasPage.view'
 import { useComandas } from '../../hooks/useComandas'
 import { useMesas } from '../../hooks/useMesas'
+import { useSectores } from '../../hooks/useSectores'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { useSucursales } from '../../hooks/useSucursales'
 import { productosFinalesService } from '@/modules/comercial/services/productosFinales.service'
@@ -35,6 +36,11 @@ export function ComandasPage() {
     loadError: mesasError
   } = useMesas()
 
+  const {
+    sectores,
+    isLoading: sectoresLoading
+  } = useSectores()
+
   const { data: productos = [], isLoading: productosLoading } = useSWR<ProductoFinal[]>(
     '/api/productos',
     () => productosFinalesService.getAll({ activo: true })
@@ -42,6 +48,7 @@ export function ComandasPage() {
 
   const { user } = useAuth()
   const { sucursales } = useSucursales()
+  const isSuperuser = user?.tipoUsuario === 'S'
 
   const [search, setSearch] = useState('')
   const [filterEstado, setFilterEstado] = useState('')
@@ -64,11 +71,16 @@ export function ComandasPage() {
   const [showViewModal, setShowViewModal] = useState(false)
   const [selectedComanda, setSelectedComanda] = useState<Comanda | null>(null)
 
-  const loading = comandasLoading || mesasLoading || productosLoading
+  const loading = comandasLoading || mesasLoading || sectoresLoading || productosLoading
   const loadError = comandasError || mesasError
 
   const filteredComandas = useMemo(() => {
     let filtered = comandas
+
+    // El superusuario ve todas las comandas; las filtramos por la sucursal elegida.
+    if (selectedSucursalId !== undefined) {
+      filtered = filtered.filter(c => c.idSucursal === selectedSucursalId)
+    }
 
     if (search) {
       const q = search.toLowerCase()
@@ -85,12 +97,23 @@ export function ComandasPage() {
     }
 
     return filtered
-  }, [comandas, search, filterEstado])
+  }, [comandas, search, filterEstado, selectedSucursalId])
 
-  const mesasDisponibles = useMemo(() =>
-    mesas.filter(m => m.disponibilidad === 'DISPONIBLE' || m.activo),
-    [mesas]
+  // Sectores activos de la sucursal seleccionada (para el selector del formulario)
+  const sectoresDeSucursal = useMemo(() =>
+    sectores.filter(s => s.activo && s.idSucursal === selectedSucursalId),
+    [sectores, selectedSucursalId]
   )
+
+  // Mesas disponibles que pertenecen a algún sector de la sucursal seleccionada
+  const mesasDisponibles = useMemo(() => {
+    const sectorIds = new Set(sectoresDeSucursal.map(s => s.idSector))
+    return mesas.filter(m =>
+      m.activo &&
+      sectorIds.has(m.idSector) &&
+      (m.disponibilidad === 'DISPONIBLE')
+    )
+  }, [mesas, sectoresDeSucursal])
 
   const productoOptions = useMemo(() =>
     productos.map(p => ({
@@ -212,9 +235,20 @@ export function ComandasPage() {
     setShowEditModal(true)
   }
 
+  const sucursalNombre = useMemo(
+    () => sucursales.find(s => s.idSucursal === selectedSucursalId)?.nombre,
+    [sucursales, selectedSucursalId]
+  )
+
   return ComandasPageView({
     comandas: filteredComandas,
     mesas: mesasDisponibles,
+    sectores: sectoresDeSucursal,
+    sucursales,
+    sucursalNombre,
+    selectedSucursalId,
+    setSelectedSucursalId,
+    isSuperuser,
     productos: productoOptions,
     loading,
     search,
