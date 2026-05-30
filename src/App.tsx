@@ -27,6 +27,7 @@ import ProductosFinalesPage from './modules/comercial/pages/ProductosFinalesPage
 import RecetasPage from './modules/inventario/pages/RecetasPage'
 
 import CatalogoPage from './modules/comercial/pages/CatalogoPage'
+import VentasPage from './modules/comercial/pages/VentasPage'
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
                 <Route path="/productos-finales" element={<ProductosFinalesPage />} />
                 <Route path="/recetas" element={<RecetasPage />} />
                 <Route path="/catalogo" element={<CatalogoPage />} />
+                <Route path="/ventas-presencial" element={<VentasPage />} />
               </Route>
               
               <Route path="/" element={<Navigate to="/login" replace />} />
