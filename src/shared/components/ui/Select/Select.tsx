@@ -85,13 +85,21 @@ export const Select: React.FC<SelectProps> = ({
 
     const handleClose = () => setIsOpen(false)
 
+    // Cerrar al scrollear la página/fondo (la posición fixed se desalinearía),
+    // pero NO cuando el scroll ocurre dentro de la propia lista de opciones.
+    const handleWindowScroll = (e: Event) => {
+      const target = e.target as Node | null
+      if (dropdownRef.current && target && dropdownRef.current.contains(target)) return
+      setIsOpen(false)
+    }
+
     document.addEventListener('mousedown', handleClickOutside)
-    window.addEventListener('scroll', handleClose, true)
+    window.addEventListener('scroll', handleWindowScroll, true)
     window.addEventListener('resize', handleClose)
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
-      window.removeEventListener('scroll', handleClose, true)
+      window.removeEventListener('scroll', handleWindowScroll, true)
       window.removeEventListener('resize', handleClose)
     }
   }, [isOpen])
