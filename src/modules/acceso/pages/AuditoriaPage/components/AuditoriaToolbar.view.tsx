@@ -71,11 +71,11 @@ export function AuditoriaToolbarView({
           </div>
           
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">Operación</label>
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 px-1">Operación</label>
             <select
               value={filters.operacion || ''}
               onChange={(e) => onFilterChange({ operacion: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm transition-all focus:border-wine-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-wine-500/10 dark:border-wine-900/30 dark:bg-black/30 dark:text-white dark:focus:border-wine-700 dark:focus:bg-black/50 appearance-none pointer-events-auto"
+              className="w-full rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 py-2.5 text-sm font-bold text-slate-900 outline-none transition-all hover:border-wine-300/50 focus:border-wine-600 focus:bg-white focus:ring-2 focus:ring-wine-500/10 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
             >
               <option value="" className="bg-white dark:bg-wine-950">Todas</option>
               <option value="INSERT" className="bg-white dark:bg-wine-950">INSERT</option>

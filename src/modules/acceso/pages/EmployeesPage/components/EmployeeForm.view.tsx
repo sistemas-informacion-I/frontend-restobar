@@ -156,7 +156,7 @@ export function EmployeeForm({ employee, roles, sucursales, onSubmit, onCancel, 
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 pl-1">Sexo</label>
           <select
             {...register('sexo')}
-            className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
+            className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:focus:bg-black/40 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
           >
             <option value="M">Masculino</option>
             <option value="F">Femenino</option>
@@ -193,7 +193,7 @@ export function EmployeeForm({ employee, roles, sucursales, onSubmit, onCancel, 
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 pl-1">Turno Laboral</label>
           <select
             {...register('turno')}
-            className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
+            className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:focus:bg-black/40 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
           >
             <option value="MA">Mañana</option>
             <option value="TA">Tarde</option>
@@ -206,7 +206,7 @@ export function EmployeeForm({ employee, roles, sucursales, onSubmit, onCancel, 
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 pl-1">Asignar Sucursal</label>
             <select
               {...register('idSucursal', { required: isSuperUser ? 'La sucursal es obligatoria' : false })}
-              className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
+              className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:focus:bg-black/40 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
             >
               <option value="">Seleccionar Sucursal...</option>
               {sucursales.map((suc) => (

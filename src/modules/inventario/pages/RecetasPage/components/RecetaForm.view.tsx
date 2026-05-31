@@ -260,7 +260,7 @@ export function RecetaForm({
                   value={item.idInventario}
                   onChange={(e) => updateIngrediente(index, 'idInventario', Number(e.target.value))}
                   required
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                  className="w-full rounded-lg border border-wine-100/50 bg-slate-50/50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 focus:ring-2 focus:ring-wine-500/10 dark:border-wine-900/20 dark:bg-black/20 dark:text-white"
                 >
                   {ingredientOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -286,7 +286,7 @@ export function RecetaForm({
                   value={item.unidadMedida}
                   onChange={(e) => updateIngrediente(index, 'unidadMedida', e.target.value as UnidadMedida)}
                   required
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                  className="w-full rounded-lg border border-wine-100/50 bg-slate-50/50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 focus:ring-2 focus:ring-wine-500/10 dark:border-wine-900/20 dark:bg-black/20 dark:text-white"
                 >
                   {UNIDADES.map((u) => (
                     <option key={u} value={u}>{u}</option>

@@ -37,13 +37,13 @@ export function ProductoSucursalForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <label className="grid gap-2">
-        <span className="text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Producto *</span>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60">Producto *</span>
         <select
           value={formData.idProducto}
           onChange={(e) => setFormData({ ...formData, idProducto: e.target.value })}
           required
           disabled={productosLoading || productosDisponibles.length === 0}
-          className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-wine-500 focus:ring-2 focus:ring-wine-200 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:border-wine-400 dark:focus:ring-wine-900/30"
+          className="rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 py-3 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:focus:bg-black/40 focus:ring-2 focus:ring-wine-500/10 disabled:opacity-50 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
         >
           <option value="">Selecciona un producto</option>
           {productosDisponibles.map((pf) => (
@@ -73,11 +73,11 @@ export function ProductoSucursalForm({
         </label>
 
         <label className="grid gap-2">
-          <span className="text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Disponibilidad *</span>
+          <span className="text-sm font-bold uppercase tracking-widest text-wine-700 dark:text-wine-300">Disponibilidad *</span>
           <select
             value={formData.disponible ? 'true' : 'false'}
             onChange={(e) => setFormData({ ...formData, disponible: e.target.value === 'true' })}
-            className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-wine-500 focus:ring-2 focus:ring-wine-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:border-wine-400 dark:focus:ring-wine-900/30"
+            className="rounded-xl border-2 border-wine-100/50 bg-white/50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-wine-500 focus:ring-2 focus:ring-wine-500/10 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-400 dark:focus:ring-wine-900/30"
           >
             <option value="true">Disponible</option>
             <option value="false">No disponible</option>

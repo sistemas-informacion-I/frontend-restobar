@@ -66,7 +66,7 @@ export function PerfilEditModal({ perfil, onClose, onSave }: Props) {
               <input {...register('telefono')} className="w-full px-5 py-3.5 bg-white dark:bg-black/50 border-2 border-wine-100/50 dark:border-wine-800/30 rounded-2xl focus:border-wine-500/50 focus:ring-4 focus:ring-wine-500/10 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400" />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">Sexo <span className="text-rose-500">*</span></label>
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 mb-2">Sexo <span className="text-rose-500">*</span></label>
               <select {...register('sexo', { required: 'Selecciona una opción' })} className="w-full px-5 py-3.5 bg-white dark:bg-black/50 border-2 border-wine-100/50 dark:border-wine-800/30 rounded-2xl focus:border-wine-500/50 focus:ring-4 focus:ring-wine-500/10 outline-none transition-all text-slate-900 dark:text-white appearance-none">
                 <option value="M">Masculino</option>
                 <option value="F">Femenino</option>

@@ -97,7 +97,7 @@ export function RegisterPageView({
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 px-1">Sexo</label>
                     <select
                       {...register('sexo', { required: 'Requerido' })}
-                      className="h-10 rounded-xl border border-wine-100/50 bg-white/50 px-3 text-xs font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500 shadow-sm"
+                      className="h-10 rounded-xl border border-wine-100/50 bg-white/50 px-3 text-xs font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:focus:bg-black/40 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500 shadow-sm"
                     >
                       <option value="" disabled>Seleccionar...</option>
                       <option value="M">M</option>

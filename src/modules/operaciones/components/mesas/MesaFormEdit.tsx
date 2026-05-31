@@ -87,12 +87,12 @@ export function MesaFormEdit({ mesa, sectores, onSubmit, onCancel, isLoading }: 
       />
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 flex items-center gap-2 pl-1">
           Disponibilidad
         </label>
         <select
           {...register('disponibilidad')}
-          className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+          className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:focus:bg-black/40 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
         >
           {disponibilidadOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -103,12 +103,12 @@ export function MesaFormEdit({ mesa, sectores, onSubmit, onCancel, isLoading }: 
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 flex items-center gap-2 pl-1">
           Sector
         </label>
         <select
           {...register('idSector', { required: 'Selecciona un sector', valueAsNumber: true })}
-          className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+          className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:focus:bg-black/40 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
         >
           <option value={0}>Selecciona un sector</option>
           {sectores.map((sector) => (
