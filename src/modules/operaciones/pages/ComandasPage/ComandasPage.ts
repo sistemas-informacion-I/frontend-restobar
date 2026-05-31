@@ -8,7 +8,8 @@ import { useSectores } from '../../hooks/useSectores'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { useSucursales } from '../../hooks/useSucursales'
 import { productosFinalesService } from '@/modules/comercial/services/productosFinales.service'
-import type { Comanda, CreateComandaData, UpdateComandaData } from '../../services/types'
+import { clienteService } from '../../services/cliente.service'
+import type { Comanda, Cliente, CreateComandaData, UpdateComandaData } from '../../services/types'
 import type { ProductoFinal } from '@/modules/comercial/services/productosFinales.service'
 
 export function ComandasPage() {
@@ -44,6 +45,11 @@ export function ComandasPage() {
   const { data: productos = [], isLoading: productosLoading } = useSWR<ProductoFinal[]>(
     '/api/productos',
     () => productosFinalesService.getAll({ activo: true })
+  )
+
+  const { data: clientes = [] } = useSWR<Cliente[]>(
+    '/api/clientes',
+    () => clienteService.getAll()
   )
 
   const { user } = useAuth()
@@ -244,6 +250,7 @@ export function ComandasPage() {
     comandas: filteredComandas,
     mesas: mesasDisponibles,
     sectores: sectoresDeSucursal,
+    clientes,
     sucursales,
     sucursalNombre,
     selectedSucursalId,

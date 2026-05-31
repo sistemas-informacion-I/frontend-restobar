@@ -4,13 +4,14 @@ import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
 import { FormSelect } from '@/shared/components/ui/forms'
 import { Card } from '@/shared/components/ui/Card'
-import { ClipboardList, Trash2, Plus, Users, Store, Grid3X3, Armchair } from 'lucide-react'
-import type { Comanda, Mesa, Sector, CreateComandaData, UpdateComandaData } from '../../services/types'
+import { ClipboardList, Trash2, Plus, Users, Store, Grid3X3, Armchair, UserRound } from 'lucide-react'
+import type { Comanda, Mesa, Sector, Cliente, CreateComandaData, UpdateComandaData } from '../../services/types'
 
 interface ComandaFormProps {
   comanda?: Comanda
   mesas?: Mesa[]
   sectores?: Sector[]
+  clientes?: Cliente[]
   sucursalNombre?: string
   productos?: Array<{ id: number; nombre: string; precio: number }>
   onSubmit: (data: CreateComandaData | UpdateComandaData) => Promise<void>
@@ -24,6 +25,7 @@ export function ComandaForm({
   comanda,
   mesas = [],
   sectores = [],
+  clientes = [],
   sucursalNombre,
   productos = [],
   onSubmit,
@@ -38,6 +40,7 @@ export function ComandaForm({
       numeroPersonas: comanda?.numeroPersonas,
       observaciones: comanda?.observaciones,
       idMesa: comanda?.idMesa,
+      idCliente: comanda?.idCliente,
       estado: comanda?.estado || 'ABIERTA',
       items: comanda?.items?.map(item => ({
         idProductoFinal: item.idProductoFinal,
@@ -123,6 +126,27 @@ export function ComandaForm({
               min: { value: 1, message: 'Mínimo 1 persona' }
             })}
             error={errors.numeroPersonas?.message}
+          />
+
+          <Controller
+            name="idCliente"
+            control={control}
+            render={({ field }) => (
+              <FormSelect
+                label="Cliente (necesario para facturar)"
+                icon={<UserRound size={18} />}
+                options={[
+                  { value: 0, label: 'Anónimo / Sin cliente' },
+                  ...clientes.map(c => ({
+                    value: c.idCliente,
+                    label: c.nit ? `${c.nombre} · NIT ${c.nit}` : c.nombre
+                  }))
+                ]}
+                placeholder="Anónimo / Sin cliente"
+                value={field.value}
+                onChange={(val) => field.onChange(val ? Number(val) : undefined)}
+              />
+            )}
           />
         </div>
 
