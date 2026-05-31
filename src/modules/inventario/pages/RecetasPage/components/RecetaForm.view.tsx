@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
+import { Select } from '@/shared/components/ui/Select/Select'
 import type { UnidadMedida, InventarioItem } from '@/modules/inventario/services/inventario.service'
 import type { ProductoFinal } from '@/modules/comercial/services/productosFinales.service'
 import type { Receta, RecetaUpsertData } from '../../../services/recetas.service'
@@ -123,38 +124,26 @@ export function RecetaForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="grid gap-2">
+        <div className="grid gap-2">
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40">Producto Final *</span>
-          <select
+          <Select
             value={idProductoFinal}
-            onChange={(e) => setIdProductoFinal(Number(e.target.value))}
-            required
-            className="rounded-2xl border border-wine-100/50 bg-slate-50/50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 focus:ring-4 focus:ring-wine-500/10 dark:border-wine-900/30 dark:bg-black/20 dark:text-white"
-          >
-            {productosFinales.map((p) => (
-              <option key={p.idProductoFinal} value={p.idProductoFinal}>
-                {p.codigo} - {p.nombre}
-              </option>
-            ))}
-          </select>
-        </label>
+            onChange={(v) => setIdProductoFinal(Number(v))}
+            options={productosFinales.map((p) => ({ value: p.idProductoFinal, label: `${p.codigo} - ${p.nombre}` }))}
+            placeholder="Seleccionar producto"
+          />
+        </div>
 
-        <label className="grid gap-2">
+        <div className="grid gap-2">
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40">Sucursal Referencia *</span>
-          <select
+          <Select
             value={idSucursalReferencia}
-            onChange={(e) => setIdSucursalReferencia(Number(e.target.value))}
-            required
+            onChange={(v) => setIdSucursalReferencia(Number(v))}
+            options={sucursales.map((s) => ({ value: s.idSucursal, label: s.nombre }))}
+            placeholder="Seleccionar sucursal"
             disabled={!canSelectSucursal}
-            className="rounded-2xl border border-wine-100/50 bg-slate-50/50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 focus:ring-4 focus:ring-wine-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-wine-900/30 dark:bg-black/20 dark:text-white"
-          >
-            {sucursales.map((s) => (
-              <option key={s.idSucursal} value={s.idSucursal}>
-                {s.nombre}
-              </option>
-            ))}
-          </select>
-        </label>
+          />
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -254,18 +243,14 @@ export function RecetaForm({
 
         <div className="space-y-3">
           {ingredientes.map((item, index) => (
-            <div key={index} className="grid gap-2 rounded-xl border border-wine-100/40 bg-white/80 p-3 dark:border-wine-900/20 dark:bg-black/20 md:grid-cols-12">
+            <div key={index} className="grid gap-2 rounded-xl border border-wine-100/40 bg-white/80 p-3 dark:border-wine-900/20 dark:bg-black/20 md:grid-cols-12 md:items-center">
               <div className="md:col-span-4">
-                <select
+                <Select
                   value={item.idInventario}
-                  onChange={(e) => updateIngrediente(index, 'idInventario', Number(e.target.value))}
-                  required
-                  className="w-full rounded-lg border border-wine-100/50 bg-slate-50/50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 focus:ring-2 focus:ring-wine-500/10 dark:border-wine-900/20 dark:bg-black/20 dark:text-white"
-                >
-                  {ingredientOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                  onChange={(v) => updateIngrediente(index, 'idInventario', Number(v))}
+                  options={ingredientOptions}
+                  placeholder="Insumo"
+                />
               </div>
 
               <div className="md:col-span-2">
@@ -276,22 +261,17 @@ export function RecetaForm({
                   required
                   value={item.cantidad}
                   onChange={(e) => updateIngrediente(index, 'cantidad', e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                  className="h-14 w-full rounded-2xl border border-wine-100/50 bg-white/80 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 focus:ring-4 focus:ring-wine-500/10 dark:border-wine-900/30 dark:bg-black/40 dark:text-white dark:focus:bg-black/40"
                   placeholder="Cant."
                 />
               </div>
 
               <div className="md:col-span-2">
-                <select
+                <Select
                   value={item.unidadMedida}
-                  onChange={(e) => updateIngrediente(index, 'unidadMedida', e.target.value as UnidadMedida)}
-                  required
-                  className="w-full rounded-lg border border-wine-100/50 bg-slate-50/50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 focus:ring-2 focus:ring-wine-500/10 dark:border-wine-900/20 dark:bg-black/20 dark:text-white"
-                >
-                  {UNIDADES.map((u) => (
-                    <option key={u} value={u}>{u}</option>
-                  ))}
-                </select>
+                  onChange={(v) => updateIngrediente(index, 'unidadMedida', v as UnidadMedida)}
+                  options={UNIDADES.map((u) => ({ value: u, label: u }))}
+                />
               </div>
 
               <div className="md:col-span-3">
@@ -300,7 +280,7 @@ export function RecetaForm({
                   value={item.notas}
                   onChange={(e) => updateIngrediente(index, 'notas', e.target.value)}
                   maxLength={500}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                  className="h-14 w-full rounded-2xl border border-wine-100/50 bg-white/80 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-wine-500 focus:ring-4 focus:ring-wine-500/10 dark:border-wine-900/30 dark:bg-black/40 dark:text-white dark:focus:bg-black/40"
                   placeholder="Notas"
                 />
               </div>
@@ -310,7 +290,7 @@ export function RecetaForm({
                   type="button"
                   onClick={() => removeIngrediente(index)}
                   disabled={ingredientes.length === 1}
-                  className="rounded-lg border border-rose-200 p-2 text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-rose-900/40 dark:text-rose-300 dark:hover:bg-rose-900/20"
+                  className="rounded-xl border border-rose-200 p-3 text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-rose-900/40 dark:text-rose-300 dark:hover:bg-rose-900/20"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
