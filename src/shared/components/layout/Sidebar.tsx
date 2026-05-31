@@ -53,7 +53,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized }: Sideb
         { path: '/sectores', label: 'Sectores', icon: Map, show: canRead('sectores') },
         { path: '/mesas', label: 'Mesas', icon: Grid, show: canRead('mesas') },
         { path: '/comandas', label: 'Comandas', icon: ClipboardList, show: canRead('comandas') },
-        { path: '/cocina', label: 'Preparación Comanda', icon: CookingPot, show: user?.tipoUsuario === 'E' || user?.tipoUsuario === 'S' || canRead('preparacion') },
+        { path: '/cocina', label: 'Preparación Comanda', icon: CookingPot, show: user?.tipoUsuario === 'E' || user?.tipoUsuario === 'S' || canRead('preparacion') || (user?.roles?.some((r) => r.name === 'COCINERO' || r.name === 'BARTENDER') ?? false) },
       ]
     },
     {
