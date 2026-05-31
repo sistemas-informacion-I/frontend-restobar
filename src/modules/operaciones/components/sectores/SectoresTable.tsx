@@ -7,6 +7,7 @@ interface SectoresTableProps {
   sectores: Sector[]
   canUpdateSectores: boolean
   canDeleteSectores: boolean
+  canCreateMesas: boolean
   onView: (sector: Sector) => void
   onEdit: (sector: Sector) => void
   onDelete: (sector: Sector) => void
@@ -23,6 +24,7 @@ export function SectoresTable({
   sectores,
   canUpdateSectores,
   canDeleteSectores,
+  canCreateMesas,
   onView,
   onEdit,
   onDelete,
@@ -81,13 +83,15 @@ export function SectoresTable({
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <Button
-                  variant="ghost"
-                  className="!rounded-xl bg-white dark:bg-white/5 border border-wine-100/50 dark:border-wine-900/20 text-[10px] font-black uppercase tracking-widest h-12"
-                  onClick={() => onAddMesa(sector)}
-                >
-                  <Armchair size={16} className="mr-2" /> + Mesa
-                </Button>
+                {canCreateMesas && (
+                  <Button
+                    variant="ghost"
+                    className="!rounded-xl bg-white dark:bg-white/5 border border-wine-100/50 dark:border-wine-900/20 text-[10px] font-black uppercase tracking-widest h-12"
+                    onClick={() => onAddMesa(sector)}
+                  >
+                    <Armchair size={16} className="mr-2" /> + Mesa
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   className="!rounded-xl bg-white dark:bg-white/5 border border-wine-100/50 dark:border-wine-900/20 text-[10px] font-black uppercase tracking-widest h-12"
@@ -187,15 +191,17 @@ export function SectoresTable({
 
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-emerald-50 dark:hover:!bg-emerald-900/20 hover:!text-emerald-600 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-900/30 transition-all"
-                          onClick={() => onAddMesa(sector)}
-                          title="Añadir Mesa"
-                        >
-                          <Armchair size={16} />
-                        </Button>
+                        {canCreateMesas && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-emerald-50 dark:hover:!bg-emerald-900/20 hover:!text-emerald-600 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-900/30 transition-all"
+                            onClick={() => onAddMesa(sector)}
+                            title="Añadir Mesa"
+                          >
+                            <Armchair size={16} />
+                          </Button>
+                        )}
 
                         <Button
                           variant="ghost"

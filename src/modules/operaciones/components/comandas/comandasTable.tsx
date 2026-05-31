@@ -1,4 +1,4 @@
-import { Eye, Edit2, Trash2, CheckCircle, ClipboardList, Store, Grid3X3, Armchair, Package, Users } from 'lucide-react'
+import { Eye, Edit2, Trash2, CheckCircle, ClipboardList, Store, Grid3X3, Armchair, Package, Users, UserRound, UserCog } from 'lucide-react'
 import { Button } from '@/shared/components/ui/Button'
 import { TableContainer } from '@/shared/components/ui'
 import type { Comanda } from '../../services/types'
@@ -161,12 +161,13 @@ export function ComandasTable({
               </div>
             </div>
 
-            <div className="mb-4 flex items-center gap-4 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+            <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
               {comanda.numeroPersonas != null && (
                 <span className="inline-flex items-center gap-1"><Users size={13} className="text-wine-600" /> {comanda.numeroPersonas} pers.</span>
               )}
               <span className="inline-flex items-center gap-1"><Package size={13} className="text-wine-600" /> {comanda.items?.length ?? 0} ítems</span>
-              {comanda.clienteNombre && <span className="truncate">{comanda.clienteNombre}</span>}
+              <span className="inline-flex items-center gap-1 truncate"><UserCog size={13} className="text-wine-600" /> {comanda.empleadoNombre?.trim() || 'Sin mesero'}</span>
+              {comanda.clienteNombre && <span className="inline-flex items-center gap-1 truncate"><UserRound size={13} className="text-wine-600" /> {comanda.clienteNombre}</span>}
             </div>
 
             {actions(comanda)}
@@ -226,7 +227,14 @@ export function ComandasTable({
                         <span className="inline-flex items-center gap-1"><Users size={12} className="text-wine-600" /> {comanda.numeroPersonas} pers.</span>
                       )}
                       <span className="inline-flex items-center gap-1"><Package size={12} className="text-wine-600" /> {comanda.items?.length ?? 0} ítems</span>
-                      {comanda.clienteNombre && <span className="truncate max-w-[140px]">{comanda.clienteNombre}</span>}
+                      <span className="inline-flex items-center gap-1 truncate max-w-[160px]" title={comanda.empleadoNombre?.trim() || undefined}>
+                        <UserCog size={12} className="text-wine-600 shrink-0" /> {comanda.empleadoNombre?.trim() || 'Sin mesero'}
+                      </span>
+                      {comanda.clienteNombre && (
+                        <span className="inline-flex items-center gap-1 truncate max-w-[160px]" title={comanda.clienteNombre}>
+                          <UserRound size={12} className="text-wine-600 shrink-0" /> {comanda.clienteNombre}
+                        </span>
+                      )}
                     </div>
                   </td>
 
