@@ -1,4 +1,4 @@
-import { Edit2, Eye, PowerOff, LayoutList, ChevronRight, GitBranch } from 'lucide-react'
+import { Edit2, Eye, PowerOff, Power,  LayoutList, ChevronRight, GitBranch } from 'lucide-react'
 import { Button } from '@/shared/components/ui/Button'
 import { TableContainer } from '@/shared/components/ui'
 import { Categoria } from '@/modules/comercial/services/categorias.service'
@@ -9,6 +9,7 @@ interface CategoriasTableProps {
   onView: (categoria: Categoria) => void
   onEdit: (categoria: Categoria) => void
   onDesactivar: (categoria: Categoria) => void
+  onActivar: (categoria: Categoria) => void
 }
 
 export function CategoriasTable({
@@ -17,6 +18,7 @@ export function CategoriasTable({
   onView,
   onEdit,
   onDesactivar,
+  onActivar,
 }: CategoriasTableProps) {
   return (
     <div className="flex flex-col gap-4">
@@ -79,22 +81,42 @@ export function CategoriasTable({
                   <Eye size={16} className="mr-2" /> Detalle
                 </Button>
                 {canUpdate && (
-                  <Button
-                    variant="ghost"
-                    className="!rounded-xl bg-white dark:bg-white/5 border border-wine-100/50 dark:border-wine-900/20 text-[10px] font-black uppercase tracking-widest h-12"
-                    onClick={() => onEdit(cat)}
-                  >
-                    <Edit2 size={16} className="mr-2" /> Editar
-                  </Button>
-                )}
-                {canUpdate && cat.activo && (
-                  <Button
-                    variant="danger"
-                    className="!rounded-xl h-12 col-span-2 shadow-lg shadow-rose-900/10"
-                    onClick={() => onDesactivar(cat)}
-                  >
-                    <PowerOff size={16} className="mr-2" /> Desactivar
-                  </Button>
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="!rounded-xl bg-white/50 dark:bg-black/20 hover:!bg-wine-50 dark:hover:!bg-wine-900/30 border border-transparent hover:border-wine-100 dark:hover:border-wine-900/20 transition-all"
+                      onClick={() => onEdit(cat)}
+                      title="Editar"
+                    >
+                      <Edit2 size={16} />
+                    </Button>
+
+                    {cat.activo && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className="!rounded-xl shadow-lg shadow-rose-900/10"
+                        onClick={() => onDesactivar(cat)}
+                        title="Desactivar"
+                      >
+                        <PowerOff size={16} />
+                      </Button>
+                    )}
+
+                    {/* ← AGREGAR ESTO */}
+                    {!cat.activo && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="!rounded-xl bg-emerald-50 text-emerald-600 hover:!bg-emerald-100 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/30"
+                        onClick={() => onActivar(cat)}
+                        title="Reactivar"
+                      >
+                        <Power size={16} />
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -219,6 +241,17 @@ export function CategoriasTable({
                                 title="Desactivar"
                               >
                                 <PowerOff size={16} />
+                              </Button>
+                            )}
+                            {!cat.activo && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="!rounded-xl bg-emerald-50 text-emerald-600 hover:!bg-emerald-100 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/30"
+                                onClick={() => onActivar(cat)}
+                                title="Reactivar"
+                              >
+                                <Power size={16} />
                               </Button>
                             )}
                           </>
