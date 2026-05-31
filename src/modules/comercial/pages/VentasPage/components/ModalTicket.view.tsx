@@ -5,7 +5,6 @@ import type { Comanda, ProductoVenta, EstadoVenta } from '@/modules/comercial/mo
 
 const estadoLabels: Record<EstadoVenta, { label: string; color: string }> = {
   PAGADA: { label: 'Pagada', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
-  PAGADO: { label: 'Pagado', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
   PENDIENTE: { label: 'Pendiente', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
   PENDIENTE_PAYPAL: { label: 'Pendiente PayPal', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
   ANULADA: { label: 'Anulada', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
