@@ -104,7 +104,7 @@ export const PasarelaPagoService = {
   },
 
   async getNotaVenta(idNotaVenta: number): Promise<NotaVentaDetail> {
-    return await httpClient.get<NotaVentaDetail>(`/api/notas-venta/${idNotaVenta}`)
+    return await httpClient.get<NotaVentaDetail>(`/api/notas-venta/mis-pedidos/${idNotaVenta}`)
   },
 
   async getTransaccion(idTransaccion: number): Promise<TransaccionOnlineResumen> {

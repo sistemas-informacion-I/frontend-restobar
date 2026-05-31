@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { ChevronDown, Check } from 'lucide-react'
 
 export interface SelectOption {
@@ -33,16 +34,50 @@ export const Select: React.FC<SelectProps> = ({
   const [scrollProgress, setScrollProgress] = useState(0)
   const [showScrollIndicator, setShowScrollIndicator] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [dropdownStyles, setDropdownStyles] = useState<React.CSSProperties | null>(null)
+
+  const computePosition = useCallback((): React.CSSProperties | null => {
+    if (!containerRef.current) return null
+    const rect = containerRef.current.getBoundingClientRect()
+    return {
+      position: 'fixed',
+      left: rect.left,
+      top: rect.bottom + 8,
+      width: Math.max(rect.width, 260),
+      zIndex: 10000
+    }
+  }, [])
 
   useEffect(() => {
+    if (!isOpen) {
+      setDropdownStyles(null)
+      return
+    }
+
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        (!dropdownRef.current || !dropdownRef.current.contains(target))
+      ) {
         setIsOpen(false)
       }
     }
+
+    const handleClose = () => setIsOpen(false)
+
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    window.addEventListener('scroll', handleClose, true)
+    window.addEventListener('resize', handleClose)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('scroll', handleClose, true)
+      window.removeEventListener('resize', handleClose)
+    }
+  }, [isOpen])
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
@@ -67,7 +102,13 @@ export const Select: React.FC<SelectProps> = ({
     >
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          const next = !isOpen
+          setIsOpen(next)
+          if (next) {
+            setDropdownStyles(computePosition())
+          }
+        }}
         className={`group flex h-14 w-full items-center justify-between rounded-2xl border border-wine-100/50 bg-white/80 px-5 text-sm font-semibold text-slate-900 backdrop-blur-md outline-none transition-all duration-500 hover:bg-white dark:border-white/10 dark:bg-black/40 dark:text-white dark:hover:bg-white/10 ${
           isOpen 
             ? 'border-wine-500/50 bg-wine-50 ring-4 ring-wine-500/10 shadow-[0_0_20px_rgba(159,18,57,0.1)] dark:bg-wine-900/20' 
@@ -90,8 +131,8 @@ export const Select: React.FC<SelectProps> = ({
         />
       </button>
 
-      {isOpen && (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-[100] w-full min-w-[260px] overflow-hidden rounded-[2.5rem] border border-wine-100/50 bg-white/90 p-2 shadow-[0_25px_60px_rgba(159,18,57,0.15)] backdrop-blur-3xl transition-all duration-500 dark:border-white/10 dark:bg-[#0f1117]/95 dark:shadow-[0_25px_60px_rgba(0,0,0,0.7)]">
+      {isOpen && dropdownStyles && createPortal(
+        <div ref={dropdownRef} style={dropdownStyles} className="min-w-[260px] overflow-hidden rounded-[2.5rem] border border-wine-100/50 bg-white/90 p-2 shadow-[0_25px_60px_rgba(159,18,57,0.15)] backdrop-blur-3xl transition-all duration-500 dark:border-white/10 dark:bg-[#0f1117]/95 dark:shadow-[0_25px_60px_rgba(0,0,0,0.7)]">
           <div className="absolute inset-0 bg-gradient-to-br from-wine-500/10 to-transparent pointer-events-none" />
           
           {/* Top Fade Mask */}
@@ -161,7 +202,8 @@ export const Select: React.FC<SelectProps> = ({
 
           {/* Bottom Fade Mask */}
           <div className="absolute bottom-0 left-0 z-10 h-10 w-full bg-gradient-to-t from-white dark:from-[#0f1117] to-transparent pointer-events-none opacity-50 dark:opacity-100" />
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
