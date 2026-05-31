@@ -83,14 +83,14 @@ export function ProductoSucursalForm({
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-sm font-bold uppercase tracking-widest text-slate-700 transition hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+          className="flex-1 rounded-2xl border border-wine-100/50 bg-wine-50/40 px-4 py-3 text-sm font-bold uppercase tracking-widest text-wine-700 transition hover:bg-wine-100/60 active:scale-95 disabled:opacity-50 dark:border-wine-900/20 dark:bg-wine-950/20 dark:text-wine-300 dark:hover:bg-wine-900/20"
           disabled={isLoading}
         >
           Cancelar
         </button>
         <button
           type="submit"
-          className="flex-1 rounded-xl bg-wine-600 px-4 py-3 text-sm font-bold uppercase tracking-widest text-white shadow-lg transition hover:bg-wine-700 active:scale-95 disabled:opacity-50 dark:bg-wine-500 dark:hover:bg-wine-600"
+          className="flex-1 rounded-2xl bg-wine-600 px-4 py-3 text-sm font-bold uppercase tracking-widest text-white shadow-lg shadow-wine-900/20 transition hover:bg-wine-700 active:scale-95 disabled:opacity-50 dark:bg-wine-500 dark:hover:bg-wine-600"
           disabled={isLoading || !formData.idProducto}
         >
           {isLoading ? 'Asignando...' : 'Asignar'}
