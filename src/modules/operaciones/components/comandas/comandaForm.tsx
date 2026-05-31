@@ -137,10 +137,13 @@ export function ComandaForm({
                 icon={<UserRound size={18} />}
                 options={[
                   { value: 0, label: 'Anónimo / Sin cliente' },
-                  ...clientes.map(c => ({
-                    value: c.idCliente,
-                    label: c.nit ? `${c.nombre} · NIT ${c.nit}` : c.nombre
-                  }))
+                  ...clientes.map(c => {
+                    const nombre = c.nombreCompleto || c.razonSocial || `Cliente #${c.idCliente}`
+                    return {
+                      value: c.idCliente,
+                      label: c.nit ? `${nombre} · NIT ${c.nit}` : nombre
+                    }
+                  })
                 ]}
                 placeholder="Anónimo / Sin cliente"
                 value={field.value}

@@ -94,9 +94,10 @@ export interface UpdateMesaData {
 
 export interface Cliente {
   idCliente: number
-  nombre: string
+  nombreCompleto?: string
+  razonSocial?: string
   nit?: string
-  email?: string
+  correo?: string
   telefono?: string
 }
 
