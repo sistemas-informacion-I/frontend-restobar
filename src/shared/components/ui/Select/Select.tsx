@@ -40,11 +40,28 @@ export const Select: React.FC<SelectProps> = ({
   const computePosition = useCallback((): React.CSSProperties | null => {
     if (!containerRef.current) return null
     const rect = containerRef.current.getBoundingClientRect()
+    const margin = 8
+    const width = Math.max(rect.width, 260)
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const estimatedHeight = 300 // alto aproximado del menú
+
+    // Horizontal: que no se salga por el borde derecho ni izquierdo.
+    let left = rect.left
+    if (left + width > vw - margin) left = vw - margin - width
+    if (left < margin) left = margin
+
+    // Vertical: abrir abajo; si no cabe, abrir arriba del selector.
+    let top = rect.bottom + margin
+    if (top + estimatedHeight > vh - margin && rect.top - margin - estimatedHeight > margin) {
+      top = rect.top - margin - estimatedHeight
+    }
+
     return {
       position: 'fixed',
-      left: rect.left,
-      top: rect.bottom + 8,
-      width: Math.max(rect.width, 260),
+      left,
+      top,
+      width,
       zIndex: 10000
     }
   }, [])
@@ -68,13 +85,21 @@ export const Select: React.FC<SelectProps> = ({
 
     const handleClose = () => setIsOpen(false)
 
+    // Cerrar al scrollear la página/fondo (la posición fixed se desalinearía),
+    // pero NO cuando el scroll ocurre dentro de la propia lista de opciones.
+    const handleWindowScroll = (e: Event) => {
+      const target = e.target as Node | null
+      if (dropdownRef.current && target && dropdownRef.current.contains(target)) return
+      setIsOpen(false)
+    }
+
     document.addEventListener('mousedown', handleClickOutside)
-    window.addEventListener('scroll', handleClose, true)
+    window.addEventListener('scroll', handleWindowScroll, true)
     window.addEventListener('resize', handleClose)
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
-      window.removeEventListener('scroll', handleClose, true)
+      window.removeEventListener('scroll', handleWindowScroll, true)
       window.removeEventListener('resize', handleClose)
     }
   }, [isOpen])

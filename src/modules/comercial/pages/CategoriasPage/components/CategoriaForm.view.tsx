@@ -1,9 +1,8 @@
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
-import { LayoutList, AlignLeft, GitBranch, AlertCircle } from 'lucide-react'
+import { LayoutList, AlignLeft, GitBranch } from 'lucide-react'
 import { Categoria, CreateCategoriaData } from '@/modules/comercial/services/categorias.service'
-import { FormSelect } from '@/shared/components/ui/forms'
 
 interface CategoriaFormProps {
   categoria: Categoria | null
@@ -25,7 +24,6 @@ export function CategoriaForm({ categoria, categorias, onSubmit, onCancel, isLoa
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<CategoriaFormValues>({
     defaultValues: categoria
@@ -41,24 +39,12 @@ export function CategoriaForm({ categoria, categorias, onSubmit, onCancel, isLoa
         },
   })
 
-  // Opciones para el select de categoría padre:
-  // - Excluye la categoría actual (no puede ser su propio padre)
-  // - Excluye categorías inactivas
-  const padreOptions = [
-    { value: '', label: 'Sin categoría padre (raíz)' },
-    ...categorias
-      .filter((c) => c.activo && c.idCategoria !== categoria?.idCategoria)
-      .map((c) => ({
-        value: String(c.idCategoria),
-        label: `${'— '.repeat(c.nivel - 1)}${c.nombre}`,
-      })),
-  ]
-
   const handleFormSubmit = (data: CategoriaFormValues) => {
     return onSubmit({
       ...data,
-      // Convertir string vacío o null del select a null para el backend, de lo contrario a número
-      idCategoriaPadre: data.idCategoriaPadre && data.idCategoriaPadre !== '' ? Number(data.idCategoriaPadre) : null,
+      idCategoriaPadre: data.idCategoriaPadre && data.idCategoriaPadre !== ''
+        ? Number(data.idCategoriaPadre)
+        : null,
     })
   }
 
@@ -90,32 +76,28 @@ export function CategoriaForm({ categoria, categorias, onSubmit, onCancel, isLoa
           {...register('descripcion')}
         />
 
-        <div className="flex flex-col gap-1.5 group">
+        <div className="flex flex-col gap-1.5">
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40 px-1">
             Categoría Padre (opcional)
           </label>
-          <div className="relative flex items-center group/input">
-            <span className="pointer-events-none absolute left-4 text-slate-400 group-focus-within/input:text-wine-600 dark:group-focus-within/input:text-wine-400 transition-colors">
+          <div className="relative flex items-center">
+            <span className="pointer-events-none absolute left-4 text-slate-400">
               <GitBranch size={18} />
             </span>
-            <Controller
-              name="idCategoriaPadre"
-              control={control}
-              render={({ field }) => (
-                <FormSelect
-                  className="pl-12"
-                  options={padreOptions}
-                  {...field}
-                />
-              )}
-            />
+            <select
+              className="w-full pl-12 h-12 rounded-2xl border border-wine-100/50 bg-white/50 text-sm font-medium text-slate-900 dark:bg-black/20 dark:text-white dark:border-wine-900/20 focus:outline-none focus:border-wine-600 transition-colors appearance-none"
+              {...register('idCategoriaPadre')}
+            >
+              <option value="">Sin categoría padre (raíz)</option>
+              {categorias
+                .filter(c => c.activo && c.idCategoria !== categoria?.idCategoria)
+                .map(c => (
+                  <option key={c.idCategoria} value={c.idCategoria}>
+                    {'— '.repeat(c.nivel - 1)}{c.nombre}
+                  </option>
+                ))}
+            </select>
           </div>
-          {errors.idCategoriaPadre && (
-            <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-rose-600 px-1 animate-in slide-in-from-top-1">
-              <AlertCircle size={12} className="shrink-0" />
-              {errors.idCategoriaPadre.message as React.ReactNode}
-            </span>
-          )}
           <p className="text-[10px] text-wine-900/30 dark:text-wine-100/20 px-1 mt-0.5">
             Si seleccionas una categoría padre, el nivel se calculará automáticamente.
           </p>

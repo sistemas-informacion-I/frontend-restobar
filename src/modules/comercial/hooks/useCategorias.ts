@@ -34,6 +34,13 @@ export const useCategorias = () => {
     { onSuccess: () => mutate() }
   )
 
+  const { trigger: activateCategoria, isMutating: isActivating } = useSWRMutation(
+    '/api/categorias/activate',
+    async (_, { arg }: { arg: number }) => {
+      return CategoriasService.activar(arg)
+    },
+    { onSuccess: () => mutate() }
+  )
   return {
     categorias,
     isLoading,
@@ -42,6 +49,8 @@ export const useCategorias = () => {
     isUpdating,
     isDeactivating,
     isSubmitting: isCreating || isUpdating || isDeactivating,
+    isActivating,
+    activateCategoria,
     createCategoria,
     updateCategoria,
     deactivateCategoria,

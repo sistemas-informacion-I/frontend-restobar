@@ -1,6 +1,7 @@
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
+import { Select } from '@/shared/components/ui/Select/Select'
 import { Armchair } from 'lucide-react'
 import { CreateMesaData, UpdateMesaData, Sector, Mesa } from '../../services/types'
 
@@ -25,6 +26,7 @@ export function MesaFormEdit({ mesa, sectores, onSubmit, onCancel, isLoading }: 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
@@ -49,14 +51,14 @@ export function MesaFormEdit({ mesa, sectores, onSubmit, onCancel, isLoading }: 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col gap-5">
       {isEdit && (
-        <div className="rounded-lg bg-indigo-50 p-3 text-sm text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
+        <div className="rounded-2xl border border-wine-100/50 bg-wine-50/40 p-3 text-sm font-semibold text-wine-700 dark:border-wine-900/20 dark:bg-wine-900/10 dark:text-wine-300">
           Editando mesa: <strong>Mesa {mesa.numeroMesa}</strong>
           {mesa.nombreSector && <span> (Sector: {mesa.nombreSector})</span>}
         </div>
       )}
 
       {!isEdit && (
-        <div className="rounded-lg bg-indigo-50 p-3 text-sm text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
+        <div className="rounded-2xl border border-wine-100/50 bg-wine-50/40 p-3 text-sm font-semibold text-wine-700 dark:border-wine-900/20 dark:bg-wine-900/10 dark:text-wine-300">
           Nueva mesa
         </div>
       )}
@@ -87,36 +89,43 @@ export function MesaFormEdit({ mesa, sectores, onSubmit, onCancel, isLoading }: 
       />
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 flex items-center gap-2 pl-1">
           Disponibilidad
         </label>
-        <select
-          {...register('disponibilidad')}
-          className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-        >
-          {disponibilidadOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        <Controller
+          name="disponibilidad"
+          control={control}
+          render={({ field }) => (
+            <Select
+              value={field.value}
+              onChange={field.onChange}
+              options={disponibilidadOptions}
+              placeholder="Seleccionar disponibilidad"
+            />
+          )}
+        />
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 flex items-center gap-2 pl-1">
           Sector
         </label>
-        <select
-          {...register('idSector', { required: 'Selecciona un sector', valueAsNumber: true })}
-          className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-        >
-          <option value={0}>Selecciona un sector</option>
-          {sectores.map((sector) => (
-            <option key={sector.idSector} value={sector.idSector}>
-              {sector.nombre} ({sector.tipoSector})
-            </option>
-          ))}
-        </select>
+        <Controller
+          name="idSector"
+          control={control}
+          rules={{ validate: (value) => (value && value !== 0 ? true : 'Selecciona un sector') }}
+          render={({ field }) => (
+            <Select
+              value={field.value}
+              onChange={(v) => field.onChange(Number(v))}
+              options={sectores.map((sector) => ({
+                value: sector.idSector,
+                label: `${sector.nombre} (${sector.tipoSector})`,
+              }))}
+              placeholder="Selecciona un sector"
+            />
+          )}
+        />
         {errors.idSector && (
           <span className="text-xs text-rose-500">{errors.idSector.message}</span>
         )}

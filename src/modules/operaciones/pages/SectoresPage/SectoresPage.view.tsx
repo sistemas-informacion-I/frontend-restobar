@@ -47,6 +47,7 @@ interface SectoresPageViewProps {
   canCreateSectores: boolean
   canUpdateSectores: boolean
   canDeleteSectores: boolean
+  canCreateMesas: boolean
 }
 
 export function SectoresPageView({
@@ -90,7 +91,8 @@ export function SectoresPageView({
   canViewSectores,
   canCreateSectores,
   canUpdateSectores,
-  canDeleteSectores
+  canDeleteSectores,
+  canCreateMesas
 }: SectoresPageViewProps) {
   if (!canViewSectores) {
     return (
@@ -154,6 +156,7 @@ export function SectoresPageView({
             sectores={sectores}
             canUpdateSectores={canUpdateSectores}
             canDeleteSectores={canDeleteSectores}
+            canCreateMesas={canCreateMesas}
             onView={openView}
             onEdit={openEdit}
             onDelete={openDelete}

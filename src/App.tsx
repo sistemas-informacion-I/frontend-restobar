@@ -40,6 +40,8 @@ import CheckoutPage from './modules/electronico/pages/CheckoutPage'
 import PayPalSuccessPage from './modules/electronico/pages/PayPalSuccessPage'
 import { CarritoProvider } from './modules/electronico/context/CarritoContext'
 
+import ReportesPage from './modules/operaciones/pages/ReportesPage/ReportesPage'
+
 function App() {
   return (
     <SWRConfig
@@ -95,12 +97,13 @@ function App() {
                   <Route path="/productos-finales" element={<ProductosFinalesPage />} />
                   <Route path="/ventas" element={<VentasPage />} />
                   <Route path="/recetas" element={<RecetasPage />} />
-  <Route path="/catalogo" element={<CatalogoPage />} />
-  <Route path="/carrito" element={<CarritoPage />} />
-  <Route path="/pasarela-pago/:idComanda?" element={<PasarelaPagoPage />} />
+                  <Route path="/catalogo" element={<CatalogoPage />} />
+                  <Route path="/carrito" element={<CarritoPage />} />
+                  <Route path="/pasarela-pago/:idComanda?" element={<PasarelaPagoPage />} />
                   <Route path="/mis-pedidos" element={<MisPedidosPage />} />
-  <Route path="/metodos-pago" element={<MetodosPagoPage />} />
+                  <Route path="/metodos-pago" element={<MetodosPagoPage />} />
                   <Route path="/mis-pedidos/:id" element={<PedidoDetailPage />} />
+                  <Route path="/reportes" element={<ReportesPage />} />
                 </Route>
 
                 <Route path="/" element={<Navigate to="/catalogo" replace />} />

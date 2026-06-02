@@ -19,25 +19,27 @@ export function getOrCreateSessionId(): string {
   return sid
 }
 
-function carritoHeaders(isAuthenticated: boolean): Record<string, string> {
-  if (isAuthenticated) return {}
+// Solo un cliente autenticado opera el carrito por su id; cualquier otro caso
+// (anónimo, o usuario autenticado que NO es cliente: SU/empleado) usa X-Session-Id.
+function carritoHeaders(esCliente: boolean): Record<string, string> {
+  if (esCliente) return {}
   return { 'X-Session-Id': getOrCreateSessionId() }
 }
 
 export const carritoService = {
-  async getCarrito(idSucursal: number, isAuthenticated: boolean): Promise<CarritoResponse> {
+  async getCarrito(idSucursal: number, esCliente: boolean): Promise<CarritoResponse> {
     return httpClient.get(`/carrito?idSucursal=${idSucursal}`, {
-      headers: carritoHeaders(isAuthenticated),
+      headers: carritoHeaders(esCliente),
     })
   },
 
   async agregarItem(
     idSucursal: number,
     body: AgregarItemRequest,
-    isAuthenticated: boolean
+    esCliente: boolean
   ): Promise<CarritoResponse> {
     return httpClient.post(`/carrito/items?idSucursal=${idSucursal}`, body, {
-      headers: carritoHeaders(isAuthenticated),
+      headers: carritoHeaders(esCliente),
     })
   },
 
@@ -45,23 +47,23 @@ export const carritoService = {
     idSucursal: number,
     idProductoFinal: number,
     body: ActualizarItemRequest,
-    isAuthenticated: boolean
+    esCliente: boolean
   ): Promise<CarritoResponse> {
     return httpClient.put(
       `/carrito/items/${idProductoFinal}?idSucursal=${idSucursal}`,
       body,
-      { headers: carritoHeaders(isAuthenticated) }
+      { headers: carritoHeaders(esCliente) }
     )
   },
 
   async eliminarItem(
     idSucursal: number,
     idProductoFinal: number,
-    isAuthenticated: boolean
+    esCliente: boolean
   ): Promise<CarritoResponse> {
     return httpClient.delete(
       `/carrito/items/${idProductoFinal}?idSucursal=${idSucursal}`,
-      { headers: carritoHeaders(isAuthenticated) }
+      { headers: carritoHeaders(esCliente) }
     )
   },
 

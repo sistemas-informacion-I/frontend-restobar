@@ -6,12 +6,13 @@ import { Search, Plus, ClipboardList, ListFilter, Store } from 'lucide-react'
 import { ComandasTable } from '../../components/comandas/comandasTable'
 import { ComandaView } from '../../components/comandas/comandaView'
 import { ComandaForm } from '../../components/comandas/comandaForm'
-import type { Comanda, Mesa, Sector, Sucursal } from '../../services/types'
+import type { Comanda, Mesa, Sector, Sucursal, Cliente } from '../../services/types'
 
 interface ComandasPageViewProps {
   comandas: Comanda[]
   mesas: Mesa[]
   sectores: Sector[]
+  clientes: Cliente[]
   sucursales: Sucursal[]
   sucursalNombre?: string
   selectedSucursalId?: number
@@ -63,6 +64,7 @@ export function ComandasPageView({
   comandas,
   mesas,
   sectores,
+  clientes,
   sucursales,
   sucursalNombre,
   selectedSucursalId,
@@ -239,6 +241,7 @@ export function ComandasPageView({
           <ComandaForm
             mesas={mesas}
             sectores={sectores}
+            clientes={clientes}
             sucursalNombre={sucursalNombre}
             productos={productos}
             onSubmit={handleCreate}
@@ -256,6 +259,7 @@ export function ComandasPageView({
             comanda={selectedComanda || undefined}
             mesas={mesas}
             sectores={sectores}
+            clientes={clientes}
             sucursalNombre={sucursalNombre}
             productos={productos}
             onSubmit={handleUpdate}

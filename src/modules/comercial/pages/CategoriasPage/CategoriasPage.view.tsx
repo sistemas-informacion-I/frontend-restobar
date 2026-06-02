@@ -4,6 +4,8 @@ import { CategoriasTable } from './components/CategoriasTable.view'
 import { CategoriaForm } from './components/CategoriaForm.view'
 import { CategoriaView } from './components/CategoriaView.view'
 import { Categoria, CreateCategoriaData } from '@/modules/comercial/services/categorias.service'
+import { CheckCircle2, XCircle } from 'lucide-react'
+import { Button } from '@/shared/components/ui/Button'
 
 interface CategoriasPageViewProps {
   categorias: Categoria[]
@@ -26,7 +28,10 @@ interface CategoriasPageViewProps {
   onEdit: (categoria: Categoria) => void
   onView: (categoria: Categoria) => void
   onDesactivar: (categoria: Categoria) => void
+  onActivar: (categoria: Categoria) => void
   onSubmit: (data: CreateCategoriaData) => Promise<void>
+  confirmModal: { open: boolean; mensaje: string; onConfirm: () => void }
+  onConfirmModalClose: () => void
 }
 
 export function CategoriasPageView({
@@ -50,21 +55,32 @@ export function CategoriasPageView({
   onEdit,
   onView,
   onDesactivar,
+  onActivar,
   onSubmit,
+  confirmModal,
+  onConfirmModalClose,
 }: CategoriasPageViewProps) {
   return (
     <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
 
         {/* Feedback global (fuera de modales) */}
         {feedbackMessage && !isFormModalOpen && !isViewModalOpen && (
-          <div className={`rounded-2xl border-2 px-6 py-4 text-xs font-bold uppercase tracking-widest shadow-lg animate-in fade-in slide-in-from-top-2 duration-500 ${
+          <div className={`flex items-start gap-4 rounded-3xl p-5 shadow-xl animate-in fade-in slide-in-from-top-4 duration-500 border-2 ${
             feedbackType === 'error'
-              ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900/30 dark:bg-rose-900/20 dark:text-rose-400 shadow-rose-900/5'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-400 shadow-emerald-900/5'
+              ? 'bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300'
           }`}>
-            <div className="flex items-center gap-3">
-              <div className={`h-2 w-2 rounded-full ${feedbackType === 'error' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
-              {feedbackMessage}
+            {/* Ícono grande */}
+            {feedbackType === 'error'
+              ? <XCircle size={28} className="shrink-0 mt-0.5" />
+              : <CheckCircle2 size={28} className="shrink-0 mt-0.5" />
+            }
+            {/* Texto */}
+            <div className="flex flex-col gap-0.5 flex-1">
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                {feedbackType === 'error' ? 'Error' : 'Éxito'}
+              </span>
+              <span className="text-sm font-bold">{feedbackMessage}</span>
             </div>
           </div>
         )}
@@ -91,6 +107,7 @@ export function CategoriasPageView({
             onView={onView}
             onEdit={onEdit}
             onDesactivar={onDesactivar}
+            onActivar={onActivar}
           />
         )}
 
@@ -124,13 +141,43 @@ export function CategoriasPageView({
 
         {/* Modal Ver detalle */}
         <Modal.Root
-          isOpen={isViewModalOpen}
-          onClose={() => setIsViewModalOpen(false)}
-          size="lg"
+                  isOpen={isViewModalOpen}
+                  onClose={() => setIsViewModalOpen(false)}
+                  size="lg"
+                >
+                  <Modal.Header>Detalle de la Categoría</Modal.Header>
+                  <Modal.Body>
+                    {selectedCategoria && <CategoriaView categoria={selectedCategoria} />}
+                  </Modal.Body>
+                </Modal.Root>
+                  {/* Modal de confirmación */}
+        <Modal.Root
+          isOpen={confirmModal.open}
+          onClose={onConfirmModalClose}
+          size="sm"
         >
-          <Modal.Header>Detalle de la Categoría</Modal.Header>
+          <Modal.Header>Confirmar acción</Modal.Header>
           <Modal.Body>
-            {selectedCategoria && <CategoriaView categoria={selectedCategoria} />}
+            <div className="flex flex-col gap-6">
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                {confirmModal.mensaje}
+              </p>
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={onConfirmModalClose}
+                  className="bg-wine-50/50 dark:bg-wine-950/30"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={confirmModal.onConfirm}
+                  className="shadow-lg shadow-wine-900/20"
+                >
+                  Confirmar
+                </Button>
+              </div>
+            </div>
           </Modal.Body>
         </Modal.Root>
 

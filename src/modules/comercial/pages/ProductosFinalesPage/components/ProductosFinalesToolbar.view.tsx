@@ -29,7 +29,7 @@ export function ProductosFinalesToolbar({
             placeholder="Buscar por código, nombre..."
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full rounded-2xl border border-wine-100/50 bg-white/90 pl-10 pr-4 py-3 text-sm font-bold text-slate-900 placeholder:text-slate-400/70 outline-none transition-all duration-300 focus:border-wine-500 focus:bg-white focus:ring-4 focus:ring-wine-500/10 hover:border-wine-300 dark:border-wine-900/30 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-wine-600 dark:focus:bg-black/40"
+            className="w-full rounded-2xl border border-wine-100/50 bg-white/90 pl-10 pr-4 py-3 text-sm font-bold text-slate-900 placeholder:text-slate-400/70 outline-none transition-all duration-300 focus:border-wine-500 focus:bg-white dark:focus:bg-black/40 focus:ring-4 focus:ring-wine-500/10 hover:border-wine-300 dark:border-wine-900/30 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-wine-600 dark:focus:bg-black/40"
           />
         </div>
         <button

@@ -46,6 +46,26 @@ function mapComanda(c: OperacionesComanda): Comanda {
   }
 }
 
+// Respuesta cruda de /api/clientes (ClienteResponse del backend)
+interface RawCliente {
+  idCliente: number
+  nombreCompleto?: string
+  razonSocial?: string
+  nit?: string
+  correo?: string
+  telefono?: string
+}
+
+function mapCliente(c: RawCliente): ClienteMock {
+  return {
+    idCliente: c.idCliente,
+    nombre: c.nombreCompleto || c.razonSocial || `Cliente #${c.idCliente}`,
+    nit: c.nit,
+    email: c.correo,
+    telefono: c.telefono,
+  }
+}
+
 function mapDetalleToProducto(d: DetalleComandaItem): ProductoVenta {
   return {
     idProducto: d.idProductoFinal,
@@ -88,13 +108,15 @@ export const VentaPresencialService = {
   },
 
   async buscarClientes(termino: string): Promise<ClienteMock[]> {
-    return httpClient.get<ClienteMock[]>(
+    const data = await httpClient.get<RawCliente[]>(
       `/api/clientes?buscar=${encodeURIComponent(termino)}`
     )
+    return data.map(mapCliente)
   },
 
   async obtenerTodosClientes(): Promise<ClienteMock[]> {
-    return httpClient.get<ClienteMock[]>('/api/clientes')
+    const data = await httpClient.get<RawCliente[]>('/api/clientes')
+    return data.map(mapCliente)
   },
 
   async confirmarVenta(

@@ -92,6 +92,15 @@ export interface UpdateMesaData {
   idSector?: number
 }
 
+export interface Cliente {
+  idCliente: number
+  nombreCompleto?: string
+  razonSocial?: string
+  nit?: string
+  correo?: string
+  telefono?: string
+}
+
 // ============ COMANDA TYPES ============
 export interface Comanda {
   idComanda: number
@@ -145,6 +154,7 @@ export interface UpdateComandaData {
   estado?: string
   observaciones?: string
   numeroPersonas?: number
+  idCliente?: number
   items?: CreateDetalleComandaItem[]
 }
 

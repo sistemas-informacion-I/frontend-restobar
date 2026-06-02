@@ -14,6 +14,7 @@ export default function CategoriasPage() {
     updateCategoria,
     deactivateCategoria,
     loadError,
+    activateCategoria,
   } = useCategorias()
 
   const [search, setSearch] = useState('')
@@ -39,13 +40,46 @@ export default function CategoriasPage() {
     }
   }, [])
 
+  // Primero agrupa: padre seguido de sus hijos en orden
+  const categoriasPorPadre = useMemo(() => {
+    const construirArbol = (lista: Categoria[]): Categoria[] => {
+      const resultado: Categoria[] = []
+      // Raíces primero, ordenadas por nombre
+      const raices = lista
+        .filter(c => !c.idCategoriaPadre)
+        .sort((a, b) => a.nombre.localeCompare(b.nombre))
+
+      const agregarConHijos = (cat: Categoria) => {
+        resultado.push(cat)
+        // Hijos directos de esta categoría, ordenados por nombre
+        const hijos = lista
+          .filter(c => c.idCategoriaPadre === cat.idCategoria)
+          .sort((a, b) => a.nombre.localeCompare(b.nombre))
+        hijos.forEach(agregarConHijos) // recursivo para múltiples niveles
+      }
+
+      raices.forEach(agregarConHijos)
+      return resultado
+    }
+
+    return construirArbol(categorias)
+  }, [categorias])
+
+  // Luego filtra sobre el árbol ya ordenado
   const filteredCategorias = useMemo(() => {
-    return categorias.filter((c: Categoria) =>
+    if (!search.trim()) return categoriasPorPadre
+    return categoriasPorPadre.filter(c =>
       c.nombre.toLowerCase().includes(search.toLowerCase()) ||
       (c.descripcion && c.descripcion.toLowerCase().includes(search.toLowerCase())) ||
       (c.nombreCategoriaPadre && c.nombreCategoriaPadre.toLowerCase().includes(search.toLowerCase()))
     )
-  }, [categorias, search])
+  }, [categoriasPorPadre, search])
+
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean
+    mensaje: string
+    onConfirm: () => void
+  }>({ open: false, mensaje: '', onConfirm: () => {} })
 
   const handleCreate = () => {
     setSelectedCategoria(null)
@@ -66,16 +100,37 @@ export default function CategoriasPage() {
     setIsViewModalOpen(true)
   }
 
-  const handleDesactivar = async (categoria: Categoria) => {
-    if (!confirm(`¿Desactivar la categoría "${categoria.nombre}"?`)) return
-    try {
-      await deactivateCategoria(categoria.idCategoria)
-      showFeedback('Categoría desactivada correctamente', 'success')
-    } catch (error: any) {
-      showFeedback(getErrorMessage(error, 'Desactivar categoría'), 'error')
-    }
+  const handleDesactivar = (categoria: Categoria) => {
+    setConfirmModal({
+      open: true,
+      mensaje: `¿Desactivar la categoría "${categoria.nombre}"?`,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, open: false }))
+        try {
+          await deactivateCategoria(categoria.idCategoria)
+          showFeedback('Categoría desactivada correctamente', 'success')
+        } catch (error: any) {
+          showFeedback(getErrorMessage(error, 'Desactivar categoría'), 'error')
+        }
+      }
+    })
   }
 
+  const handleActivar = (categoria: Categoria) => {
+    setConfirmModal({
+      open: true,
+      mensaje: `¿Reactivar la categoría "${categoria.nombre}"?`,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, open: false }))
+        try {
+          await activateCategoria(categoria.idCategoria)
+          showFeedback('Categoría reactivada correctamente', 'success')
+        } catch (error: any) {
+          showFeedback(getErrorMessage(error, 'Reactivar categoría'), 'error')
+        }
+      }
+    })
+  }
   const onSubmit = async (data: CreateCategoriaData) => {
     setFeedbackMessage('')
     setFeedbackType('')
@@ -92,6 +147,8 @@ export default function CategoriasPage() {
       showFeedback(getErrorMessage(error, 'Guardar categoría'), 'error')
     }
   }
+
+  
 
   return (
     <CategoriasPageView
@@ -116,6 +173,9 @@ export default function CategoriasPage() {
       onView={handleView}
       onDesactivar={handleDesactivar}
       onSubmit={onSubmit}
+      onActivar={handleActivar}
+      confirmModal={confirmModal}
+      onConfirmModalClose={() => setConfirmModal(prev => ({ ...prev, open: false }))}
     />
   )
 }
