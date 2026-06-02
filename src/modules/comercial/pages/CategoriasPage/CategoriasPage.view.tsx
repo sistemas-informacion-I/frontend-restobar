@@ -4,7 +4,7 @@ import { CategoriasTable } from './components/CategoriasTable.view'
 import { CategoriaForm } from './components/CategoriaForm.view'
 import { CategoriaView } from './components/CategoriaView.view'
 import { Categoria, CreateCategoriaData } from '@/modules/comercial/services/categorias.service'
-import { CheckCircle2, XCircle, X } from 'lucide-react'
+import { CheckCircle2, XCircle } from 'lucide-react'
 import { Button } from '@/shared/components/ui/Button'
 
 interface CategoriasPageViewProps {
