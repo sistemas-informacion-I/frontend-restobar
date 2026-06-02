@@ -3,7 +3,7 @@ name: Deploy Frontend React (Vite)
 on:
   push:
     branches:
-      - main
+      - ramita-backup
 
 jobs:
   deploy:
