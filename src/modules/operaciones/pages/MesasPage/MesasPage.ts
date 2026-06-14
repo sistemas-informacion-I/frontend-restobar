@@ -4,8 +4,11 @@ import { Mesa, CreateMesaData, UpdateMesaData } from '../../services/types'
 import { MesasPageView } from './MesasPage.view'
 import { useMesas } from '../../hooks/useMesas'
 import { useSectores } from '../../hooks/useSectores'
+import { useAuth } from '../../../acceso/context/AuthContext'
 
 export function MesasPage() {
+
+  const { canRead, canCreate, canUpdate, canDelete } = useAuth()
 
   const {
     mesas,
@@ -99,11 +102,11 @@ export function MesasPage() {
     setShowDeleteModal(true)
   }
 
-  // Permissions
-  const canViewMesas = true
-  const canCreateMesas = true 
-  const canUpdateMesas = true
-  const canDeleteMesas = true
+  // Permissions (las mesas son de solo lectura para el personal sin gestión)
+  const canViewMesas = canRead('mesas')
+  const canCreateMesas = canCreate('mesas')
+  const canUpdateMesas = canUpdate('mesas')
+  const canDeleteMesas = canDelete('mesas')
 
   return MesasPageView({
     mesas: filteredMesas,

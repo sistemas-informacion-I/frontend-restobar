@@ -25,6 +25,7 @@ jobs:
       - name: Build production app
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_REPORTS_API_URL: ${{ secrets.VITE_REPORTS_API_URL }}
         run: npm run build
 
       - name: Deploy to Firebase Hosting

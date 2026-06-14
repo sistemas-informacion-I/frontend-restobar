@@ -1,5 +1,6 @@
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { X } from 'lucide-react';
+import { Select } from '@/shared/components/ui/Select/Select';
 import { PerfilPersonalResponse, PerfilPersonalUpdate } from '../../../models/perfil-personal.model';
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
 }
 
 export function PerfilEditModal({ perfil, onClose, onSave }: Props) {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<PerfilPersonalUpdate>({
+  const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm<PerfilPersonalUpdate>({
     defaultValues: {
       nombre: perfil.nombre,
       apellido: perfil.apellido,
@@ -66,12 +67,24 @@ export function PerfilEditModal({ perfil, onClose, onSave }: Props) {
               <input {...register('telefono')} className="w-full px-5 py-3.5 bg-white dark:bg-black/50 border-2 border-wine-100/50 dark:border-wine-800/30 rounded-2xl focus:border-wine-500/50 focus:ring-4 focus:ring-wine-500/10 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400" />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">Sexo <span className="text-rose-500">*</span></label>
-              <select {...register('sexo', { required: 'Selecciona una opción' })} className="w-full px-5 py-3.5 bg-white dark:bg-black/50 border-2 border-wine-100/50 dark:border-wine-800/30 rounded-2xl focus:border-wine-500/50 focus:ring-4 focus:ring-wine-500/10 outline-none transition-all text-slate-900 dark:text-white appearance-none">
-                <option value="M">Masculino</option>
-                <option value="F">Femenino</option>
-                <option value="O">Otro</option>
-              </select>
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 mb-2">Sexo <span className="text-rose-500">*</span></label>
+              <Controller
+                name="sexo"
+                control={control}
+                rules={{ required: 'Selecciona una opción' }}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={[
+                      { value: 'M', label: 'Masculino' },
+                      { value: 'F', label: 'Femenino' },
+                      { value: 'O', label: 'Otro' },
+                    ]}
+                    placeholder="Seleccionar sexo"
+                  />
+                )}
+              />
               {errors.sexo && <p className="text-rose-500 text-[10px] font-bold mt-1.5">{errors.sexo.message}</p>}
             </div>
           </div>

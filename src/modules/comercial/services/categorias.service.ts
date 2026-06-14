@@ -47,4 +47,8 @@ export const CategoriasService = {
   async desactivar(id: number): Promise<Categoria> {
     return await httpClient.patch<Categoria>(`/api/categorias/${id}/desactivar`, {})
   },
+
+  async activar(id: number): Promise<Categoria> {
+    return await httpClient.patch<Categoria>(`/api/categorias/${id}/activar`, {})
+  },
 }

@@ -1,6 +1,7 @@
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { Input } from '@/shared/components/ui/Input'
+import { Select } from '@/shared/components/ui/Select/Select'
 import { Button } from '@/shared/components/ui/Button'
 import { User, CreditCard, Mail, Phone, MapPin, Briefcase, KeyRound } from 'lucide-react'
 import { Empleado, CreateEmpleadoData } from '@/modules/acceso/services/empleados.service'
@@ -26,6 +27,7 @@ export function EmployeeForm({ employee, roles, sucursales, onSubmit, onCancel, 
     setValue,
     getValues,
     watch,
+    control,
     formState: { errors },
   } = useForm<any>({
     defaultValues: employee ? {
@@ -154,14 +156,22 @@ export function EmployeeForm({ employee, roles, sucursales, onSubmit, onCancel, 
 
         <div className="flex flex-col gap-2">
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 pl-1">Sexo</label>
-          <select
-            {...register('sexo')}
-            className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
-          >
-            <option value="M">Masculino</option>
-            <option value="F">Femenino</option>
-            <option value="O">Otro</option>
-          </select>
+          <Controller
+            name="sexo"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value}
+                onChange={field.onChange}
+                options={[
+                  { value: 'M', label: 'Masculino' },
+                  { value: 'F', label: 'Femenino' },
+                  { value: 'O', label: 'Otro' },
+                ]}
+                placeholder="Seleccionar sexo"
+              />
+            )}
+          />
         </div>
 
         <Input
@@ -191,30 +201,43 @@ export function EmployeeForm({ employee, roles, sucursales, onSubmit, onCancel, 
 
         <div className="flex flex-col gap-2">
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 pl-1">Turno Laboral</label>
-          <select
-            {...register('turno')}
-            className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
-          >
-            <option value="MA">Mañana</option>
-            <option value="TA">Tarde</option>
-            <option value="NO">Noche</option>
-          </select>
+          <Controller
+            name="turno"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value}
+                onChange={field.onChange}
+                options={[
+                  { value: 'MA', label: 'Mañana' },
+                  { value: 'TA', label: 'Tarde' },
+                  { value: 'NO', label: 'Noche' },
+                ]}
+                placeholder="Seleccionar turno"
+              />
+            )}
+          />
         </div>
 
         {isSuperUser && (
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60 pl-1">Asignar Sucursal</label>
-            <select
-              {...register('idSucursal', { required: isSuperUser ? 'La sucursal es obligatoria' : false })}
-              className="h-12 rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
-            >
-              <option value="">Seleccionar Sucursal...</option>
-              {sucursales.map((suc) => (
-                <option key={suc.idSucursal} value={suc.idSucursal}>
-                  {suc.nombre} ({suc.ciudad})
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="idSucursal"
+              control={control}
+              rules={{ required: isSuperUser ? 'La sucursal es obligatoria' : false }}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={sucursales.map((suc) => ({
+                    value: suc.idSucursal,
+                    label: `${suc.nombre} (${suc.ciudad})`,
+                  }))}
+                  placeholder="Seleccionar sucursal..."
+                />
+              )}
+            />
             {errors.idSucursal && <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest pl-1">{errors.idSucursal.message as string}</p>}
           </div>
         )}

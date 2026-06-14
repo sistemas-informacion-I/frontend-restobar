@@ -15,6 +15,8 @@ import { httpClient } from './core/api/http-client'
 import SucursalesPage from './modules/operaciones/pages/SucursalesPage'
 import SectoresPage from './modules/operaciones/pages/SectoresPage'
 import MesasPage from './modules/operaciones/pages/MesasPage'
+import ComandasPage from './modules/operaciones/pages/ComandasPage'
+import { PreparacionPage } from './modules/operaciones/pages/PreparacionPage'
 import EmployeesPage from './modules/acceso/pages/EmployeesPage'
 import ProveedoresPage from './modules/comercial/pages/ProveedoresPage'
 import InventarioPage from './modules/inventario/pages/InventarioPage'
@@ -33,9 +35,12 @@ import MisPedidosPage from './modules/electronico/pages/MisPedidosPage'
 import PedidoDetailPage from './modules/electronico/pages/PedidoDetailPage'
 import PasarelaPagoPage from './modules/electronico/pages/PasarelaPagoPage'
 import MetodosPagoPage from './modules/electronico/pages/MetodosPagoPage'
+import VentasPage from './modules/comercial/pages/VentasPage'
 import CheckoutPage from './modules/electronico/pages/CheckoutPage'
 import PayPalSuccessPage from './modules/electronico/pages/PayPalSuccessPage'
 import { CarritoProvider } from './modules/electronico/context/CarritoContext'
+
+import ReportesPage from './modules/operaciones/pages/ReportesPage/ReportesPage'
 
 function App() {
   return (
@@ -81,6 +86,8 @@ function App() {
                   <Route path="/sucursales" element={<SucursalesPage />} />
                   <Route path="/sectores" element={<SectoresPage />} />
                   <Route path="/mesas" element={<MesasPage />} />
+                  <Route path="/comandas" element={<ComandasPage />} />
+                  <Route path="/cocina" element={<PreparacionPage />} />
                   <Route path="/empleados" element={<EmployeesPage />} />
                   <Route path="/proveedores" element={<ProveedoresPage />} />
                   <Route path="/inventario" element={<InventarioPage />} />
@@ -88,13 +95,15 @@ function App() {
                   <Route path="/categorias" element={<CategoriasPage />} />
                   <Route path="/compras" element={<Compra />} />
                   <Route path="/productos-finales" element={<ProductosFinalesPage />} />
+                  <Route path="/ventas" element={<VentasPage />} />
                   <Route path="/recetas" element={<RecetasPage />} />
-  <Route path="/catalogo" element={<CatalogoPage />} />
-  <Route path="/carrito" element={<CarritoPage />} />
-  <Route path="/pasarela-pago/:idComanda?" element={<PasarelaPagoPage />} />
+                  <Route path="/catalogo" element={<CatalogoPage />} />
+                  <Route path="/carrito" element={<CarritoPage />} />
+                  <Route path="/pasarela-pago/:idComanda?" element={<PasarelaPagoPage />} />
                   <Route path="/mis-pedidos" element={<MisPedidosPage />} />
-  <Route path="/metodos-pago" element={<MetodosPagoPage />} />
+                  <Route path="/metodos-pago" element={<MetodosPagoPage />} />
                   <Route path="/mis-pedidos/:id" element={<PedidoDetailPage />} />
+                  <Route path="/reportes" element={<ReportesPage />} />
                 </Route>
 
                 <Route path="/" element={<Navigate to="/catalogo" replace />} />

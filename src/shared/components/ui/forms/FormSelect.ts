@@ -1,6 +1,7 @@
 import { FormSelectView } from './FormSelect.view'
 
 export interface FormSelectProps {
+  label?: string
   disabled?: boolean
   options?: Array<{ value: string | number; label: string }>
   className?: string
@@ -10,6 +11,7 @@ export interface FormSelectProps {
 }
 
 export const FormSelect = ({ 
+  label,
   disabled = false, 
   options = [], 
   className = '', 
@@ -17,7 +19,7 @@ export const FormSelect = ({
   onChange,
   ...props 
 }: FormSelectProps) => {
-  return FormSelectView({ disabled, options, className, value, onChange, ...props })
+  return FormSelectView({ label, disabled, options, className, value, onChange, ...props })
 }
 
 FormSelect.displayName = 'FormSelect'

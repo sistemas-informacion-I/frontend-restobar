@@ -34,7 +34,10 @@ const CARRITO_SUCURSAL_KEY = 'carrito_sucursal_id'
 const CarritoContext = createContext<CarritoContextType | undefined>(undefined)
 
 export function CarritoProvider({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
+  // El backend opera el carrito por idCliente solo si el usuario es CLIENTE ('C').
+  // SU/empleado o anónimo deben usar X-Session-Id; si no, el backend rechaza el "agregar".
+  const esCliente = isAuthenticated && user?.tipoUsuario === 'C'
   const [carrito, setCarrito] = useState<CarritoResponse | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -60,14 +63,14 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
     if (!sucursalId) return
     try {
       setIsLoading(true)
-      const data = await carritoService.getCarrito(sucursalId, isAuthenticated)
+      const data = await carritoService.getCarrito(sucursalId, esCliente)
       setCarrito(data)
     } catch {
       setCarrito(null)
     } finally {
       setIsLoading(false)
     }
-  }, [sucursalId, isAuthenticated])
+  }, [sucursalId, esCliente])
 
   const openCarrito = useCallback(async () => {
     setIsOpen(true)
@@ -84,7 +87,7 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
       }
       try {
         setIsLoading(true)
-        const updated = await carritoService.agregarItem(sucursalId, req, isAuthenticated)
+        const updated = await carritoService.agregarItem(sucursalId, req, esCliente)
         setCarrito(updated)
 
         if (sourceEl) {
@@ -118,7 +121,7 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
         setIsLoading(false)
       }
     },
-    [sucursalId, isAuthenticated]
+    [sucursalId, esCliente]
   )
 
   const actualizarCantidad = useCallback(
@@ -127,7 +130,7 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
       try {
         setIsLoading(true)
         const updated = await carritoService.actualizarItem(
-          sucursalId, idProductoFinal, { cantidad }, isAuthenticated
+          sucursalId, idProductoFinal, { cantidad }, esCliente
         )
         setCarrito(updated)
       } catch (error: any) {
@@ -136,7 +139,7 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
         setIsLoading(false)
       }
     },
-    [sucursalId, isAuthenticated]
+    [sucursalId, esCliente]
   )
 
   const eliminarItem = useCallback(
@@ -144,7 +147,7 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
       if (!sucursalId) return
       try {
         setIsLoading(true)
-        const updated = await carritoService.eliminarItem(sucursalId, idProductoFinal, isAuthenticated)
+        const updated = await carritoService.eliminarItem(sucursalId, idProductoFinal, esCliente)
         setCarrito(updated)
         toast.success('Producto eliminado del carrito')
       } catch (error: any) {
@@ -153,7 +156,7 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
         setIsLoading(false)
       }
     },
-    [sucursalId, isAuthenticated]
+    [sucursalId, esCliente]
   )
 
   const checkout = useCallback(async () => {
@@ -172,7 +175,7 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [sucursalId, isAuthenticated])
+  }, [sucursalId, esCliente])
 
   const totalItems = carrito?.items.reduce((sum, item) => sum + item.cantidad, 0) ?? 0
 

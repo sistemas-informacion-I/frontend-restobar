@@ -8,7 +8,7 @@ import { useSucursales } from '../../hooks/useSucursales'
 import { useAuth } from '../../../acceso/context/AuthContext'
 
 export function SectoresPage() {
-  const { user } = useAuth()
+  const { user, canRead, canCreate, canUpdate, canDelete } = useAuth()
   const isSuperUser = user?.tipoUsuario === 'S'
 
   const {
@@ -160,11 +160,12 @@ export function SectoresPage() {
     return sucursal?.nombre || `Sucursal #${idSucursal}`
   }
 
-  // Permission checks
-  const canViewSectores = true
-  const canCreateSectores = true
-  const canUpdateSectores = true
-  const canDeleteSectores = true
+  // Permission checks (gestión reservada a ADMIN/SU; el personal solo visualiza)
+  const canViewSectores = canRead('sectores')
+  const canCreateSectores = canCreate('sectores')
+  const canUpdateSectores = canUpdate('sectores')
+  const canDeleteSectores = canDelete('sectores')
+  const canCreateMesas = canCreate('mesas')
 
   return SectoresPageView({
     sectores: filteredSectores,
@@ -207,7 +208,8 @@ export function SectoresPage() {
     canViewSectores,
     canCreateSectores,
     canUpdateSectores,
-    canDeleteSectores
+    canDeleteSectores,
+    canCreateMesas
   })
 }
 

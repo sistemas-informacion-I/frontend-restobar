@@ -1,0 +1,1 @@
+export { PreparacionQueueCard } from './PreparacionQueueCard'

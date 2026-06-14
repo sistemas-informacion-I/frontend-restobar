@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Select } from '@/shared/components/ui/Select/Select'
 import { ProductoFinal, ProductoFinalRequest } from '../../../services/productosFinales.service'
 import { Categoria } from '../../../services/categorias.service'
 
@@ -61,7 +62,7 @@ export function ProductoFinalForm({
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
               required
-              className="w-full rounded-2xl border border-wine-100/50 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-slate-900 placeholder:text-slate-400/60 outline-none transition-all duration-300 focus:border-wine-500 focus:bg-white focus:ring-4 focus:ring-wine-500/10 hover:border-wine-300 dark:border-wine-900/30 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-wine-600 dark:focus:bg-black/40"
+              className="w-full rounded-2xl border border-wine-100/50 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-slate-900 placeholder:text-slate-400/60 outline-none transition-all duration-300 focus:border-wine-500 focus:bg-white dark:focus:bg-black/40 focus:ring-4 focus:ring-wine-500/10 hover:border-wine-300 dark:border-wine-900/30 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-wine-600 dark:focus:bg-black/40"
               placeholder="Nombre del producto"
             />
           </label>
@@ -75,31 +76,19 @@ export function ProductoFinalForm({
                 value={formData.codigo}
                 onChange={(e) => setFormData({ ...formData, codigo: e.target.value })}
                 required
-                className="w-full rounded-2xl border border-wine-100/50 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-500 focus:bg-white dark:border-wine-900/30 dark:bg-black/20 dark:text-white"
+                className="w-full rounded-2xl border border-wine-100/50 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-500 focus:bg-white dark:focus:bg-black/40 dark:border-wine-900/30 dark:bg-black/20 dark:text-white"
                 placeholder="PROD-001"
               />
             </label>
-            <label className="flex-1 grid gap-2">
+            <div className="flex-1 grid gap-2">
               <span className="px-1 text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40">Categoría *</span>
-              <div className="relative">
-                <select
-                  value={formData.idCategoria}
-                  onChange={(e) => setFormData({ ...formData, idCategoria: Number(e.target.value) })}
-                  className="w-full rounded-2xl border border-wine-100/50 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-500 focus:bg-white dark:border-wine-900/30 dark:bg-black/20 dark:text-white appearance-none"
-                >
-                  {categorias.map((cat) => (
-                    <option key={cat.idCategoria} value={cat.idCategoria}>
-                      {cat.nombre}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-wine-900/30 dark:text-wine-100/20">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            </label>
+              <Select
+                value={formData.idCategoria}
+                onChange={(v) => setFormData({ ...formData, idCategoria: Number(v) })}
+                options={categorias.map((cat) => ({ value: cat.idCategoria, label: cat.nombre }))}
+                placeholder="Seleccionar categoría"
+              />
+            </div>
           </div>
 
           {/* Fila 3: Preparación */}
@@ -110,7 +99,7 @@ export function ProductoFinalForm({
                 type="number"
                 value={formData.tiempoPreparacion || ''}
                 onChange={(e) => setFormData({ ...formData, tiempoPreparacion: e.target.value ? Number(e.target.value) : undefined })}
-                className="w-full rounded-2xl border border-wine-100/50 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-500 focus:bg-white dark:border-wine-900/30 dark:bg-black/20 dark:text-white"
+                className="w-full rounded-2xl border border-wine-100/50 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-500 focus:bg-white dark:focus:bg-black/40 dark:border-wine-900/30 dark:bg-black/20 dark:text-white"
                 placeholder="30"
               />
             </label>
@@ -123,7 +112,7 @@ export function ProductoFinalForm({
             <textarea
               value={formData.descripcion}
               onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-              className="min-h-[120px] rounded-2xl border border-wine-100/50 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-500 focus:bg-white dark:border-wine-900/30 dark:bg-black/20 dark:text-white"
+              className="min-h-[120px] rounded-2xl border border-wine-100/50 bg-slate-50/50 px-5 py-3.5 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-500 focus:bg-white dark:focus:bg-black/40 dark:border-wine-900/30 dark:bg-black/20 dark:text-white"
               rows={4}
               placeholder="Detalles del producto..."
             />

@@ -205,7 +205,7 @@ export function ProductosFinalesPageView({
             placeholder="Buscar por código, nombre..."
             value={searchSucursal}
             onChange={(e) => onSearchSucursalChange(e.target.value)}
-            className="w-full rounded-2xl border border-wine-100/50 bg-white/90 pl-10 pr-4 py-3 text-sm font-bold text-slate-900 placeholder:text-slate-400/70 outline-none transition-all duration-300 focus:border-wine-500 focus:bg-white focus:ring-4 focus:ring-wine-500/10 hover:border-wine-300 dark:border-wine-900/30 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-wine-600 dark:focus:bg-black/40"
+            className="w-full rounded-2xl border border-wine-100/50 bg-white/90 pl-10 pr-4 py-3 text-sm font-bold text-slate-900 placeholder:text-slate-400/70 outline-none transition-all duration-300 focus:border-wine-500 focus:bg-white dark:focus:bg-black/40 focus:ring-4 focus:ring-wine-500/10 hover:border-wine-300 dark:border-wine-900/30 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-wine-600 dark:focus:bg-black/40"
           />
         </div>
 
@@ -308,11 +308,11 @@ export function ProductosFinalesPageView({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-2">
-                <span className="text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Disponible</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60">Disponible</span>
                 <select
                   value={editDisponible ? 'true' : 'false'}
                   onChange={(e) => setEditDisponible(e.target.value === 'true')}
-                  className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-wine-500 focus:ring-2 focus:ring-wine-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:border-wine-400 dark:focus:ring-wine-900/30"
+                  className="rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 py-3 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:focus:bg-black/40 focus:ring-2 focus:ring-wine-500/10 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
                 >
                   <option value="true">Sí</option>
                   <option value="false">No</option>
@@ -320,11 +320,11 @@ export function ProductosFinalesPageView({
               </label>
 
               <label className="grid gap-2">
-                <span className="text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Estado</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/60 dark:text-wine-400/60">Estado</span>
                 <select
                   value={editActivo ? 'true' : 'false'}
                   onChange={(e) => setEditActivo(e.target.value === 'true')}
-                  className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-wine-500 focus:ring-2 focus:ring-wine-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:border-wine-400 dark:focus:ring-wine-900/30"
+                  className="rounded-2xl border-2 border-wine-100/50 bg-white/50 px-4 py-3 text-sm font-bold text-slate-900 outline-none transition-all focus:border-wine-600 focus:bg-white dark:focus:bg-black/40 focus:ring-2 focus:ring-wine-500/10 dark:border-wine-900/20 dark:bg-black/40 dark:text-white dark:focus:border-wine-500"
                 >
                   <option value="true">Activo</option>
                   <option value="false">Inactivo</option>

@@ -72,3 +72,6 @@ Thumbs.db
 ### Docker ###
 #.dockerignore
 #Dockerfile.*
+# Logs locales de Vite
+vite-error.txt
+vite-output.txt
