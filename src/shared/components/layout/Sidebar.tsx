@@ -64,6 +64,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized }: Sideb
       items: [
         { path: '/inventario', label: 'Insumos', icon: Package, show: canRead('inventario') },
         { path: '/recetas', label: 'Recetas', icon: ChefHat, show: canRead('receta') },
+        { path: '/notas-salida', label: 'Notas de Salida', icon: ClipboardList, show: canRead('inventario') || user?.tipoUsuario === 'S' || user?.tipoUsuario === 'E' },
       ]
     }
   ]

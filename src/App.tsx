@@ -28,6 +28,7 @@ import CategoriasPage from './modules/comercial/pages/CategoriasPage'
 import Compra from './modules/comercial/pages/Compra'
 import ProductosFinalesPage from './modules/comercial/pages/ProductosFinalesPage'
 import RecetasPage from './modules/inventario/pages/RecetasPage'
+import NotasSalidaPage from './modules/inventario/pages/NotasSalidaPage/index'
 
 import CatalogoPage from './modules/comercial/pages/CatalogoPage'
 import CarritoPage from './modules/electronico/pages/CarritoPage'
@@ -100,6 +101,7 @@ function App() {
                   <Route path="/productos-finales" element={<ProductosFinalesPage />} />
                   <Route path="/ventas" element={<VentasPage />} />
                   <Route path="/recetas" element={<RecetasPage />} />
+                  <Route path="/notas-salida" element={<NotasSalidaPage />} />
                   <Route path="/catalogo" element={<CatalogoPage />} />
                   <Route path="/carrito" element={<CarritoPage />} />
                   <Route path="/pasarela-pago/:idComanda?" element={<PasarelaPagoPage />} />
