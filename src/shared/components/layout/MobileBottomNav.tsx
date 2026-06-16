@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Home, ShoppingCart, Package, User, Menu } from 'lucide-react'
+import { Home, ShoppingCart, Package, User, Menu, CalendarDays } from 'lucide-react'
 import { useCarrito } from '@/modules/electronico/hooks/useCarrito'
 
 interface MobileBottomNavProps {
@@ -8,6 +8,7 @@ interface MobileBottomNavProps {
 
 const tabs = [
   { path: '/catalogo', label: 'Inicio', icon: Home },
+  { path: '/reservas', label: 'Reservas', icon: CalendarDays },
   { path: '/carrito', label: 'Carrito', icon: ShoppingCart, badgeKey: 'carrito' as const },
   { path: '/mis-pedidos', label: 'Pedidos', icon: Package },
   { path: '/perfil', label: 'Perfil', icon: User },

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Users, Shield, LayoutDashboard, Activity, User, Store, Map, Grid, Truck, Package, LayoutList, ShoppingCart, ShoppingBag, ChefHat, Utensils, BookOpen, CreditCard, ClipboardList, CookingPot, DollarSign, FileBarChart } from 'lucide-react'
+import { Users, Shield, LayoutDashboard, Activity, User, Store, Map, Grid, Truck, Package, LayoutList, ShoppingCart, ShoppingBag, ChefHat, Utensils, BookOpen, CreditCard, ClipboardList, CookingPot, DollarSign, FileBarChart, CalendarDays, CalendarCheck } from 'lucide-react'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { SidebarView } from './SidebarView'
 
@@ -41,6 +41,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized }: Sideb
       title: 'Ecommerce',
       items: [
         { path: '/catalogo', label: 'Catálogo', icon: BookOpen, show: true },
+        { path: '/reservas', label: 'Reservas', icon: CalendarDays, show: true },
         { path: '/carrito', label: 'Carrito', icon: ShoppingCart, show: true },
         { path: '/mis-pedidos', label: 'Mis Pedidos', icon: ShoppingBag, show: true },
         { path: '/metodos-pago', label: 'Métodos de Pago', icon: CreditCard, show: user?.tipoUsuario === 'S' || user?.tipoUsuario === 'E' || canRead('payments') },
@@ -53,6 +54,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized }: Sideb
         { path: '/sectores', label: 'Sectores', icon: Map, show: canRead('sectores') },
         { path: '/mesas', label: 'Mesas', icon: Grid, show: canRead('mesas') },
         { path: '/comandas', label: 'Comandas', icon: ClipboardList, show: canRead('comandas') },
+        { path: '/reservas/panel', label: 'Panel Reservas', icon: CalendarCheck, show: user?.tipoUsuario === 'S' || user?.tipoUsuario === 'E' },
         { path: '/cocina', label: 'Preparación Comanda', icon: CookingPot, show: user?.tipoUsuario === 'E' || user?.tipoUsuario === 'S' || canRead('preparacion') || (user?.roles?.some((r) => r.name === 'COCINERO' || r.name === 'BARTENDER') ?? false) },
         { path: '/reportes', label: 'Reportes', icon: FileBarChart, show: canRead('reportes') || user?.tipoUsuario === 'S' || user?.tipoUsuario === 'E' },
       ]
