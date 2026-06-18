@@ -41,6 +41,8 @@ import CheckoutPage from './modules/electronico/pages/CheckoutPage'
 import PayPalSuccessPage from './modules/electronico/pages/PayPalSuccessPage'
 import ReservasPage from './modules/electronico/pages/ReservasPage'
 import PanelReservasPage from './modules/electronico/pages/PanelReservasPage'
+import { EntregasPage } from './modules/electronico/pages/EntregasPage'
+import { SeguimientoEntregaPage } from './modules/electronico/pages/SeguimientoEntregaPage'
 import { CarritoProvider } from './modules/electronico/context/CarritoContext'
 
 import ReportesPage from './modules/operaciones/pages/ReportesPage/ReportesPage'
@@ -109,6 +111,8 @@ function App() {
                   <Route path="/metodos-pago" element={<MetodosPagoPage />} />
                   <Route path="/mis-pedidos/:id" element={<PedidoDetailPage />} />
                   <Route path="/reservas/panel" element={<PanelReservasPage />} />
+                  <Route path="/entregas" element={<EntregasPage />} />
+                  <Route path="/entregas/:id/seguimiento" element={<SeguimientoEntregaPage />} />
                   <Route path="/reportes" element={<ReportesPage />} />
                 </Route>
 

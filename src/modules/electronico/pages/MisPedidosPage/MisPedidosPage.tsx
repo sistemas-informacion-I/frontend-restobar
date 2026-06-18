@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ShoppingBag, Clock, ArrowRight, Search, Filter, X, ReceiptText } from 'lucide-react'
+import { ShoppingBag, Clock, ArrowRight, Search, Filter, X, ReceiptText, Truck } from 'lucide-react'
 import { Button } from '@/shared/components/ui'
 import { PasarelaPagoService, NotaVentaDetail } from '../../services/pasarelaPago.service'
 import { toast } from 'sonner'
@@ -19,6 +19,22 @@ const estadoColors: Record<string, string> = {
   EMITIDA: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800',
   ANULADA: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-rose-200 dark:border-rose-800',
   DEVUELTA: 'bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400 border-slate-200 dark:border-slate-800',
+}
+
+const deliveryLabels: Record<string, string> = {
+  PENDIENTE: 'Pendiente de repartidor',
+  ASIGNADO: 'Repartidor asignado',
+  EN_CAMINO: 'En camino',
+  ENTREGADO: 'Entregado',
+  CANCELADO: 'Cancelado',
+}
+
+const deliveryColors: Record<string, string> = {
+  PENDIENTE: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  ASIGNADO: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  EN_CAMINO: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
+  ENTREGADO: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+  CANCELADO: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
 }
 
 const timelineDots: Record<string, string> = {
@@ -197,11 +213,14 @@ interface PedidoCardProps {
 }
 
 function PedidoCard({ pedido, onClick, animationDelay = 0 }: PedidoCardProps) {
+  const navigate = useNavigate()
   const estadoColor = estadoColors[pedido.estado] || estadoColors.EMITIDA
   const dotColor = timelineDots[pedido.estado] || timelineDots.EMITIDA
   const fecha = pedido.fechaEmision
     ? new Date(pedido.fechaEmision).toLocaleDateString('es-BO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
     : '-'
+  const estadoEntrega = (pedido as any).estadoEntrega as string | undefined
+  const idEntrega = (pedido as any).idEntrega as number | undefined
 
   return (
     <button
@@ -245,7 +264,23 @@ function PedidoCard({ pedido, onClick, animationDelay = 0 }: PedidoCardProps) {
                 {pedido.detalles.length > 3 && (
                   <span className="text-[10px] text-slate-400">+{pedido.detalles.length - 3} más</span>
                 )}
+            {estadoEntrega && (
+              <div className="flex items-center gap-2 mt-2">
+                <Truck size={12} className={estadoEntrega === 'EN_CAMINO' ? 'text-indigo-500' : 'text-slate-400'} />
+                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${deliveryColors[estadoEntrega] || 'bg-slate-100 text-slate-600'}`}>
+                  {deliveryLabels[estadoEntrega] || estadoEntrega}
+                </span>
+                {idEntrega && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate(`/entregas/${idEntrega}/seguimiento`) }}
+                    className="ml-auto rounded-lg bg-wine-50 px-2.5 py-1 text-[10px] font-bold text-wine-700 transition-colors hover:bg-wine-100 dark:bg-wine-900/20 dark:text-wine-300 dark:hover:bg-wine-900/40"
+                  >
+                    Ver seguimiento
+                  </button>
+                )}
               </div>
+            )}
+          </div>
             )}
           </div>
         </div>

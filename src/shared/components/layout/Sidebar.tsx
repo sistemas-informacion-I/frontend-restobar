@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Users, Shield, LayoutDashboard, Activity, User, Store, Map, Grid, Truck, Package, LayoutList, ShoppingCart, ShoppingBag, ChefHat, Utensils, BookOpen, CreditCard, ClipboardList, CookingPot, DollarSign, FileBarChart, CalendarDays, CalendarCheck } from 'lucide-react'
+import { Users, Shield, LayoutDashboard, Activity, User, Store, Map, Grid, Truck, Package, LayoutList, ShoppingCart, ShoppingBag, ChefHat, Utensils, BookOpen, CreditCard, ClipboardList, CookingPot, DollarSign, FileBarChart, CalendarDays, CalendarCheck, Bike } from 'lucide-react'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { SidebarView } from './SidebarView'
 
@@ -44,6 +44,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized }: Sideb
         { path: '/reservas', label: 'Reservas', icon: CalendarDays, show: true },
         { path: '/carrito', label: 'Carrito', icon: ShoppingCart, show: true },
         { path: '/mis-pedidos', label: 'Mis Pedidos', icon: ShoppingBag, show: true },
+        { path: '/entregas', label: 'Entregas', icon: Bike, show: true },
         { path: '/metodos-pago', label: 'Métodos de Pago', icon: CreditCard, show: user?.tipoUsuario === 'S' || user?.tipoUsuario === 'E' || canRead('payments') },
       ]
     },
