@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useAuth } from '../../../acceso/context/AuthContext'
 import { useSucursales } from '../../hooks/useSucursales'
+import { wsClient } from '@/core/api/websocket-client'
 import {
   useDashboardKpi,
   useDashboardSalesEvolution,
@@ -39,6 +40,22 @@ export function DashboardAnalitico() {
     }),
     [fechaInicio, fechaFin, idSucursal, isSuperUser]
   )
+
+  const resolvedSucursalId = isSuperUser ? idSucursal : user?.sucursalId
+
+  useEffect(() => {
+    if (!resolvedSucursalId) return
+    const topic = `/topic/sucursal/${resolvedSucursalId}/dashboard/update`
+    const sub = wsClient.subscribe(topic, () => {
+      kpiQuery.mutate()
+      salesEvolutionQuery.mutate()
+      salesByCategoryQuery.mutate()
+      monthComparisonQuery.mutate()
+      topProductsQuery.mutate()
+      employeeRankingQuery.mutate()
+    })
+    return () => sub.unsubscribe()
+  }, [resolvedSucursalId])
 
   const kpiQuery = useDashboardKpi(filters)
   const salesEvolutionQuery = useDashboardSalesEvolution(filters)
