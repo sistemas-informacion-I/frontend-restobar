@@ -20,6 +20,7 @@ import { PreparacionPage } from './modules/operaciones/pages/PreparacionPage'
 import EmployeesPage from './modules/acceso/pages/EmployeesPage'
 import ProveedoresPage from './modules/comercial/pages/ProveedoresPage'
 import InventarioPage from './modules/inventario/pages/InventarioPage'
+import AlertasInventarioPage from './modules/inventario/pages/AlertasInventarioPage'
 import { Toaster } from 'sonner'
 
 import { ProtectedLayout } from './shared/components/layout/ProtectedLayout'
@@ -97,6 +98,7 @@ function App() {
                   <Route path="/empleados" element={<EmployeesPage />} />
                   <Route path="/proveedores" element={<ProveedoresPage />} />
                   <Route path="/inventario" element={<InventarioPage />} />
+                  <Route path="/inventario/alertas" element={<AlertasInventarioPage />} />
                   <Route path="/restobar" element={<DashboardPage />} />
                   <Route path="/categorias" element={<CategoriasPage />} />
                   <Route path="/compras" element={<Compra />} />
