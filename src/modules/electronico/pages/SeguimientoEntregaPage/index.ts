@@ -1,0 +1,1 @@
+export { SeguimientoEntregaPage } from './SeguimientoEntregaPage'

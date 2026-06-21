@@ -156,9 +156,10 @@ class AuthService {
     const permissions = mapAuthoritiesToPermissions(authorities)
     return {
       id: String(response.idUsuario),
-      firstName: response.username,
-      lastName: '',
-      name: response.username,
+      idEmpleado: response.idEmpleado ?? undefined,
+      firstName: response.firstName || response.username || '',
+      lastName: response.lastName || '',
+      name: [response.firstName, response.lastName].filter(Boolean).join(' ') || response.username,
       email: response.email || response.username,
       username: response.username,
       isActive: true,

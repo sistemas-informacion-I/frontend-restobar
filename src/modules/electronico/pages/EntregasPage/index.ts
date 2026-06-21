@@ -1,0 +1,1 @@
+export { EntregasPage } from './EntregasPage'

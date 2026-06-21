@@ -28,6 +28,7 @@ import CategoriasPage from './modules/comercial/pages/CategoriasPage'
 import Compra from './modules/comercial/pages/Compra'
 import ProductosFinalesPage from './modules/comercial/pages/ProductosFinalesPage'
 import RecetasPage from './modules/inventario/pages/RecetasPage'
+import NotasSalidaPage from './modules/inventario/pages/NotasSalidaPage/index'
 
 import CatalogoPage from './modules/comercial/pages/CatalogoPage'
 import CarritoPage from './modules/electronico/pages/CarritoPage'
@@ -38,6 +39,10 @@ import MetodosPagoPage from './modules/electronico/pages/MetodosPagoPage'
 import VentasPage from './modules/comercial/pages/VentasPage'
 import CheckoutPage from './modules/electronico/pages/CheckoutPage'
 import PayPalSuccessPage from './modules/electronico/pages/PayPalSuccessPage'
+import ReservasPage from './modules/electronico/pages/ReservasPage'
+import PanelReservasPage from './modules/electronico/pages/PanelReservasPage'
+import { EntregasPage } from './modules/electronico/pages/EntregasPage'
+import { SeguimientoEntregaPage } from './modules/electronico/pages/SeguimientoEntregaPage'
 import { CarritoProvider } from './modules/electronico/context/CarritoContext'
 
 import ReportesPage from './modules/operaciones/pages/ReportesPage/ReportesPage'
@@ -74,6 +79,7 @@ function App() {
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/paypal/success" element={<PayPalSuccessPage />} />
                   <Route path="/paypal/cancel" element={<CheckoutPage />} />
+                  <Route path="/reservas" element={<ReservasPage />} />
                 </Route>
 
                 {/* Protected Routes (auth required) */}
@@ -97,12 +103,16 @@ function App() {
                   <Route path="/productos-finales" element={<ProductosFinalesPage />} />
                   <Route path="/ventas" element={<VentasPage />} />
                   <Route path="/recetas" element={<RecetasPage />} />
+                  <Route path="/notas-salida" element={<NotasSalidaPage />} />
                   <Route path="/catalogo" element={<CatalogoPage />} />
                   <Route path="/carrito" element={<CarritoPage />} />
                   <Route path="/pasarela-pago/:idComanda?" element={<PasarelaPagoPage />} />
                   <Route path="/mis-pedidos" element={<MisPedidosPage />} />
                   <Route path="/metodos-pago" element={<MetodosPagoPage />} />
                   <Route path="/mis-pedidos/:id" element={<PedidoDetailPage />} />
+                  <Route path="/reservas/panel" element={<PanelReservasPage />} />
+                  <Route path="/entregas" element={<EntregasPage />} />
+                  <Route path="/entregas/:id/seguimiento" element={<SeguimientoEntregaPage />} />
                   <Route path="/reportes" element={<ReportesPage />} />
                 </Route>
 

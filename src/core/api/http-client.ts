@@ -54,7 +54,8 @@ export class HttpClient {
             requestUrl === '/register' ||
             requestUrl.endsWith('/register') ||
             requestUrl.includes('/login/forgot/') ||
-            requestUrl.startsWith('/carrito')
+            requestUrl.startsWith('/carrito') ||
+            requestUrl.startsWith('/reservas')
 
           // For auth entry, recovery, and cart operations, return API error without refresh/redirect.
           if (isAuthEntryEndpoint) {

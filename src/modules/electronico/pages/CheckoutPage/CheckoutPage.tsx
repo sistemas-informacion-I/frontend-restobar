@@ -1,15 +1,21 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Package, User, MapPin, ArrowLeft, CreditCard, Check, ChevronDown, ChevronUp, ShoppingBag } from 'lucide-react'
+import { Package, User, MapPin, ArrowLeft, CreditCard, Check, ChevronDown, ChevronUp, ShoppingBag, Navigation } from 'lucide-react'
 import { Button } from '@/shared/components/ui'
 import { Input } from '@/shared/components/ui'
 import { Select } from '@/shared/components/ui/Select/Select'
 import { useCarrito } from '../../hooks/useCarrito'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { PasarelaPagoService } from '../../services/pasarelaPago.service'
+import { useSucursalesMapa } from '../../hooks/useSucursales'
 import { httpClient } from '@/core/api/http-client'
 import { toast } from 'sonner'
 import { User as UserType } from '@/modules/acceso/models/user.model'
+import L from 'leaflet'
+
+const SANTA_CRUZ_LAT = -17.783327
+const SANTA_CRUZ_LNG = -63.1821404
+const PURPLE_MARKER = `<div style="width:26px;height:26px;background:#7c3aed;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="4"/></svg></div>`
 
 const steps = [
   { id: 1, label: 'Tus Datos', shortLabel: 'Datos', icon: User },
@@ -21,6 +27,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate()
   const { carrito, sucursalId } = useCarrito()
   const { isAuthenticated, user } = useAuth()
+  const { sucursales } = useSucursalesMapa()
 
   const [activeStep, setActiveStep] = useState(1)
   const [customerName, setCustomerName] = useState('')
@@ -37,6 +44,36 @@ export default function CheckoutPage() {
   const [metodosPago, setMetodosPago] = useState<any[]>([])
   const [stepErrors, setStepErrors] = useState<Record<number, string | null>>({})
 
+  // Punto B - coordenadas de entrega
+  const [destinoLat, setDestinoLat] = useState<number>(SANTA_CRUZ_LAT)
+  const [destinoLng, setDestinoLng] = useState<number>(SANTA_CRUZ_LNG)
+
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<L.Map | null>(null)
+  const markerRef = useRef<L.Marker | null>(null)
+
+  const handleMiUbicacion = () => {
+    if (!navigator.geolocation) {
+      alert('Tu navegador no soporta geolocalización')
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords
+        setDestinoLat(latitude)
+        setDestinoLng(longitude)
+        if (mapRef.current && markerRef.current) {
+          mapRef.current.setView([latitude, longitude], 16)
+          markerRef.current.setLatLng([latitude, longitude])
+        }
+      },
+      () => {
+        alert('No se pudo obtener tu ubicación. Verifica los permisos del navegador.')
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
+  }
+
   useEffect(() => {
     if (user) {
       const u = user as UserType
@@ -47,6 +84,66 @@ export default function CheckoutPage() {
     if (savedMetodo) setSelectedMetodoId(Number(savedMetodo))
     loadMetodosPago()
   }, [user])
+
+  // Inicializar mapa Leaflet cuando el paso 2 esta activo
+  useEffect(() => {
+    if (activeStep !== 2 || !mapContainerRef.current) return
+    if (mapRef.current) return
+
+    const timer = setTimeout(() => {
+      if (!mapContainerRef.current || mapRef.current) return
+
+      const map = L.map(mapContainerRef.current, {
+        center: [destinoLat, destinoLng],
+        zoom: 13,
+        zoomControl: true,
+        attributionControl: false,
+      })
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map)
+
+      // Marcadores de sucursales
+      sucursales.forEach((s) => {
+        if (!s.latitud || !s.longitud) return
+        const icon = L.divIcon({
+          html: `<div style="width:22px;height:22px;background:#f97316;border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="3"/></svg></div>`,
+          iconSize: [22, 22], iconAnchor: [11, 11], className: '',
+        })
+        const m = L.marker([s.latitud, s.longitud], { icon }).addTo(map)
+        m.bindTooltip(s.nombre, { direction: 'top', offset: [0, -12] })
+      })
+
+      // Marcador para el punto de entrega (violeta, arrastrable)
+      const icon = L.divIcon({ html: PURPLE_MARKER, iconSize: [26, 26], iconAnchor: [13, 13], className: '' })
+      const marker = L.marker([destinoLat, destinoLng], { icon, draggable: true }).addTo(map)
+
+      marker.on('dragend', () => {
+        const pos = marker.getLatLng()
+        setDestinoLat(pos.lat)
+        setDestinoLng(pos.lng)
+      })
+
+      map.on('click', (e: L.LeafletMouseEvent) => {
+        marker.setLatLng(e.latlng)
+        setDestinoLat(e.latlng.lat)
+        setDestinoLng(e.latlng.lng)
+      })
+
+      mapRef.current = map
+      markerRef.current = marker
+
+      setTimeout(() => map.invalidateSize(), 200)
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current = null
+        markerRef.current = null
+      }
+    }
+  }, [activeStep, sucursales])
 
   const loadMetodosPago = async () => {
     try {
@@ -73,8 +170,9 @@ export default function CheckoutPage() {
   }
 
   const subtotal = carrito.items.reduce((sum, item) => sum + item.subtotal, 0)
+  const costoEnvio = 15
   const impuesto = subtotal * 0.13
-  const total = subtotal + impuesto
+  const total = subtotal + impuesto + costoEnvio
 
   const validateStep = (step: number): boolean => {
     const errs: Record<number, string | null> = {}
@@ -121,7 +219,15 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true)
     try {
-      const checkoutData = await httpClient.post<{ idNotaVenta: number }>(`/carrito/checkout?idSucursal=${sucursalId}&idMetodoPago=${selectedMetodoId}`)
+      const params = new URLSearchParams({
+        idSucursal: String(sucursalId),
+        idMetodoPago: String(selectedMetodoId),
+        direccionEntrega: shippingAddress,
+        latitud: String(destinoLat),
+        longitud: String(destinoLng),
+        costoEnvio: String(costoEnvio),
+      })
+      const checkoutData = await httpClient.post<{ idNotaVenta: number }>(`/carrito/checkout?${params}`)
       const idNV = checkoutData.idNotaVenta
 
       const metodoPagoId = Number(sessionStorage.getItem('checkout_metodo_pago') || selectedMetodoId)
@@ -232,19 +338,14 @@ export default function CheckoutPage() {
             id="step-1"
             className={`rounded-[2.5rem] border transition-all duration-500 ${activeStep === 1 ? 'border-wine-300 dark:border-wine-700 shadow-2xl shadow-wine-900/10' : 'border-wine-100/40 dark:border-wine-900/20'} bg-white/75 shadow-2xl shadow-wine-900/5 dark:bg-black/35 overflow-hidden`}
           >
-            <button
-              onClick={() => goToStep(1)}
-              className="w-full flex items-center justify-between p-6 sm:p-8 text-left"
-            >
+            <button onClick={() => goToStep(1)} className="w-full flex items-center justify-between p-6 sm:p-8 text-left">
               <div className="flex items-center gap-3">
                 <div className={`flex h-12 w-12 items-center justify-center rounded-2xl transition-all duration-500 ${activeStep === 1 ? 'bg-wine-600 text-white shadow-lg shadow-wine-900/20' : activeStep > 1 ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>
                   {activeStep > 1 ? <Check size={22} /> : <User size={22} />}
                 </div>
                 <div>
                   <h2 className="text-xl font-black tracking-tighter text-slate-900 dark:text-white">Información del Cliente</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {activeStep > 1 ? customerName || 'Completado' : 'Datos para la factura'}
-                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{activeStep > 1 ? customerName || 'Completado' : 'Datos para la factura'}</p>
                 </div>
               </div>
               {activeStep === 1 ? <ChevronUp size={20} className="text-slate-400" /> : <ChevronDown size={20} className="text-slate-400" />}
@@ -258,39 +359,31 @@ export default function CheckoutPage() {
                   <Input label="Teléfono" type="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="+591 123 456 789" required />
                   <Input label="NIT / CI" value={customerNit} onChange={(e) => setCustomerNit(e.target.value)} placeholder="12345678" />
                 </div>
-                <Button onClick={() => goToStep(2)} fullWidth className="!rounded-2xl">
-                  Continuar al Envío
-                </Button>
+                <Button onClick={() => goToStep(2)} fullWidth className="!rounded-2xl">Continuar al Envío</Button>
                 {stepErrors[1] && <p className="text-xs text-rose-500 text-center">{stepErrors[1]}</p>}
               </div>
             </div>
           </div>
 
-          {/* Step 2: Shipping */}
+          {/* Step 2: Shipping + Map */}
           <div
             id="step-2"
             className={`rounded-[2.5rem] border transition-all duration-500 ${activeStep === 2 ? 'border-wine-300 dark:border-wine-700 shadow-2xl shadow-wine-900/10' : 'border-wine-100/40 dark:border-wine-900/20'} bg-white/75 shadow-2xl shadow-wine-900/5 dark:bg-black/35 overflow-hidden`}
           >
-            <button
-              onClick={() => goToStep(2)}
-              disabled={activeStep < 2}
-              className="w-full flex items-center justify-between p-6 sm:p-8 text-left disabled:cursor-not-allowed"
-            >
+            <button onClick={() => goToStep(2)} disabled={activeStep < 2} className="w-full flex items-center justify-between p-6 sm:p-8 text-left disabled:cursor-not-allowed">
               <div className="flex items-center gap-3">
                 <div className={`flex h-12 w-12 items-center justify-center rounded-2xl transition-all duration-500 ${activeStep === 2 ? 'bg-wine-600 text-white shadow-lg shadow-wine-900/20' : activeStep > 2 ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>
                   {activeStep > 2 ? <Check size={22} /> : <MapPin size={22} />}
                 </div>
                 <div>
                   <h2 className="text-xl font-black tracking-tighter text-slate-900 dark:text-white">Dirección de Envío</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {activeStep > 2 ? shippingAddress || 'Completado' : '¿Dónde entregamos?'}
-                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{activeStep > 2 ? shippingAddress || 'Completado' : '¿Dónde entregamos?'}</p>
                 </div>
               </div>
               {activeStep === 2 ? <ChevronUp size={20} className="text-slate-400" /> : <ChevronDown size={20} className="text-slate-400" />}
             </button>
 
-            <div className={`transition-all duration-500 overflow-hidden ${activeStep === 2 ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className={`transition-all duration-500 overflow-hidden ${activeStep === 2 ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="px-6 sm:px-8 pb-8 space-y-4">
                 <Input label="Dirección" value={shippingAddress} onChange={(e) => setShippingAddress(e.target.value)} placeholder="Av. Principal #123" required />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -299,14 +392,35 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40 px-1">Referencias</label>
-                  <textarea
-                    value={shippingNotes}
-                    onChange={(e) => setShippingNotes(e.target.value)}
-                    rows={3}
-                    placeholder="Casa de dos pisos, puerta azul..."
-                    className="w-full rounded-2xl border bg-slate-50/50 py-3.5 text-sm font-bold text-slate-900 placeholder:text-slate-400/60 transition-all duration-300 focus:bg-white focus:outline-none focus:ring-4 focus:ring-wine-500/10 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-600 dark:focus:bg-black/40 border-wine-100/50 hover:border-wine-300 focus:border-wine-500 dark:border-wine-900/30 dark:hover:border-wine-700 dark:focus:border-wine-600 px-5"
-                  />
+                  <textarea value={shippingNotes} onChange={(e) => setShippingNotes(e.target.value)} rows={3} placeholder="Casa de dos pisos, puerta azul..." className="w-full rounded-2xl border bg-slate-50/50 py-3.5 text-sm font-bold text-slate-900 placeholder:text-slate-400/60 transition-all duration-300 focus:bg-white focus:outline-none focus:ring-4 focus:ring-wine-500/10 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-600 dark:focus:bg-black/40 border-wine-100/50 hover:border-wine-300 focus:border-wine-500 dark:border-wine-900/30 dark:hover:border-wine-700 dark:focus:border-wine-600 px-5" />
                 </div>
+
+                {/* Mapa para seleccionar ubicacion de entrega */}
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40 px-1 flex items-center gap-2">
+                    <MapPin size={12} className="text-wine-500" />
+                    Marca tu ubicación en el mapa
+                  </label>
+                  <div className="relative mt-2 h-64 rounded-2xl overflow-hidden border border-wine-100/40">
+                    <div ref={mapContainerRef} className="h-full w-full" />
+                    <button
+                      type="button"
+                      onClick={handleMiUbicacion}
+                      className="absolute top-2 right-2 z-[9999] flex items-center gap-1 rounded-xl bg-wine-600 px-3 py-2 text-[11px] font-bold text-white shadow-lg shadow-wine-900/30 transition-all hover:bg-wine-700 hover:scale-105 active:scale-95"
+                    >
+                      <Navigation size={13} />
+                      Mi ubicación
+                    </button>
+                    <div className="absolute bottom-2 left-2 z-[9999] rounded-lg bg-white/90 px-2.5 py-1.5 text-[10px] font-semibold text-slate-600 shadow backdrop-blur dark:bg-slate-900/90 dark:text-slate-300" style={{ pointerEvents: 'auto' }}>
+                      🟣 Arrastra el marcador o haz click
+                    </div>
+                    <div className="absolute bottom-2 right-2 z-[9999] rounded-lg bg-white/90 px-2.5 py-1.5 text-[10px] font-mono text-slate-600 shadow backdrop-blur dark:bg-slate-900/90 dark:text-slate-300" style={{ pointerEvents: 'auto' }}>
+                      {destinoLat.toFixed(5)}, {destinoLng.toFixed(5)}
+                    </div>
+                  </div>
+                  <p className="mt-1 text-[10px] text-slate-400">El marcador violeta indica dónde se entregará tu pedido</p>
+                </div>
+
                 <div className="flex gap-3">
                   <Button variant="ghost" onClick={() => goToStep(1)} className="!rounded-2xl" icon={<ArrowLeft size={16} />}>Volver</Button>
                   <Button onClick={() => goToStep(3)} fullWidth className="!rounded-2xl">Continuar al Pago</Button>
@@ -321,11 +435,7 @@ export default function CheckoutPage() {
             id="step-3"
             className={`rounded-[2.5rem] border transition-all duration-500 ${activeStep === 3 ? 'border-wine-300 dark:border-wine-700 shadow-2xl shadow-wine-900/10' : 'border-wine-100/40 dark:border-wine-900/20'} bg-white/75 shadow-2xl shadow-wine-900/5 dark:bg-black/35 overflow-hidden`}
           >
-            <button
-              onClick={() => goToStep(3)}
-              disabled={activeStep < 3}
-              className="w-full flex items-center justify-between p-6 sm:p-8 text-left disabled:cursor-not-allowed"
-            >
+            <button onClick={() => goToStep(3)} disabled={activeStep < 3} className="w-full flex items-center justify-between p-6 sm:p-8 text-left disabled:cursor-not-allowed">
               <div className="flex items-center gap-3">
                 <div className={`flex h-12 w-12 items-center justify-center rounded-2xl transition-all duration-500 ${activeStep === 3 ? 'bg-wine-600 text-white shadow-lg shadow-wine-900/20' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>
                   <CreditCard size={22} />
@@ -341,50 +451,16 @@ export default function CheckoutPage() {
             <div className={`transition-all duration-500 overflow-hidden ${activeStep === 3 ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="px-6 sm:px-8 pb-8 space-y-4">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40 px-1 block mb-2">
-                    Método de Pago
-                  </label>
-                  <Select
-                    value={selectedMetodoId || ''}
-                    onChange={(value) => {
-                      if (value) {
-                        setSelectedMetodoId(value as number)
-                        sessionStorage.setItem('checkout_metodo_pago', String(value))
-                      }
-                    }}
-                    options={metodosPago.filter((m: any) => m.activo).map((metodo: any) => ({
-                      value: metodo.idMetodoPago,
-                      label: metodo.comisionPorcentaje && metodo.comisionPorcentaje > 0
-                        ? `${metodo.nombre} (+${metodo.comisionPorcentaje}% comisión)`
-                        : metodo.nombre
-                    }))}
-                    placeholder="Selecciona un método de pago"
-                    icon={<CreditCard size={18} />}
-                  />
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40 px-1 block mb-2">Método de Pago</label>
+                  <Select value={selectedMetodoId || ''} onChange={(value) => { if (value) { setSelectedMetodoId(value as number); sessionStorage.setItem('checkout_metodo_pago', String(value)) } }} options={metodosPago.filter((m: any) => m.activo).map((metodo: any) => ({ value: metodo.idMetodoPago, label: metodo.comisionPorcentaje && metodo.comisionPorcentaje > 0 ? `${metodo.nombre} (+${metodo.comisionPorcentaje}% comisión)` : metodo.nombre }))} placeholder="Selecciona un método de pago" icon={<CreditCard size={18} />} />
                 </div>
-
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-400/40 px-1">Notas adicionales (opcional)</label>
-                  <textarea
-                    value={orderNotes}
-                    onChange={(e) => setOrderNotes(e.target.value)}
-                    rows={2}
-                    placeholder="¿Alguna instrucción especial para tu pedido?"
-                    className="w-full rounded-2xl border bg-slate-50/50 py-3.5 text-sm font-bold text-slate-900 placeholder:text-slate-400/60 transition-all duration-300 focus:bg-white focus:outline-none focus:ring-4 focus:ring-wine-500/10 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-600 dark:focus:bg-black/40 border-wine-100/50 hover:border-wine-300 focus:border-wine-500 dark:border-wine-900/30 dark:hover:border-wine-700 dark:focus:border-wine-600 px-5 mt-2"
-                  />
+                  <textarea value={orderNotes} onChange={(e) => setOrderNotes(e.target.value)} rows={2} placeholder="¿Alguna instrucción especial para tu pedido?" className="w-full rounded-2xl border bg-slate-50/50 py-3.5 text-sm font-bold text-slate-900 placeholder:text-slate-400/60 transition-all duration-300 focus:bg-white focus:outline-none focus:ring-4 focus:ring-wine-500/10 dark:bg-black/20 dark:text-white dark:placeholder:text-slate-600 dark:focus:bg-black/40 border-wine-100/50 hover:border-wine-300 focus:border-wine-500 dark:border-wine-900/30 dark:hover:border-wine-700 dark:focus:border-wine-600 px-5 mt-2" />
                 </div>
-
                 <div className="flex gap-3">
                   <Button variant="ghost" onClick={() => goToStep(2)} className="!rounded-2xl" icon={<ArrowLeft size={16} />}>Volver</Button>
-                  <Button
-                    onClick={handleCheckout}
-                    isLoading={isSubmitting}
-                    fullWidth
-                    className="!rounded-2xl bg-gradient-to-r from-wine-600 to-wine-950 px-6 text-sm font-black uppercase tracking-widest shadow-xl shadow-wine-900/20"
-                    disabled={!selectedMetodoId}
-                  >
-                    Confirmar Pedido
-                  </Button>
+                  <Button onClick={handleCheckout} isLoading={isSubmitting} fullWidth className="!rounded-2xl bg-gradient-to-r from-wine-600 to-wine-950 px-6 text-sm font-black uppercase tracking-widest shadow-xl shadow-wine-900/20" disabled={!selectedMetodoId}>Confirmar Pedido</Button>
                 </div>
                 {stepErrors[3] && <p className="text-xs text-rose-500 text-center">{stepErrors[3]}</p>}
               </div>
@@ -396,33 +472,21 @@ export default function CheckoutPage() {
         <div className="space-y-6">
           <div className="rounded-[2.5rem] border border-wine-100/40 bg-white/75 p-6 sm:p-8 shadow-2xl shadow-wine-900/5 dark:border-wine-900/20 dark:bg-black/35 sticky top-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-wine-600 to-wine-950 text-white shadow-lg shadow-wine-900/20">
-                <Package size={22} />
-              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-wine-600 to-wine-950 text-white shadow-lg shadow-wine-900/20"><Package size={22} /></div>
               <h2 className="text-lg font-black tracking-tighter text-slate-900 dark:text-white">Resumen</h2>
             </div>
-
             <div className="space-y-3 mb-4 max-h-64 overflow-y-auto custom-scrollbar">
               {carrito.items.map((item) => (
                 <div key={item.idItemCarrito} className="flex justify-between items-start py-2 border-b border-wine-100/20 dark:border-wine-900/20 last:border-0">
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.nombreProducto}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">x{item.cantidad} · Bs {item.precioUnitario.toFixed(2)} c/u</p>
-                  </div>
+                  <div className="flex-1"><p className="text-sm font-semibold text-slate-900 dark:text-white">{item.nombreProducto}</p><p className="text-xs text-slate-500 dark:text-slate-400">x{item.cantidad} · Bs {item.precioUnitario.toFixed(2)} c/u</p></div>
                   <span className="text-sm font-bold text-slate-900 dark:text-white ml-3">Bs {item.subtotal.toFixed(2)}</span>
                 </div>
               ))}
             </div>
-
             <div className="space-y-2 pt-4 border-t-2 border-wine-100/30 dark:border-wine-900/30">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Subtotal</span>
-                <span className="font-semibold text-slate-900 dark:text-white">Bs {subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Impuestos (13%)</span>
-                <span className="font-semibold text-slate-900 dark:text-white">Bs {impuesto.toFixed(2)}</span>
-              </div>
+              <div className="flex justify-between text-sm"><span className="text-slate-500 dark:text-slate-400">Subtotal</span><span className="font-semibold text-slate-900 dark:text-white">Bs {subtotal.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-slate-500 dark:text-slate-400">Costo de envío</span><span className="font-semibold text-slate-900 dark:text-white">Bs {costoEnvio.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-slate-500 dark:text-slate-400">Impuestos (13%)</span><span className="font-semibold text-slate-900 dark:text-white">Bs {impuesto.toFixed(2)}</span></div>
               <div className="flex justify-between pt-3 border-t-2 border-wine-100/30 dark:border-wine-900/30">
                 <span className="text-base font-black text-slate-900 dark:text-white">TOTAL</span>
                 <span className="text-2xl font-black text-wine-600 dark:text-wine-400">Bs {total.toFixed(2)}</span>

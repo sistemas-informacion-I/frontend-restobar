@@ -3,6 +3,8 @@ import { Permission } from './permission.model'
 
 export interface User {
   id: string
+  idUsuario?: string
+  idEmpleado?: number
   ci?: string
   firstName: string
   lastName: string
