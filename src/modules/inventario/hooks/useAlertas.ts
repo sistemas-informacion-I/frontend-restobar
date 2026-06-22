@@ -1,4 +1,4 @@
-import useSWR, { mutate } from 'swr'
+import useSWR from 'swr'
 import { alertaInventarioService } from '../services/alertaInventario.service'
 
 export const ALERTAS_KEYS = {

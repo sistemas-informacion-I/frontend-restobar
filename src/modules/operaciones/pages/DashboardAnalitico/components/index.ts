@@ -1,0 +1,7 @@
+export { FiltrosSucursal } from './FiltrosSucursal'
+export { TarjetasKpi } from './TarjetasKpi'
+export { GraficoVentas } from './GraficoVentas'
+export { GraficoCategorias } from './GraficoCategorias'
+export { ComparativaMensual } from './ComparativaMensual'
+export { TablaProductosTop } from './TablaProductosTop'
+export { TablaEmpleados } from './TablaEmpleados'

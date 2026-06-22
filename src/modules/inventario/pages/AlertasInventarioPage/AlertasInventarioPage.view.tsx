@@ -32,7 +32,6 @@ export function AlertasInventarioPageView(props: AlertasInventarioPageViewProps)
     sucursales,
     selectedSucursalId,
     setSelectedSucursalId,
-    user,
   } = props
 
   const auth = useAuth()

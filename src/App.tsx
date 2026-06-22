@@ -48,6 +48,7 @@ import { CarritoProvider } from './modules/electronico/context/CarritoContext'
 
 import ReportesPage from './modules/operaciones/pages/ReportesPage/ReportesPage'
 import CajaPage from './modules/comercial/pages/CajaPage'
+import DashboardAnalitico from './modules/operaciones/pages/DashboardAnalitico'
 
 function App() {
   return (
@@ -118,6 +119,7 @@ function App() {
                   <Route path="/entregas" element={<EntregasPage />} />
                   <Route path="/entregas/:id/seguimiento" element={<SeguimientoEntregaPage />} />
                   <Route path="/reportes" element={<ReportesPage />} />
+                  <Route path="/dashboard-analitico" element={<DashboardAnalitico />} />
                 </Route>
 
                 <Route path="/" element={<Navigate to="/catalogo" replace />} />
