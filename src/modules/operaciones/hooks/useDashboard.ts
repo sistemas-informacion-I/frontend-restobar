@@ -9,16 +9,6 @@ import type {
   ProductRanking,
   EmployeeRanking,
 } from '../types/dashboard.types'
-import {
-  mockKpi,
-  mockSalesEvolution,
-  mockSalesByCategory,
-  mockMonthComparison,
-  mockTopProducts,
-  mockEmployeeRanking,
-} from '../types/dashboard.mock'
-
-const USE_MOCK = true
 
 function swrKey(prefix: string, filters?: DashboardFilters): string {
   const params = new URLSearchParams()
@@ -29,14 +19,9 @@ function swrKey(prefix: string, filters?: DashboardFilters): string {
   return qs ? `${prefix}?${qs}` : prefix
 }
 
-function delay<T>(data: T): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(data), 400))
-}
-
 export function useDashboardKpi(filters?: DashboardFilters) {
   const key = swrKey('/api/dashboard/kpi', filters)
-  const fetcher = USE_MOCK ? () => delay(mockKpi) : () => dashboardService.getKpi(filters)
-  return useSWR<KpiDTO>(key, fetcher, {
+  return useSWR<KpiDTO>(key, () => dashboardService.getKpi(filters), {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
@@ -44,24 +29,21 @@ export function useDashboardKpi(filters?: DashboardFilters) {
 
 export function useDashboardSalesEvolution(filters?: DashboardFilters) {
   const key = swrKey('/api/dashboard/sales-evolution', filters)
-  const fetcher = USE_MOCK ? () => delay(mockSalesEvolution) : () => dashboardService.getSalesEvolution(filters)
-  return useSWR<SalesPoint[]>(key, fetcher, {
+  return useSWR<SalesPoint[]>(key, () => dashboardService.getSalesEvolution(filters), {
     revalidateOnFocus: false,
   })
 }
 
 export function useDashboardSalesByCategory(filters?: DashboardFilters) {
   const key = swrKey('/api/dashboard/sales-by-category', filters)
-  const fetcher = USE_MOCK ? () => delay(mockSalesByCategory) : () => dashboardService.getSalesByCategory(filters)
-  return useSWR<CategorySales[]>(key, fetcher, {
+  return useSWR<CategorySales[]>(key, () => dashboardService.getSalesByCategory(filters), {
     revalidateOnFocus: false,
   })
 }
 
 export function useDashboardMonthComparison(filters?: DashboardFilters) {
   const key = swrKey('/api/dashboard/month-comparison', filters)
-  const fetcher = USE_MOCK ? () => delay(mockMonthComparison) : () => dashboardService.getMonthComparison(filters)
-  return useSWR<MonthComparison>(key, fetcher, {
+  return useSWR<MonthComparison>(key, () => dashboardService.getMonthComparison(filters), {
     revalidateOnFocus: false,
   })
 }
@@ -70,16 +52,14 @@ export function useDashboardTopProducts(
   filters?: DashboardFilters & { limit?: number }
 ) {
   const key = swrKey('/api/dashboard/top-products', filters)
-  const fetcher = USE_MOCK ? () => delay(mockTopProducts) : () => dashboardService.getTopProducts(filters)
-  return useSWR<ProductRanking[]>(key, fetcher, {
+  return useSWR<ProductRanking[]>(key, () => dashboardService.getTopProducts(filters), {
     revalidateOnFocus: false,
   })
 }
 
 export function useDashboardEmployeeRanking(filters?: DashboardFilters) {
   const key = swrKey('/api/dashboard/employee-ranking', filters)
-  const fetcher = USE_MOCK ? () => delay(mockEmployeeRanking) : () => dashboardService.getEmployeeRanking(filters)
-  return useSWR<EmployeeRanking[]>(key, fetcher, {
+  return useSWR<EmployeeRanking[]>(key, () => dashboardService.getEmployeeRanking(filters), {
     revalidateOnFocus: false,
   })
 }
