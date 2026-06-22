@@ -1,3 +1,4 @@
+import { BarChart3 } from 'lucide-react'
 import { FiltrosSucursal, TarjetasKpi, GraficoVentas, GraficoCategorias, ComparativaMensual, TablaProductosTop, TablaEmpleados } from './components'
 import type { KpiDTO, SalesPoint, CategorySales, MonthComparison, ProductRanking, EmployeeRanking } from '../../types/dashboard.types'
 
@@ -27,11 +28,16 @@ export interface DashboardAnaliticoViewProps {
 export function DashboardAnaliticoView(props: DashboardAnaliticoViewProps) {
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold text-wine-900 dark:text-white">
-          Dashboard Analítico
-        </h1>
-        <p className="mt-1 text-sm text-wine-500 dark:text-wine-400">
+      <div className="space-y-1">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-wine-600/10 text-wine-600 dark:bg-wine-500/10 dark:text-wine-400">
+            <BarChart3 size={28} />
+          </div>
+          <h1 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white sm:text-4xl">
+            Dashboard Analítico
+          </h1>
+        </div>
+        <p className="ml-1 text-sm font-bold uppercase tracking-[0.2em] text-wine-900/40 dark:text-wine-300/40">
           Indicadores clave y evolución del negocio
         </p>
       </div>
