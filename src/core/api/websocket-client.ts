@@ -19,7 +19,7 @@ class WebSocketClient {
 
   constructor() {
     // Tomamos la URL del servidor backend. 
-    const backendUrl = import.meta.env.VITE_WS_URL 
+    const backendUrl = import.meta.env.VITE_API_URL 
       ?? 'http://localhost:3000';
 
     this.client = new Client({
