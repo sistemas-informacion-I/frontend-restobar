@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
+import { mutate } from 'swr'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { useInventario, useStock } from '../../hooks/useInventario'
+import { ALERTAS_KEYS } from '../../hooks/useAlertas'
 import { InventarioPageView } from './InventarioPage.view'
 import {
   inventarioService,
@@ -154,7 +156,11 @@ export function InventarioPage() {
       showFeedback('Lote registrado y stock actualizado', 'success')
       
       // 4. Re-validar con datos reales del servidor
-      mutateStock() 
+      mutateStock()
+      if (selectedSucursalId) {
+        mutate(ALERTAS_KEYS.alertas(selectedSucursalId))
+        mutate(ALERTAS_KEYS.alertasPendientesCount(selectedSucursalId))
+      }
       return { success: true }
     } catch (error) {
       // Revertir en caso de error
@@ -176,6 +182,10 @@ export function InventarioPage() {
       showFeedback('Estado del lote actualizado', 'success')
       mutateLotes()
       mutateStock()
+      if (selectedSucursalId) {
+        mutate(ALERTAS_KEYS.alertas(selectedSucursalId))
+        mutate(ALERTAS_KEYS.alertasPendientesCount(selectedSucursalId))
+      }
     } catch (error) {
       showFeedback(getErrorMessage(error, 'cambiar el estado del lote'), 'error')
     }
@@ -189,6 +199,10 @@ export function InventarioPage() {
       setShowStockInitialModal(false)
       setSelectedInsumo(null)
       mutateStock()
+      if (selectedSucursalId) {
+        mutate(ALERTAS_KEYS.alertas(selectedSucursalId))
+        mutate(ALERTAS_KEYS.alertasPendientesCount(selectedSucursalId))
+      }
       return { success: true }
     } catch (error) {
       const msg = getErrorMessage(error, 'inicializar stock')

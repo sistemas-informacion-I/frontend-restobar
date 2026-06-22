@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Plus } from 'lucide-react'
+import { mutate } from 'swr'
 import { notaSalidaService, NotaSalidaRequest } from '../../services/notaSalidaService'
 import { sucursalService } from '../../../operaciones/services/sucursal.service'
 import { inventarioService, StockSucursal } from '../../services/inventario.service'
+import { ALERTAS_KEYS } from '../../hooks/useAlertas'
 import { toast } from 'sonner'
 import Modal from '@/shared/components/ui/Modal'
 
@@ -96,6 +98,12 @@ export function NotasSalidaPage() {
       setCantidad(1)
       setIdStockSucursal(0)
       fetchNotas()
+      if (idSucursal) {
+        await Promise.all([
+          mutate(ALERTAS_KEYS.alertas(idSucursal)),
+          mutate(ALERTAS_KEYS.alertasPendientesCount(idSucursal)),
+        ])
+      }
     } catch (error) {
       console.error(error)
       toast.error('Error al crear la nota')
@@ -110,6 +118,12 @@ export function NotasSalidaPage() {
       await notaSalidaService.anular(id)
       toast.success('Nota anulada')
       fetchNotas()
+      if (idSucursal) {
+        await Promise.all([
+          mutate(ALERTAS_KEYS.alertas(idSucursal)),
+          mutate(ALERTAS_KEYS.alertasPendientesCount(idSucursal)),
+        ])
+      }
     } catch (error) {
       console.error(error)
       toast.error('Error al anular la nota')

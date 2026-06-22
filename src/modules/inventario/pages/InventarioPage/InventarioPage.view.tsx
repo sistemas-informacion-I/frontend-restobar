@@ -1,5 +1,7 @@
 import { AlertCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import Modal from '@/shared/components/ui/Modal'
+import { Button } from '@/shared/components/ui/Button'
 import { InventarioItem, StockSucursal, EstadoLote, LoteRequest, StockInicialRequest } from '../../services/inventario.service'
 import { 
   InventarioToolbar, 
@@ -74,6 +76,12 @@ export function InventarioPageView(props: InventarioPageViewProps) {
         onOpenCreateModal={() => setShowCreateModal(true)}
         user={user}
       />
+
+      <div className="flex justify-end">
+        <Link to="/inventario/alertas">
+          <Button variant="secondary">Ver alertas</Button>
+        </Link>
+      </div>
 
       {/* Page-level Feedback */}
       {feedbackMessage && (

@@ -51,7 +51,7 @@ export function SucursalesTable({
                     <Store size={24} />
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    <span className="font-black text-lg text-slate-900 dark:text-white tracking-tight leading-none">{sucursal.nombre}</span>
+                    <span className="font-black text-lg text-slate-600 dark:text-slate-200 tracking-tight leading-none">{sucursal.nombre}</span>
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wine-600 dark:text-wine-400">ID: {sucursal.idSucursal}</span>
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export function SucursalesTable({
                           <Store size={20} />
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <span className="font-bold text-slate-900 dark:text-white tracking-tight leading-none">{sucursal.nombre}</span>
+                          <span className="font-black text-lg text-slate-600 dark:text-slate-200 tracking-tight leading-none">{sucursal.nombre}</span>
                           <span className="text-[10px] font-bold uppercase tracking-widest text-wine-600 dark:text-wine-400">ID: {sucursal.idSucursal}</span>
                         </div>
                       </div>

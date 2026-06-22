@@ -16,7 +16,7 @@ export function SucursalView({sucursal, sectores}: SucursalViewProps) {
           <Store size={36} />
         </div>
         <div className="flex flex-col gap-2">
-          <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{sucursal.nombre}</h3>
+          <h3 className="text-3xl font-black text-slate-600 dark:text-slate-200 tracking-tighter">{sucursal.nombre}</h3>
           <div className="flex flex-wrap items-center gap-3 justify-center sm:justify-start">
             <span className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-[10px] font-black uppercase tracking-widest ${
               sucursal.activo 
