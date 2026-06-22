@@ -4,7 +4,8 @@ import {
   ReportRunRequest,
   ReportResult,
   ReportTemplate,
-  ReportTemplateRequest
+  ReportTemplateRequest,
+  AIReportResponse
 } from '../types/report.types';
 
 const REPORTS_API_URL = import.meta.env.VITE_REPORTS_API_URL || 'http://localhost:8001/api/reports';
@@ -62,6 +63,20 @@ class ReportService {
 
   async deleteTemplate(id: number): Promise<void> {
     await this.api.delete(`/templates/${id}`);
+  }
+
+  async runReportByPrompt(prompt: string): Promise<AIReportResponse> {
+    const response = await this.api.post<AIReportResponse>('/prompt', { prompt });
+    return response.data;
+  }
+
+  async runReportByAudio(audioBlob: Blob): Promise<AIReportResponse> {
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'audio.webm');
+    const response = await this.api.post<AIReportResponse>('/audio', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
   }
 }
 

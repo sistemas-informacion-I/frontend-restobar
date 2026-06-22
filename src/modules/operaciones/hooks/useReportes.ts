@@ -244,6 +244,8 @@ export const useReportes = () => {
       setDateFrom,
       setDateTo,
       setIsSaveModalOpen,
+      setResult,
+      setSelectedFields,
     }
   };
 };

@@ -77,3 +77,9 @@ export interface ReportTemplateRequest {
   sortOrder: 'asc' | 'desc';
   isShared: boolean;
 }
+
+export interface AIReportResponse {
+  transcript?: string;
+  query: ReportRunRequest;
+  result: ReportResult;
+}

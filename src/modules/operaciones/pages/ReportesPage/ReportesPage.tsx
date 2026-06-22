@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { 
   FileBarChart, Play, Save, Bookmark, Loader2, Info, LayoutDashboard, Database 
 } from 'lucide-react';
 import { ReportFiltersBuilder } from '../../components/reportes/ReportFiltersBuilder';
 import { ReportPreviewTable } from '../../components/reportes/ReportPreviewTable';
 import { SaveTemplateModal } from '../../components/reportes/SaveTemplateModal';
+import { AIReportAssistant } from '../../components/reportes/AIReportAssistant';
 import { Select } from '@/shared/components/ui';
 import { useReportes } from '../../hooks/useReportes';
 import { FieldDefinition } from '../../types/report.types';
+import { AIReportResponse } from '../../types/report.types';
 
 export default function ReportesPage() {
   const { state, actions } = useReportes();
@@ -33,15 +36,37 @@ export default function ReportesPage() {
     handleSelectReportType,
     toggleFieldSelection,
     handleLoadTemplate,
-    handleRunReport,
-    handleSortChange,
-    handleExport,
-    handleSaveTemplate,
-    setFilters,
-    setDateFrom,
-    setDateTo,
-    setIsSaveModalOpen,
+      handleRunReport,
+      handleSortChange,
+      handleExport,
+      handleSaveTemplate,
+      setFilters,
+      setDateFrom,
+      setDateTo,
+      setIsSaveModalOpen,
+      setResult,
   } = actions;
+
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const handleAIResult = (response: AIReportResponse) => {
+    if (response.query) {
+      handleSelectReportType(response.query.reportType);
+      if (response.query.selectedFields?.length) {
+        actions.setSelectedFields?.(response.query.selectedFields);
+      }
+      if (response.query.filters?.length) {
+        setFilters(response.query.filters);
+      }
+      if (response.query.dateFrom) {
+        setDateFrom(response.query.dateFrom.substring(0, 10));
+      }
+      if (response.query.dateTo) {
+        setDateTo(response.query.dateTo.substring(0, 10));
+      }
+    }
+    setResult(response.result);
+  };
 
   if (fetchingData) {
     return (
@@ -188,18 +213,26 @@ export default function ReportesPage() {
               </div>
             </div>
 
-            {currentReportDef ? (
-              <ReportFiltersBuilder
-                fields={currentReportDef.fields}
-                filters={filters}
-                onChange={setFilters}
-              />
-            ) : (
-              <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 p-4 bg-slate-50 dark:bg-wine-900/20 rounded-lg">
-                <Info className="w-5 h-5 mr-2 text-wine-500 dark:text-wine-400" />
-                Selecciona una fuente de datos en el panel izquierdo para comenzar.
-              </div>
-            )}
+            <AIReportAssistant
+              onResult={handleAIResult}
+              loading={aiLoading}
+              setLoading={setAiLoading}
+            />
+
+            <div className="border-t border-wine-200 dark:border-wine-700/30 pt-5">
+              {currentReportDef ? (
+                <ReportFiltersBuilder
+                  fields={currentReportDef.fields}
+                  filters={filters}
+                  onChange={setFilters}
+                />
+              ) : (
+                <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 p-4 bg-slate-50 dark:bg-wine-900/20 rounded-lg">
+                  <Info className="w-5 h-5 mr-2 text-wine-500 dark:text-wine-400" />
+                  Selecciona una fuente de datos en el panel izquierdo para comenzar.
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Preview Area */}
