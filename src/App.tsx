@@ -46,6 +46,7 @@ import { SeguimientoEntregaPage } from './modules/electronico/pages/SeguimientoE
 import { CarritoProvider } from './modules/electronico/context/CarritoContext'
 
 import ReportesPage from './modules/operaciones/pages/ReportesPage/ReportesPage'
+import CajaPage from './modules/comercial/pages/CajaPage'
 
 function App() {
   return (
@@ -102,6 +103,7 @@ function App() {
                   <Route path="/compras" element={<Compra />} />
                   <Route path="/productos-finales" element={<ProductosFinalesPage />} />
                   <Route path="/ventas" element={<VentasPage />} />
+                  <Route path="/caja" element={<CajaPage />} />
                   <Route path="/recetas" element={<RecetasPage />} />
                   <Route path="/notas-salida" element={<NotasSalidaPage />} />
                   <Route path="/catalogo" element={<CatalogoPage />} />

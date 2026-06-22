@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Users, Shield, LayoutDashboard, Activity, User, Store, Map, Grid, Truck, Package, LayoutList, ShoppingCart, ShoppingBag, ChefHat, Utensils, BookOpen, CreditCard, ClipboardList, CookingPot, DollarSign, FileBarChart, CalendarDays, CalendarCheck, Bike } from 'lucide-react'
+import { Users, Shield, LayoutDashboard, Activity, User, Store, Map, Grid, Truck, Package, LayoutList, ShoppingCart, ShoppingBag, ChefHat, Utensils, BookOpen, CreditCard, ClipboardList, CookingPot, DollarSign, FileBarChart, CalendarDays, CalendarCheck, Bike, Wallet } from 'lucide-react'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { SidebarView } from './SidebarView'
 
@@ -33,6 +33,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, sidebarMinimized }: Sideb
         { path: '/proveedores', label: 'Proveedores', icon: Truck, show: canRead('providers') },
         { path: '/categorias', label: 'Categorías', icon: LayoutList, show: canRead('categories') },
         { path: '/ventas', label: 'Ventas', icon: DollarSign, show: user?.tipoUsuario === 'S' || user?.tipoUsuario === 'E' || user?.tipoUsuario === 'C' },
+        { path: '/caja', label: 'Caja', icon: Wallet, show: canRead('caja') || user?.tipoUsuario === 'S' },
         { path: '/compras', label: 'Compras', icon: ShoppingCart, show: canRead('compras') },
         { path: '/productos-finales', label: 'Productos Finales', icon: Utensils, show: canRead('producto') },
       ]
