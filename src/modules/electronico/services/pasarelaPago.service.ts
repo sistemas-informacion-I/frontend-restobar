@@ -27,6 +27,7 @@ export interface TransaccionOnlineResumen {
 
 export interface NotaVentaDetail {
   idNotaVenta: number
+  idSucursal: number | null
   numeroComanda: string | null
   idComanda: number | null
   fechaEmision: string

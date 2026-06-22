@@ -82,7 +82,6 @@ function App() {
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/paypal/success" element={<PayPalSuccessPage />} />
                   <Route path="/paypal/cancel" element={<CheckoutPage />} />
-                  <Route path="/reservas" element={<ReservasPage />} />
                 </Route>
 
                 {/* Protected Routes (auth required) */}
@@ -115,6 +114,7 @@ function App() {
                   <Route path="/mis-pedidos" element={<MisPedidosPage />} />
                   <Route path="/metodos-pago" element={<MetodosPagoPage />} />
                   <Route path="/mis-pedidos/:id" element={<PedidoDetailPage />} />
+                  <Route path="/reservas" element={<ReservasPage />} />
                   <Route path="/reservas/panel" element={<PanelReservasPage />} />
                   <Route path="/entregas" element={<EntregasPage />} />
                   <Route path="/entregas/:id/seguimiento" element={<SeguimientoEntregaPage />} />

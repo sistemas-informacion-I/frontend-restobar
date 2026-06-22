@@ -31,7 +31,7 @@ const stepColors: Record<string, string> = {
 export default function PedidoDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { agregarItem } = useCarrito()
+  const { agregarItem, setSucursalId } = useCarrito()
   const [pedido, setPedido] = useState<NotaVentaDetail | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isDownloading, setIsDownloading] = useState(false)
@@ -88,8 +88,14 @@ export default function PedidoDetailPage() {
   const handleReordenar = async () => {
     if (!pedido?.detalles) return
 
+    if (!pedido.idSucursal) {
+      toast.error('No se pudo determinar la sucursal de este pedido')
+      return
+    }
+
     setIsReordering(true)
     try {
+      setSucursalId(pedido.idSucursal)
       for (const d of pedido.detalles) {
         await agregarItem({
           idProductoFinal: d.idProductoFinal,

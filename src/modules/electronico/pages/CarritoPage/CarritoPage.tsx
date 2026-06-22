@@ -21,11 +21,8 @@ export default function CarritoPage() {
   const [selectedMetodoId, setSelectedMetodoId] = useState<number | null>(null)
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('carrito_sucursal_id')
-    if (stored || sucursalId) {
-      setIsHydrated(true)
-    }
-  }, [sucursalId])
+    setIsHydrated(true)
+  }, [])
 
   useEffect(() => {
     if (isAuthenticated) {

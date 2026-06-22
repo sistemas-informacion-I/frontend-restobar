@@ -223,10 +223,12 @@ function PedidoCard({ pedido, onClick, animationDelay = 0 }: PedidoCardProps) {
   const idEntrega = (pedido as any).idEntrega as number | undefined
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
-      className="w-full rounded-[2rem] border border-wine-100/50 bg-white/75 p-5 sm:p-6 text-left shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-wine-900/10 hover:-translate-y-0.5 dark:border-wine-900/20 dark:bg-black/35 hover:dark:bg-black/45 animate-in fade-in slide-in-from-bottom-2"
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick() }}
+      className="w-full rounded-[2rem] border border-wine-100/50 bg-white/75 p-5 sm:p-6 text-left shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-wine-900/10 hover:-translate-y-0.5 dark:border-wine-900/20 dark:bg-black/35 hover:dark:bg-black/45 animate-in fade-in slide-in-from-bottom-2 cursor-pointer"
       style={{ animationDelay: `${animationDelay}ms`, animationFillMode: 'both' }}
     >
       <div className="flex items-start justify-between gap-4">
@@ -264,6 +266,8 @@ function PedidoCard({ pedido, onClick, animationDelay = 0 }: PedidoCardProps) {
                 {pedido.detalles.length > 3 && (
                   <span className="text-[10px] text-slate-400">+{pedido.detalles.length - 3} más</span>
                 )}
+              </div>
+            )}
             {estadoEntrega && (
               <div className="flex items-center gap-2 mt-2">
                 <Truck size={12} className={estadoEntrega === 'EN_CAMINO' ? 'text-indigo-500' : 'text-slate-400'} />
@@ -281,8 +285,6 @@ function PedidoCard({ pedido, onClick, animationDelay = 0 }: PedidoCardProps) {
               </div>
             )}
           </div>
-            )}
-          </div>
         </div>
 
         {/* Right: total + arrow */}
@@ -293,6 +295,6 @@ function PedidoCard({ pedido, onClick, animationDelay = 0 }: PedidoCardProps) {
           <ArrowRight size={18} className="text-slate-300 dark:text-slate-600" />
         </div>
       </div>
-    </button>
+    </div>
   )
 }
