@@ -32,8 +32,10 @@ interface VentasPageViewProps {
   onSelectComanda: (comanda: Comanda) => void
   productos: ProductoVenta[]
   productosLoading: boolean
-  subtotal: number
-  descuentoTotal: number
+  subtotalOriginal: number
+  descuentoPromociones: number
+  subtotalConPromociones: number
+  descuentoManual: number
   impuesto: number
   propinaTotal: number
   total: number
@@ -85,8 +87,10 @@ export function VentasPageView({
   onSelectComanda,
   productos,
   productosLoading,
-  subtotal,
-  descuentoTotal,
+  subtotalOriginal,
+  descuentoPromociones,
+  subtotalConPromociones,
+  descuentoManual,
   impuesto,
   propinaTotal,
   total,
@@ -152,7 +156,7 @@ export function VentasPageView({
               />
 
               <AjustesVenta
-                subtotal={subtotal}
+                subtotal={subtotalOriginal}
                 descuentoPorcentual={ajustes.descuentoPorcentual}
                 descuentoFijo={ajustes.descuentoFijo}
                 propinaPorcentual={ajustes.propinaPorcentual}
@@ -165,8 +169,10 @@ export function VentasPageView({
               />
 
               <ResumenFinanciero
-                subtotal={subtotal}
-                descuento={descuentoTotal}
+                subtotalOriginal={subtotalOriginal}
+                descuentoPromociones={descuentoPromociones}
+                subtotalConPromociones={subtotalConPromociones}
+                descuentoManual={descuentoManual}
                 impuesto={impuesto}
                 propina={propinaTotal}
                 total={total}

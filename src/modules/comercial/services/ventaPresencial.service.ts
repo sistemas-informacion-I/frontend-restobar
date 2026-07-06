@@ -7,16 +7,25 @@ import type {
   VentaPresencialRequest,
   VentaPresencialConfirmResponse,
   MetodoPagoResponse,
+  PromocionAplicadaVenta,
 } from '../models/ventaPresencial.model'
 import { comandaService } from '../../operaciones/services/comanda.service'
 import type { Comanda as OperacionesComanda } from '../../operaciones/services/types'
 
 function mapComanda(c: OperacionesComanda): Comanda {
-  const items = c.items || []
-  const subtotal = items.reduce(
+  const subtotalItems = (c.items || []).reduce(
     (sum, i) => sum + (i.precioUnitario || 0) * (i.cantidad || 0),
     0
   )
+  const subtotalOriginal = c.subtotalOriginal ?? 0
+  const subtotalConPromociones = c.subtotalConPromociones ?? subtotalOriginal
+  const descuentoPromociones = c.descuentoPromociones ?? 0
+  const descuentoManual = c.descuentoManual ?? 0
+  const impuesto = c.impuesto ?? 0
+  const propina = c.propina ?? 0
+  const total = c.total ?? (subtotalConPromociones > 0
+    ? subtotalConPromociones - descuentoManual + impuesto + propina
+    : subtotalItems)
   const hora = c.fechaApertura
     ? new Date(c.fechaApertura).toLocaleTimeString('es-BO', {
         hour: '2-digit',
@@ -28,7 +37,15 @@ function mapComanda(c: OperacionesComanda): Comanda {
     numeroComanda: c.numeroComanda,
     mesa: c.mesaNombre || 'Para llevar',
     cliente: c.clienteNombre || 'Anónimo',
-    subtotal,
+    nombrePromocion: c.nombrePromocion,
+    subtotal: total,
+    subtotalOriginal: subtotalOriginal > 0 ? subtotalOriginal : subtotalItems,
+    subtotalConPromociones: subtotalConPromociones > 0 ? subtotalConPromociones : subtotalItems,
+    descuentoPromociones,
+    descuentoManual,
+    impuesto,
+    propina,
+    promocionesAplicadas: mapPromociones(c.promocionesAplicadas),
     estado: c.estado,
     hora,
     sucursal: undefined,
@@ -44,6 +61,17 @@ function mapComanda(c: OperacionesComanda): Comanda {
       estado: i.estado,
     })),
   }
+}
+
+function mapPromociones(promociones?: OperacionesComanda['promocionesAplicadas']): PromocionAplicadaVenta[] {
+  if (!Array.isArray(promociones)) return []
+  return promociones.map((p) => ({
+    id: p.id,
+    nombre: p.nombre,
+    tipo: p.tipo,
+    valorDescuento: p.valorDescuento,
+    montoDescuento: p.montoDescuento,
+  }))
 }
 
 // Respuesta cruda de /api/clientes (ClienteResponse del backend)

@@ -1,23 +1,29 @@
 import { DollarSign, Percent, Receipt, Gift, Banknote } from 'lucide-react'
 
 interface ResumenFinancieroProps {
-  subtotal: number
-  descuento: number
+  subtotalOriginal: number
+  subtotalConPromociones: number
+  descuentoPromociones: number
+  descuentoManual: number
   impuesto: number
   propina: number
   total: number
 }
 
 export function ResumenFinanciero({
-  subtotal,
-  descuento,
+  subtotalOriginal,
+  subtotalConPromociones,
+  descuentoPromociones,
+  descuentoManual,
   impuesto,
   propina,
   total,
 }: ResumenFinancieroProps) {
   const rows = [
-    { label: 'Subtotal', value: subtotal, icon: Receipt, color: 'text-slate-900 dark:text-white' },
-    { label: 'Descuento', value: -descuento, icon: Gift, color: 'text-rose-600 dark:text-rose-400' },
+    { label: 'Subtotal', value: subtotalOriginal, icon: Receipt, color: 'text-slate-900 dark:text-white' },
+    { label: 'Promociones', value: -descuentoPromociones, icon: Gift, color: 'text-rose-600 dark:text-rose-400' },
+    { label: 'Subtotal con promociones', value: subtotalConPromociones, icon: Receipt, color: 'text-slate-900 dark:text-white' },
+    { label: 'Descuento manual', value: -descuentoManual, icon: Gift, color: 'text-rose-600 dark:text-rose-400' },
     { label: 'Impuesto (18%)', value: impuesto, icon: Percent, color: 'text-slate-900 dark:text-white' },
     { label: 'Propina', value: propina, icon: DollarSign, color: 'text-emerald-600 dark:text-emerald-400' },
   ]

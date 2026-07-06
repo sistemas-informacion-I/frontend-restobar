@@ -123,6 +123,22 @@ export interface Comanda {
   numeroPersonas?: number
   estado: 'PENDIENTE_PAGO' | 'ABIERTA' | 'EN_PREPARACION' | 'LISTA' | 'ENTREGADA' | 'CERRADA' | 'CANCELADA'
   observaciones?: string
+  idPromocion?: number
+  nombrePromocion?: string
+  subtotalOriginal?: number
+  descuentoPromociones?: number
+  subtotalConPromociones?: number
+  descuentoManual?: number
+  impuesto?: number
+  propina?: number
+  total?: number
+  promocionesAplicadas?: {
+    id: number
+    nombre: string
+    tipo: string
+    valorDescuento: number
+    montoDescuento: number
+  }[]
   items?: DetalleComanda[]
 }
 
@@ -134,6 +150,8 @@ export interface DetalleComanda {
   cantidad: number
   notas?: string
   estado: 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CANCELADO'
+  esPromocion?: boolean
+  idPromocion?: number
   estacionPreparacion: 'COCINA' | 'BARRA'
   fechaAceptacion?: string
   empleadoAsignado?: string
@@ -142,6 +160,7 @@ export interface DetalleComanda {
 export interface CreateComandaData {
   idSucursal: number
   idCliente?: number
+  idPromocion?: number
   idReserva?: number
   idMesa?: number
   tipoServicio: 'MESA' | 'PARA_LLEVAR' | 'ONLINE'
@@ -155,6 +174,7 @@ export interface UpdateComandaData {
   observaciones?: string
   numeroPersonas?: number
   idCliente?: number
+  idPromocion?: number | null
   items?: CreateDetalleComandaItem[]
 }
 
@@ -167,6 +187,8 @@ export interface CreateDetalleComandaItem {
   idProductoFinal: number
   cantidad: number
   notas?: string
+  esPromocion?: boolean
+  idPromocion?: number
 }
 
 // ============ PREPARACION (KDS) TYPES ============
