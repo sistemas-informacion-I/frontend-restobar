@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import { useVentaPresencial } from '../../hooks/useVentaPresencial'
 import { VentaPresencialService } from '../../services/ventaPresencial.service'
 import { getErrorMessage, httpClient } from '@/core/api'
+import { comandaService } from '@/modules/operaciones/services/comanda.service'
 import { VentasPageView } from './VentasPage.view'
 import type {
   Comanda,
@@ -14,8 +15,6 @@ import type {
   EstadoVenta,
   VentaPresencialConfirmResponse,
 } from '../../models/ventaPresencial.model'
-
-const IVA_RATE = 0.18
 
 export default function VentasPage() {
   const {
@@ -50,6 +49,15 @@ export default function VentasPage() {
   const [busquedaCliente, setBusquedaCliente] = useState('')
   const [isPayPalModalOpen, setIsPayPalModalOpen] = useState(false)
   const [payPalUrl, setPayPalUrl] = useState('')
+  const [resumenBackend, setResumenBackend] = useState({
+    subtotalOriginal: 0,
+    descuentoPromociones: 0,
+    subtotalConPromociones: 0,
+    descuentoManual: 0,
+    impuesto: 0,
+    propina: 0,
+    total: 0,
+  })
 
   const payPalPopupRef = useRef<Window | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -69,19 +77,89 @@ export default function VentasPage() {
     return m?.nombre ?? ''
   }, [metodosPago, metodoPagoId])
 
-  const subtotal = useMemo(() => {
-    return productosComanda.reduce((sum, p) => sum + p.subtotal, 0)
-  }, [productosComanda])
+  const calcularSubtotalProductos = useCallback((productos: ProductoVenta[]) => {
+    return productos.reduce((sum, p) => sum + (p.subtotal || 0), 0)
+  }, [])
 
-  const descuentoTotal = useMemo(() => {
-    const dPorcentual = subtotal * (descuentoPorcentual / 100)
-    return Math.min(dPorcentual + descuentoFijo, subtotal)
-  }, [subtotal, descuentoPorcentual, descuentoFijo])
+  const hydrateResumen = useCallback((comanda: Comanda | null, productos: ProductoVenta[] = []) => {
+    const subtotalFallback = calcularSubtotalProductos(productos)
 
-  const baseImponible = subtotal - descuentoTotal
-  const impuesto = baseImponible * IVA_RATE
-  const propinaTotal = propinaFija + subtotal * (propinaPorcentual / 100)
-  const total = baseImponible + impuesto + propinaTotal
+    const subtotalOriginalRaw = comanda?.subtotalOriginal ?? 0
+    const descuentoPromociones = comanda?.descuentoPromociones ?? 0
+    const subtotalConPromocionesRaw = comanda?.subtotalConPromociones ?? 0
+    const descuentoManual = comanda?.descuentoManual ?? 0
+    const impuestoRaw = comanda?.impuesto ?? 0
+    const propinaRaw = comanda?.propina ?? 0
+
+    const subtotalOriginal = subtotalOriginalRaw > 0 ? subtotalOriginalRaw : subtotalFallback
+    const subtotalConPromociones = subtotalConPromocionesRaw > 0 ? subtotalConPromocionesRaw : Math.max(0, subtotalOriginal - descuentoPromociones)
+    const baseImponible = Math.max(0, subtotalConPromociones - descuentoManual)
+    const impuesto = impuestoRaw > 0 ? impuestoRaw : Number((baseImponible * 0.18).toFixed(2))
+    const propina = propinaRaw > 0 ? propinaRaw : Number((propinaFija + subtotalOriginal * (propinaPorcentual / 100)).toFixed(2))
+    const total = comanda?.subtotal && comanda.subtotal > 0
+      ? comanda.subtotal
+      : Number((baseImponible + impuesto + propina).toFixed(2))
+
+    setResumenBackend({
+      subtotalOriginal,
+      descuentoPromociones,
+      subtotalConPromociones,
+      descuentoManual,
+      impuesto,
+      propina,
+      total,
+    })
+  }, [calcularSubtotalProductos, propinaFija, propinaPorcentual])
+
+  const refreshComandaSeleccionada = useCallback(async (idComanda: number) => {
+    const rawComanda = await comandaService.getOne(idComanda)
+    const prods = await VentaPresencialService.getProductosByComanda(idComanda)
+    const subtotalFallback = calcularSubtotalProductos(prods)
+
+    const subtotalOriginal = rawComanda.subtotalOriginal ?? subtotalFallback
+    const descuentoPromociones = rawComanda.descuentoPromociones ?? 0
+    const subtotalConPromociones = rawComanda.subtotalConPromociones ?? Math.max(0, subtotalOriginal - descuentoPromociones)
+    const descuentoManual = rawComanda.descuentoManual ?? 0
+    const impuesto = rawComanda.impuesto ?? 0
+    const propina = rawComanda.propina ?? 0
+    const total = rawComanda.total ?? Number((Math.max(0, subtotalConPromociones - descuentoManual) + impuesto + propina).toFixed(2))
+
+    const comandaActualizada = {
+      idComanda: rawComanda.idComanda,
+      numeroComanda: rawComanda.numeroComanda,
+      mesa: rawComanda.mesaNombre || 'Para llevar',
+      cliente: rawComanda.clienteNombre || 'Anónimo',
+      nombrePromocion: rawComanda.nombrePromocion,
+      subtotal: total,
+      estado: rawComanda.estado,
+      subtotalOriginal,
+      subtotalConPromociones,
+      descuentoPromociones,
+      descuentoManual,
+      impuesto,
+      propina,
+      promocionesAplicadas: rawComanda.promocionesAplicadas ?? [],
+      sucursal: rawComanda.nombreSucursal,
+      idSucursal: rawComanda.idSucursal,
+      idCliente: rawComanda.idCliente,
+      items: rawComanda.items?.map((i) => ({
+        idDetalleComanda: i.idDetalleComanda,
+        idProductoFinal: i.idProductoFinal,
+        nombreProducto: i.nombreProducto,
+        precioUnitario: i.precioUnitario,
+        cantidad: i.cantidad,
+        notas: i.notas,
+        estado: i.estado,
+      })),
+      hora: rawComanda.fechaApertura
+        ? new Date(rawComanda.fechaApertura).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' })
+        : '',
+    } as Comanda
+
+    setComandaSeleccionada(comandaActualizada)
+    hydrateResumen(comandaActualizada, prods)
+    setProductosComanda(prods)
+  }, [calcularSubtotalProductos, hydrateResumen])
 
   useEffect(() => {
     return () => {
@@ -104,12 +182,15 @@ export default function VentasPage() {
           setIsTicketModalOpen(true)
           toast.success('Pago PayPal completado exitosamente')
           refetchComandas()
+          if (comandaSeleccionada?.idComanda) {
+            refreshComandaSeleccionada(comandaSeleccionada.idComanda).catch(() => undefined)
+          }
         }
       } catch {
         // continue polling
       }
     }, 3000)
-  }, [refetchComandas])
+  }, [comandaSeleccionada?.idComanda, refetchComandas, refreshComandaSeleccionada])
 
   const handleSelectComanda = useCallback(async (comanda: Comanda) => {
     setComandaSeleccionada(comanda)
@@ -122,12 +203,11 @@ export default function VentasPage() {
     const activos = metodosPago.filter((m) => m.activo)
     if (activos.length > 0) setMetodoPagoId(activos[0].idMetodoPago)
     try {
-      const prods = await VentaPresencialService.getProductosByComanda(comanda.idComanda)
-      setProductosComanda(prods)
+      await refreshComandaSeleccionada(comanda.idComanda)
     } catch {
       toast.error('Error al cargar productos de la comanda')
     }
-  }, [metodosPago])
+  }, [metodosPago, refreshComandaSeleccionada])
 
   const handleDescuentoPorcentual = useCallback((value: number) => {
     const clamped = Math.max(0, Math.min(value, 100))
@@ -155,12 +235,18 @@ export default function VentasPage() {
     setCliente({ idCliente: c.idCliente, nombre: c.nombre, nit: c.nit, esAnonimo: false })
     setNitManual(c.nit || '')
     setIsClienteModalOpen(false)
-  }, [])
+    if (comandaSeleccionada?.idComanda) {
+      refreshComandaSeleccionada(comandaSeleccionada.idComanda).catch(() => undefined)
+    }
+  }, [comandaSeleccionada?.idComanda, refreshComandaSeleccionada])
 
   const handleVentaAnonima = useCallback(() => {
     setCliente({ nombre: 'Anónimo', esAnonimo: true })
     setNitManual('')
-  }, [])
+    if (comandaSeleccionada?.idComanda) {
+      refreshComandaSeleccionada(comandaSeleccionada.idComanda).catch(() => undefined)
+    }
+  }, [comandaSeleccionada?.idComanda, refreshComandaSeleccionada])
 
   const handleBuscarClientes = useCallback(async (termino: string) => {
     setBusquedaCliente(termino)
@@ -190,12 +276,12 @@ export default function VentasPage() {
 
   const handleConfirmarClick = useCallback(() => {
     if (!comandaSeleccionada) return
-    if (descuentoFijo > subtotal) {
+    if (descuentoFijo > resumenBackend.subtotalOriginal) {
       toast.error('El descuento fijo no puede superar el subtotal')
       return
     }
     setIsConfirmModalOpen(true)
-  }, [comandaSeleccionada, descuentoFijo, subtotal])
+  }, [comandaSeleccionada, descuentoFijo, resumenBackend.subtotalOriginal])
 
   const handleConfirmarVenta = useCallback(async () => {
     if (!comandaSeleccionada) return
@@ -214,6 +300,17 @@ export default function VentasPage() {
       const result = await confirmarVenta(payload) as unknown as VentaPresencialConfirmResponse
       setIsConfirmModalOpen(false)
 
+      setResumenBackend({
+        subtotalOriginal: result.subtotalOriginal ?? result.subtotal,
+        descuentoPromociones: result.descuentoPromociones ?? 0,
+        subtotalConPromociones: result.subtotalConPromociones ?? result.subtotal,
+        descuentoManual: result.descuentoManual ?? Math.max(0, result.descuento - (result.descuentoPromociones ?? 0)),
+        impuesto: result.impuesto,
+        propina: result.propina,
+        total: result.total,
+      })
+      setComandaSeleccionada((prev) => prev ? ({ ...prev, promocionesAplicadas: result.promocionesAplicadas ?? prev.promocionesAplicadas }) : prev)
+
       if (result.paypalApprovalUrl) {
         setPayPalUrl(result.paypalApprovalUrl)
         setEstadoVenta('PENDIENTE_PAYPAL')
@@ -226,6 +323,9 @@ export default function VentasPage() {
         setIsTicketModalOpen(true)
         toast.success('Venta confirmada exitosamente')
         refetchComandas()
+        if (comandaSeleccionada?.idComanda) {
+          refreshComandaSeleccionada(comandaSeleccionada.idComanda).catch(() => undefined)
+        }
       }
     } catch (error: any) {
       const msg = getErrorMessage(error, 'confirmar venta')
@@ -244,11 +344,13 @@ export default function VentasPage() {
     confirmarVenta,
     refetchComandas,
     startPollingPayPal,
+    refreshComandaSeleccionada,
   ])
 
   const handleCancelar = useCallback(() => {
     setComandaSeleccionada(null)
     setProductosComanda([])
+    hydrateResumen(null, [])
     setDescuentoPorcentual(0)
     setDescuentoFijo(0)
     setPropinaPorcentual(0)
@@ -257,7 +359,7 @@ export default function VentasPage() {
     setNitManual('')
     const activos = metodosPago.filter((m) => m.activo)
     if (activos.length > 0) setMetodoPagoId(activos[0].idMetodoPago)
-  }, [metodosPago])
+  }, [hydrateResumen, metodosPago])
 
   const handleImprimirTicket = useCallback(() => {
     toast.success('Ticket enviado a impresión')
@@ -302,6 +404,15 @@ export default function VentasPage() {
     propinaFija,
   }
 
+  useEffect(() => {
+    if (!comandaSeleccionada?.idComanda) return
+    const intervalId = window.setInterval(() => {
+      refreshComandaSeleccionada(comandaSeleccionada.idComanda).catch(() => undefined)
+    }, 8000)
+
+    return () => window.clearInterval(intervalId)
+  }, [comandaSeleccionada?.idComanda, refreshComandaSeleccionada])
+
   return (
     <VentasPageView
       comandas={filteredComandas}
@@ -315,11 +426,13 @@ export default function VentasPage() {
       onSelectComanda={handleSelectComanda}
       productos={productosComanda}
       productosLoading={false}
-      subtotal={subtotal}
-      descuentoTotal={descuentoTotal}
-      impuesto={impuesto}
-      propinaTotal={propinaTotal}
-      total={total}
+      subtotalOriginal={resumenBackend.subtotalOriginal}
+      descuentoPromociones={resumenBackend.descuentoPromociones}
+      subtotalConPromociones={resumenBackend.subtotalConPromociones}
+      descuentoManual={resumenBackend.descuentoManual}
+      impuesto={resumenBackend.impuesto}
+      propinaTotal={resumenBackend.propina}
+      total={resumenBackend.total}
       ajustes={ajustes}
       onDescuentoPorcentualChange={handleDescuentoPorcentual}
       onDescuentoFijoChange={handleDescuentoFijo}

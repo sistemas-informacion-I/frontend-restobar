@@ -8,9 +8,11 @@ import { useSectores } from '../../hooks/useSectores'
 import { useAuth } from '@/modules/acceso/context/AuthContext'
 import { useSucursales } from '../../hooks/useSucursales'
 import { productosFinalesService } from '@/modules/comercial/services/productosFinales.service'
+import { promocionService } from '@/modules/comercial/services/promocionService'
 import { clienteService } from '../../services/cliente.service'
 import type { Comanda, Cliente, CreateComandaData, UpdateComandaData } from '../../services/types'
 import type { ProductoFinal } from '@/modules/comercial/services/productosFinales.service'
+import type { Promocion } from '@/modules/comercial/models/Promocion'
 
 export function ComandasPage() {
   const {
@@ -47,9 +49,14 @@ export function ComandasPage() {
     () => productosFinalesService.getAll({ activo: true })
   )
 
-  const { data: clientes = [] } = useSWR<Cliente[]>(
+  const { data: clientes = [], error: clientesError } = useSWR<Cliente[]>(
     '/api/clientes',
     () => clienteService.getAll()
+  )
+
+  const { data: promociones = [] } = useSWR<Promocion[]>(
+    '/api/promociones',
+    () => promocionService.getAll()
   )
 
   const { user } = useAuth()
@@ -78,7 +85,7 @@ export function ComandasPage() {
   const [selectedComanda, setSelectedComanda] = useState<Comanda | null>(null)
 
   const loading = comandasLoading || mesasLoading || sectoresLoading || productosLoading
-  const loadError = comandasError || mesasError
+  const loadError = comandasError || mesasError || clientesError
 
   const filteredComandas = useMemo(() => {
     let filtered = comandas
@@ -128,6 +135,22 @@ export function ComandasPage() {
       precio: ((p as unknown as { precio?: number; precioVenta?: number }).precio ?? (p as unknown as { precio?: number; precioVenta?: number }).precioVenta ?? 0)
     })),
     [productos]
+  )
+
+  const promocionesAplicables = useMemo(
+    () => promociones
+      .filter((p) => p.estado === 'ACTIVA' && p.aplicable === true)
+      .map((p) => ({
+        id: p.idPromocion ?? p.id,
+        nombre: p.nombre,
+        productos: (p.productos ?? [])
+          .filter((prod) => (prod.idProductoFinal ?? 0) > 0)
+          .map((prod) => ({
+            idProductoFinal: prod.idProductoFinal ?? 0,
+            nombre: prod.nombre ?? `Producto ${prod.idProductoFinal ?? ''}`
+          }))
+      })),
+    [promociones]
   )
 
   const handleCreate = async (data: CreateComandaData | UpdateComandaData) => {
@@ -257,6 +280,7 @@ export function ComandasPage() {
     setSelectedSucursalId,
     isSuperuser,
     productos: productoOptions,
+    promociones: promocionesAplicables,
     loading,
     search,
     setSearch,

@@ -1,4 +1,4 @@
-import { Package, MessageSquare } from 'lucide-react'
+import { Package, MessageSquare, Tag } from 'lucide-react'
 import { SkeletonLoading } from './SkeletonLoading.view'
 import type { Comanda, ProductoVenta } from '@/modules/comercial/models/ventaPresencial.model'
 
@@ -27,6 +27,11 @@ export function VentaDetalle({ comanda, productos, productosLoading }: VentaDeta
           <p className="text-[10px] font-bold uppercase tracking-widest text-wine-900/40 dark:text-wine-400/40">
             {comanda.cliente}
           </p>
+          {comanda.nombrePromocion && (
+            <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-emerald-700/80 dark:text-emerald-400/80">
+              Promocion aplicada: {comanda.nombrePromocion}
+            </p>
+          )}
         </div>
       </div>
 
@@ -74,6 +79,42 @@ export function VentaDetalle({ comanda, productos, productosLoading }: VentaDeta
               </div>
             </div>
           ))
+        )}
+      </div>
+
+      <div className="border-t border-wine-100/50 px-5 py-4 dark:border-wine-900/30">
+        <div className="mb-3 flex items-center gap-2">
+          <Tag size={12} className="text-wine-700 dark:text-wine-300" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-wine-900/50 dark:text-wine-400/50">
+            Promociones aplicadas
+          </p>
+        </div>
+
+        {comanda.promocionesAplicadas && comanda.promocionesAplicadas.length > 0 ? (
+          <div className="space-y-2">
+            {comanda.promocionesAplicadas.map((promo) => (
+              <div
+                key={promo.id}
+                className="flex items-center justify-between rounded-xl border border-wine-100/60 bg-wine-50/40 px-3 py-2 dark:border-wine-900/30 dark:bg-wine-900/10"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-black text-slate-900 dark:text-white">
+                    {promo.nombre}
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-wine-900/50 dark:text-wine-400/50">
+                    {promo.valorDescuento}% de descuento
+                  </p>
+                </div>
+                <span className="ml-3 shrink-0 text-xs font-black text-emerald-700 dark:text-emerald-400">
+                  -Bs {promo.montoDescuento.toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs font-bold text-wine-900/50 dark:text-wine-400/50">
+            No existen promociones aplicadas.
+          </p>
         )}
       </div>
     </div>

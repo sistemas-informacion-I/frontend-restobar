@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm, useFieldArray } from 'react-hook-form'
 import { Input } from '@/shared/components/ui/Input'
 import { Button } from '@/shared/components/ui/Button'
@@ -14,6 +14,7 @@ interface ComandaFormProps {
   clientes?: Cliente[]
   sucursalNombre?: string
   productos?: Array<{ id: number; nombre: string; precio: number }>
+  promociones?: Array<{ id: number; nombre: string; productos: Array<{ idProductoFinal: number; nombre: string }> }>
   onSubmit: (data: CreateComandaData | UpdateComandaData) => Promise<void>
   onCancel: () => void
   isLoading: boolean
@@ -28,6 +29,7 @@ export function ComandaForm({
   clientes = [],
   sucursalNombre,
   productos = [],
+  promociones = [],
   onSubmit,
   onCancel,
   isLoading,
@@ -41,21 +43,26 @@ export function ComandaForm({
       observaciones: comanda?.observaciones,
       idMesa: comanda?.idMesa,
       idCliente: comanda?.idCliente,
+      idPromocion: comanda?.idPromocion,
       estado: comanda?.estado || 'ABIERTA',
       items: comanda?.items?.map(item => ({
         idProductoFinal: item.idProductoFinal,
         cantidad: item.cantidad,
-        notas: item.notas
+        notas: item.notas,
+        esPromocion: item.esPromocion,
+        idPromocion: item.idPromocion
       })) || []
     }
   })
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: 'items'
   })
 
   const selectedTipoServicio = watch('tipoServicio')
+  const selectedPromocionId = watch('idPromocion')
+  const prevPromocionIdRef = useRef<number | undefined>(comanda?.idPromocion)
 
   // Sector seleccionado (no se envía al backend, sólo filtra las mesas disponibles)
   const [selectedSectorId, setSelectedSectorId] = useState<number | undefined>(comanda?.idSector)
@@ -86,9 +93,52 @@ export function ComandaForm({
     append({
       idProductoFinal: 0,
       cantidad: 1,
-      notas: ''
+      notas: '',
+      esPromocion: false,
+      idPromocion: undefined
     })
   }
+
+  useEffect(() => {
+    const promoId = selectedPromocionId ? Number(selectedPromocionId) : undefined
+    const prevPromoId = prevPromocionIdRef.current
+
+    if (promoId === prevPromoId && promociones.length > 0) {
+      return
+    }
+
+    const currentItems = (watch('items') || []) as Array<{
+      idProductoFinal: number
+      cantidad: number
+      notas?: string
+      esPromocion?: boolean
+      idPromocion?: number
+    }>
+
+    const manualItems = currentItems
+      .filter((item) => !item?.esPromocion)
+      .map((item) => ({
+        idProductoFinal: item.idProductoFinal,
+        cantidad: item.cantidad,
+        notas: item.notas,
+        esPromocion: false,
+        idPromocion: undefined,
+      }))
+
+    const promocion = promociones.find((p) => p.id === promoId)
+    const promoItems = promocion
+      ? promocion.productos.map((producto) => ({
+          idProductoFinal: producto.idProductoFinal,
+          cantidad: 1,
+          notas: '',
+          esPromocion: true,
+          idPromocion: promocion.id,
+        }))
+      : []
+
+    replace([...manualItems, ...promoItems])
+    prevPromocionIdRef.current = promoId
+  }, [promociones, replace, selectedPromocionId, watch])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 animate-in fade-in">
@@ -126,6 +176,23 @@ export function ComandaForm({
               min: { value: 1, message: 'Mínimo 1 persona' }
             })}
             error={errors.numeroPersonas?.message}
+          />
+
+          <Controller
+            name="idPromocion"
+            control={control}
+            render={({ field }) => (
+              <FormSelect
+                label="Promoción (opcional)"
+                options={[
+                  { value: '', label: 'Sin promoción' },
+                  ...promociones.map((p) => ({ value: p.id, label: p.nombre }))
+                ]}
+                placeholder="Seleccionar promoción"
+                value={field.value}
+                onChange={(val) => field.onChange(val ? Number(val) : undefined)}
+              />
+            )}
           />
 
           <Controller

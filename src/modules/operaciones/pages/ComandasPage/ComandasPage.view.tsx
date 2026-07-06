@@ -19,6 +19,7 @@ interface ComandasPageViewProps {
   setSelectedSucursalId: (value: number | undefined) => void
   isSuperuser: boolean
   productos: Array<{ id: number; nombre: string; precio: number }>
+  promociones: Array<{ id: number; nombre: string; productos: Array<{ idProductoFinal: number; nombre: string }> }>
   loading: boolean
   search: string
   setSearch: (value: string) => void
@@ -71,6 +72,7 @@ export function ComandasPageView({
   setSelectedSucursalId,
   isSuperuser,
   productos,
+  promociones,
   loading,
   search,
   setSearch,
@@ -244,6 +246,7 @@ export function ComandasPageView({
             clientes={clientes}
             sucursalNombre={sucursalNombre}
             productos={productos}
+            promociones={promociones}
             onSubmit={handleCreate}
             onCancel={() => setShowCreateModal(false)}
             isLoading={isSubmitting}
@@ -262,6 +265,7 @@ export function ComandasPageView({
             clientes={clientes}
             sucursalNombre={sucursalNombre}
             productos={productos}
+            promociones={promociones}
             onSubmit={handleUpdate}
             onCancel={() => {
               setShowEditModal(false)

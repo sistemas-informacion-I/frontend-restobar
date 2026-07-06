@@ -6,7 +6,15 @@ export interface Comanda {
   numeroComanda: string
   mesa: string
   cliente: string
+  nombrePromocion?: string
   subtotal: number
+  subtotalOriginal?: number
+  subtotalConPromociones?: number
+  descuentoPromociones?: number
+  descuentoManual?: number
+  impuesto?: number
+  propina?: number
+  promocionesAplicadas?: PromocionAplicadaVenta[]
   estado: string
   hora: string
   sucursal?: string
@@ -58,11 +66,21 @@ export interface MetodoPagoResponse {
 }
 
 export interface ResumenFinanciero {
-  subtotal: number
-  descuento: number
+  subtotalOriginal: number
+  subtotalConPromociones: number
+  descuentoPromociones: number
+  descuentoManual: number
   impuesto: number
   propina: number
   total: number
+}
+
+export interface PromocionAplicadaVenta {
+  id: number
+  nombre: string
+  tipo: string
+  valorDescuento: number
+  montoDescuento: number
 }
 
 export interface VentaPresencial {
@@ -93,9 +111,14 @@ export interface VentaPresencialConfirmResponse {
   estado: string
   total: number
   subtotal: number
+  subtotalOriginal?: number
+  subtotalConPromociones?: number
+  descuentoPromociones?: number
+  descuentoManual?: number
   impuesto: number
   descuento: number
   propina: number
+  promocionesAplicadas?: PromocionAplicadaVenta[]
   paypalApprovalUrl?: string
   paypalOrderId?: string
   idTransaccion?: number
